@@ -23,4 +23,13 @@ public class SimpleCompartment extends Compartment {
             return y;
         }
     }
+
+    public @Role class AnotherRoleType {
+        private @Base BaseType base;
+
+        @OverrideBase
+        public int calculate(int x) {
+            return -x;
+        }
+    }
 }
