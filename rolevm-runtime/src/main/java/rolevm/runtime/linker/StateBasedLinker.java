@@ -153,6 +153,15 @@ public class StateBasedLinker implements BindingObserver, GuardingDynamicLinker 
         }
     }
 
+    /**
+     * Tries to find an "overloaded" method in the role type, matching the given
+     * name and method type, and if found, returns a method handle that dynamically
+     * replaces the original receiver with its bound role. Otherwise, if no
+     * overloaded method is found in the role type, the fallback method handle is
+     * returned as-is.
+     * 
+     * @see MethodHandles#collectArguments(MethodHandle, int, MethodHandle)
+     */
     private MethodHandle maybeRoleHandle(final Class<?> roleType, final String name, final MethodType methodType,
             final MethodHandle fallback) {
         try {
@@ -163,6 +172,12 @@ public class StateBasedLinker implements BindingObserver, GuardingDynamicLinker 
         }
     }
 
+    /**
+     * Returns the object-to-role mapping method handle, with its return type
+     * adapted to the given role type. The resulting handle is intended to be used
+     * as the filter method handle in
+     * {@link MethodHandles#collectArguments(MethodHandle, int, MethodHandle)}.
+     */
     private MethodHandle makeGetRoleHandle(final Class<?> roleType) {
         return getRoleHandle.asType(getRoleHandle.type().changeReturnType(roleType));
     }
