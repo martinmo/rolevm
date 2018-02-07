@@ -6,7 +6,6 @@ public class BaseType {
     }
 
     public int delegation() {
-        // should return 10 if role is bound, 6 otherwise
         return calculate(3);
     }
 }
