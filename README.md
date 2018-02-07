@@ -171,16 +171,16 @@ The required JARs can be obtained using `mvn dependency:copy`.
 
 ### OT/J callin vs RoleVM basecall overhead
 
-Measured using the synthetic NoopCompartment benchmark.
+Measured using the synthetic NoopCompartment benchmarks.
 
-OT/J:
+OT/J ([benchmark source](https://github.com/martinmo/otjbench)):
 
     Benchmark                      Mode  Cnt    Score   Error  Units
     NoopCallin.baseline            avgt   10    0,438 ± 0,010  ns/op
     NoopCallin.callinTest          avgt   10  232,749 ± 6,563  ns/op
     NoopCallin.callinWithArgsTest  avgt   10  253,201 ± 7,882  ns/op
 
-RoleVM:
+RoleVM ([benchmark source](rolevm-bench/src/main/java/rolevm/bench/noop)):
 
     Benchmark                                   Mode  Cnt   Score   Error  Units
     NoopCompartmentBenchmark.basecall_noargs    avgt   10  40,275 ± 1,397  ns/op
