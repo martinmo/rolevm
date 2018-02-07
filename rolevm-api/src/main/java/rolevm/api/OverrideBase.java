@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * Similar to {@link Override}, this annotation is a hint to the type checker
- * that the programmer intents to override a base method. Currently, using this
+ * that the programmer intends to override a base method. Currently, using this
  * annotation has no effect.
  * 
  * @author Martin Morgenstern
