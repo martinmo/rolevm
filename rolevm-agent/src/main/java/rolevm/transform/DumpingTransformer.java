@@ -9,6 +9,11 @@ import java.nio.file.Path;
 import java.security.ProtectionDomain;
 import java.util.Objects;
 
+/**
+ * Transformer that dumps modified classes to a specified path.
+ * 
+ * @author Martin Morgenstern
+ */
 public class DumpingTransformer extends DefaultTransformer {
     private final Path directory;
 

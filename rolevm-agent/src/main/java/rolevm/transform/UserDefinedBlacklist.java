@@ -5,6 +5,12 @@ import static java.util.stream.Collectors.toList;
 
 import java.util.List;
 
+/**
+ * Allows to specify additional prefixes that should be excluded in addition to
+ * the ones defined in {@link StandardBlacklist}. Currently unused.
+ * 
+ * @author Martin Morgenstern
+ */
 public class UserDefinedBlacklist extends StandardBlacklist {
     private final String[] blacklist;
 

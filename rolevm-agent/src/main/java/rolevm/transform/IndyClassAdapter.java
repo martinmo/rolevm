@@ -4,6 +4,11 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
+/**
+ * Adapts classes using the {@link IndyMethodAdapter}.
+ * 
+ * @author Martin Morgenstern
+ */
 public class IndyClassAdapter extends ClassVisitor implements Opcodes {
     private String className;
 

@@ -10,6 +10,13 @@ import org.objectweb.asm.ClassWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import rolevm.agent.RoleVMAgent;
+
+/**
+ * The default transformer that is installed by the {@link RoleVMAgent}.
+ * 
+ * @author Martin Morgenstern
+ */
 public class DefaultTransformer implements ClassFileTransformer {
     final static Logger logger = LoggerFactory.getLogger(DefaultTransformer.class);
     private final StandardBlacklist blacklist = new StandardBlacklist();

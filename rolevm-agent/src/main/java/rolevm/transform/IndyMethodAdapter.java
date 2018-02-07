@@ -5,6 +5,14 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
+/**
+ * Adapts <code>invoke{virtual,interface}</code> call sites to equivalent
+ * <code>invokedynamic</code> call sites with an injected sender argument. The
+ * sender argument is <code>this</code> in bodies of non-static methods,
+ * otherwise the {@link Class} object of the surrounding class.
+ * 
+ * @author Martin Morgenstern
+ */
 public class IndyMethodAdapter extends MethodVisitor implements BootstrapConstants, Opcodes {
     private static final Handle BSM_HANDLE = new Handle(H_INVOKESTATIC, BSM_CLASS, BSM_NAME, BSM_TYPE, false);
     private final MethodInfo info;

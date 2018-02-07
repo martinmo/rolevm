@@ -1,5 +1,9 @@
 package rolevm.transform;
 
+/**
+ * Internally used container type to pass method metadata to the
+ * {@link IndyMethodAdapter}.
+ */
 class MethodInfo {
     final String className;
     final int access;
