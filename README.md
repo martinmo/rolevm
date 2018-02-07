@@ -166,6 +166,7 @@ The required JARs can be obtained using `mvn dependency:copy`.
 - Only one role may be bound to an object.
 - Roles must be explicitly unbound to make the base and role object eligible for garbage
   collection.
+- Only classes with a minimum class format version of 1.7 can be transformed.
 
 ## Performance
 
