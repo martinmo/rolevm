@@ -154,10 +154,10 @@ public class StateBasedLinker implements BindingObserver, GuardingDynamicLinker 
     }
 
     /**
-     * Tries to find an "overloaded" method in the role type, matching the given
-     * name and method type, and if found, returns a method handle that dynamically
+     * Tries to find an overriding method in the role type, matching the given name
+     * and method type, and if found, returns a method handle that dynamically
      * replaces the original receiver with its bound role. Otherwise, if no
-     * overloaded method is found in the role type, the fallback method handle is
+     * overriding method is found in the role type, the fallback method handle is
      * returned as-is.
      * 
      * @see MethodHandles#collectArguments(MethodHandle, int, MethodHandle)

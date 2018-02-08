@@ -71,7 +71,7 @@ public @Role class RoleType {
 
 #### Around, Before, After and Replace
 
-Suppose you have a class `A` that you want to use a base:
+Suppose you have a class `A` that you want to use as a base:
 
 ```java
 public class A {
@@ -93,7 +93,7 @@ To override a method of the base class, it must exactly *match the method signat
 class. (Methods defined in `java.lang.Object`, such as `hashCode()` or `equals()`, cannot be
 overridden by a role.)
 
-Here are some examples how to adjust the behavior of method `int A.m(int)`:
+Here are some examples of how to adjust the behavior of method `int A.m(int)`:
 
 ```java
 /* Add behavior around, before or after the base method */
@@ -115,7 +115,7 @@ public @Role class R2 {
   }
 }
 /* Conditionally replace the base method */
-public @Role class R2 {
+public @Role class R3 {
   private @Base A base;
   public int m(int x) {
     if (x < 42) {

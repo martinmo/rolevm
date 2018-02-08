@@ -10,8 +10,8 @@ import rolevm.runtime.binding.BindingObserver;
 /**
  * Creates and manages a {@link SwitchPoint} per static receiver type at a call
  * site. When a binding is added for an object of runtime type {@code T}, the
- * switch points of static receiver types that are assignment-compatible to
- * {@code T} are invalidated.
+ * switch points of static receiver types that {@code T} is
+ * assignment-compatible to are invalidated.
  * 
  * @author Martin Morgenstern
  */
