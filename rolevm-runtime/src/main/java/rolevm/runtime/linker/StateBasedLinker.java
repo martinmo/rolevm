@@ -148,7 +148,7 @@ public class StateBasedLinker implements BindingObserver, GuardingDynamicLinker 
             }
 
             Class<?> roleType = role.getClass();
-            return new GuardedInvocation(dropSenderArgument(maybeRoleHandle(roleType, name, type, mh)),
+            return new GuardedInvocation(dropSenderArgument(maybeRoleHandle(roleType, name, lookupType, mh)),
                     Guards.createRoleTypePlayedByGuard(binder, roleType));
         }
     }
@@ -162,10 +162,10 @@ public class StateBasedLinker implements BindingObserver, GuardingDynamicLinker 
      * 
      * @see MethodHandles#collectArguments(MethodHandle, int, MethodHandle)
      */
-    private MethodHandle maybeRoleHandle(final Class<?> roleType, final String name, final MethodType methodType,
+    private MethodHandle maybeRoleHandle(final Class<?> roleType, final String name, final MethodType lookupType,
             final MethodHandle fallback) {
         try {
-            MethodHandle handle = lookup.findVirtual(roleType, name, lookupType(methodType));
+            MethodHandle handle = lookup.findVirtual(roleType, name, lookupType);
             return MethodHandles.collectArguments(handle, 0, makeGetRoleHandle(roleType));
         } catch (NoSuchMethodException | IllegalAccessException e) {
             return fallback;
