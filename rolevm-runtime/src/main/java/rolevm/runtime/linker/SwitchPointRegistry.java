@@ -12,6 +12,9 @@ import rolevm.runtime.binding.BindingObserver;
  * site. When a binding is added for an object of runtime type {@code T}, the
  * switch points of static receiver types that {@code T} is
  * assignment-compatible to are invalidated.
+ * <p>
+ * Using {@link ClassValue} avoids memory leaks, e.g., in the case when the
+ * {@link Class} objects used as a key are otherwise unreferenced.
  * 
  * @author Martin Morgenstern
  */
@@ -27,8 +30,11 @@ public class SwitchPointRegistry extends ClassValue<SwitchPoint> implements Bind
             switchPoints.add(get(computed));
         }
         SwitchPoint.invalidateAll(switchPoints.toArray(new SwitchPoint[0]));
-        // note: to help the GC, invalidated switchpoints should be removed
-        // (tricky, maybe it is easier to use a WeakReference)
+        // We do not manually remove invalidated SwitchPoints from the mapping.
+        // Since we use ClassValue, an invalidated SwitchPoint may be automatically
+        // reclaimed by the GC if
+        // 1) its corresponding Class isn't referenced elsewhere anymore, and
+        // 2) if the SwitchPoint's guard handle was purged from all ChainedCallSites.
     }
 
     List<Class<?>> assignmentCompatibleTypes(Class<?> type) {
