@@ -18,9 +18,9 @@ import rolevm.runtime.binding.BindingObserver;
  * 
  * @author Martin Morgenstern
  */
-public class SwitchPointRegistry extends ClassValue<SwitchPoint> implements BindingObserver {
+public class SwitchPointManager extends ClassValue<SwitchPoint> implements BindingObserver {
     @Override
-    protected SwitchPoint computeValue(final Class<?> clazz) {
+    protected SwitchPoint computeValue(final Class<?> type) {
         return new SwitchPoint();
     }
 

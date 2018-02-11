@@ -8,10 +8,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import rolevm.runtime.linker.SwitchPointRegistry;
+import rolevm.runtime.linker.SwitchPointManager;
 
-public class SwitchPointRegistryTest {
-    private SwitchPointRegistry registry = new SwitchPointRegistry();
+public class SwitchPointManagerTest {
+    private SwitchPointManager registry = new SwitchPointManager();
 
     @Test
     public void computeTypeForClassSimple() {

@@ -39,7 +39,7 @@ import rolevm.runtime.binding.BindingObserver;
  */
 public class StateBasedLinker implements BindingObserver, GuardingDynamicLinker {
     private static final Map<String, MethodType> alwaysBaseMethods = objectMethods();
-    private final SwitchPointRegistry switchpoints = new SwitchPointRegistry();
+    private final SwitchPointManager switchpoints = new SwitchPointManager();
     private final Lookup lookup = MethodHandles.publicLookup();
     private final MethodHandle isPureObjectGuard;
     private final MethodHandle getRoleHandle;
@@ -90,7 +90,7 @@ public class StateBasedLinker implements BindingObserver, GuardingDynamicLinker 
      * <p>
      * This linker will be used initially, when no role binding is active.
      * 
-     * @see SwitchPointRegistry
+     * @see SwitchPointManager
      */
     class InitialLinker extends LinkerState {
         @Override
