@@ -6,7 +6,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 
-import rolevm.runtime.binding.Binder;
+import rolevm.runtime.binder.Binder;
 
 /**
  * Factory for {@link MethodHandle}s used by the linker.

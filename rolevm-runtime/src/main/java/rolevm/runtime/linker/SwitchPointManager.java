@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import rolevm.runtime.binding.BindingObserver;
+import rolevm.runtime.binder.BindingObserver;
 
 /**
  * Creates and manages a {@link SwitchPoint} per static receiver type at a call

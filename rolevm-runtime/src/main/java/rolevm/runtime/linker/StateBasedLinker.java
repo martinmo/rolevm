@@ -21,8 +21,8 @@ import jdk.dynalink.linker.GuardedInvocation;
 import jdk.dynalink.linker.GuardingDynamicLinker;
 import jdk.dynalink.linker.LinkRequest;
 import jdk.dynalink.linker.LinkerServices;
-import rolevm.runtime.binding.Binder;
-import rolevm.runtime.binding.BindingObserver;
+import rolevm.runtime.binder.Binder;
+import rolevm.runtime.binder.BindingObserver;
 
 /**
  * State based linker that uses a "fast path" linking mechanism initially, when

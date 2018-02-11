@@ -1,4 +1,4 @@
-package rolevm.runtime.binding;
+package rolevm.runtime.binder;
 
 import java.lang.reflect.Field;
 

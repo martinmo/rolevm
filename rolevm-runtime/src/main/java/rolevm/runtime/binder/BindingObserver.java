@@ -1,4 +1,4 @@
-package rolevm.runtime.binding;
+package rolevm.runtime.binder;
 
 /**
  * Interface that must be implemented by classes that wish to observe binding
