@@ -1,4 +1,4 @@
-package rolevm.examples.person;
+package rolevm.examples.noop;
 
 import rolevm.api.Base;
 import rolevm.api.Compartment;
@@ -6,7 +6,7 @@ import rolevm.api.OverrideBase;
 import rolevm.api.Role;
 
 public class NoopCompartment extends Compartment {
-    public @Role class AdvancedPerson {
+    public @Role class NoopRole {
         private @Base Person base;
 
         @OverrideBase

@@ -13,10 +13,10 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.TearDown;
 
-import rolevm.examples.person.BenchmarkHelper;
-import rolevm.examples.person.NoopCompartment;
-import rolevm.examples.person.NoopCompartment.AdvancedPerson;
-import rolevm.examples.person.Person;
+import rolevm.examples.noop.BenchmarkHelper;
+import rolevm.examples.noop.NoopCompartment;
+import rolevm.examples.noop.Person;
+import rolevm.examples.noop.NoopCompartment.NoopRole;
 
 @Fork(value = 1, jvmArgsAppend = "-javaagent:rolevm-agent/target/rolevm-agent-1.0-SNAPSHOT.jar")
 @BenchmarkMode(Mode.AverageTime)
@@ -25,7 +25,7 @@ public class NoopCompartmentBenchmark {
     @State(Scope.Benchmark)
     public static class BenchState {
         Person p1, p2;
-        AdvancedPerson ap;
+        NoopRole ap;
         NoopCompartment c;
 
         @Setup(Level.Trial)
@@ -37,7 +37,7 @@ public class NoopCompartmentBenchmark {
         public void setup() {
             p1 = new Person("Martin");
             p2 = new Person("Max");
-            ap = c.bind(p1, c.new AdvancedPerson());
+            ap = c.bind(p1, c.new NoopRole());
         }
 
         @TearDown(Level.Iteration)

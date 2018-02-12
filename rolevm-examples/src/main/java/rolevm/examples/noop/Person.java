@@ -1,4 +1,4 @@
-package rolevm.examples.person;
+package rolevm.examples.noop;
 
 public class Person {
     private final String name;

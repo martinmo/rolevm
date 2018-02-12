@@ -1,4 +1,4 @@
-package rolevm.examples.person;
+package rolevm.examples.noop;
 
 /**
  * Another level of indirection is needed because we exempt package rolevm.bench
