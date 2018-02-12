@@ -18,7 +18,7 @@ import rolevm.examples.person.NoopCompartment;
 import rolevm.examples.person.NoopCompartment.AdvancedPerson;
 import rolevm.examples.person.Person;
 
-@Fork(value = 1, jvmArgsAppend = "-javaagent:rolevm-agent/target/rolevm-agent.jar")
+@Fork(value = 1, jvmArgsAppend = "-javaagent:rolevm-agent/target/rolevm-agent-1.0-SNAPSHOT.jar")
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 public class NoopCompartmentBenchmark {

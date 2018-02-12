@@ -159,7 +159,9 @@ Invoke `java` with the java agent and the rolevm runtime library on the classpat
 
     java -javaagent:rolevm-agent.jar -cp rolevm-runtime.jar pkg.Main
 
-The required JARs can be obtained using `mvn dependency:copy`.
+The required JARs can be obtained using the `dependency:copy` goal:
+
+    mvn dependency:copy -DoutputDirectory=path/to/a/directory
 
 ## Current limitations
 

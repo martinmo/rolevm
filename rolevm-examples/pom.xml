@@ -34,7 +34,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.12.4</version>
         <configuration>
-          <argLine>-javaagent:../rolevm-agent/target/rolevm-agent.jar</argLine>
+          <argLine>-javaagent:../rolevm-agent/target/rolevm-agent-${project.version}.jar</argLine>
         </configuration>
       </plugin>
     </plugins>

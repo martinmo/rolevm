@@ -11,10 +11,6 @@
 
   <artifactId>rolevm-agent</artifactId>
 
-  <properties>
-    <uberjar.name>rolevm-agent</uberjar.name>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.ow2.asm</groupId>
@@ -58,7 +54,6 @@
             </transformer>
           </transformers>
           <createDependencyReducedPom>false</createDependencyReducedPom>
-          <finalName>${uberjar.name}</finalName>
         </configuration>
         <executions>
           <execution>
