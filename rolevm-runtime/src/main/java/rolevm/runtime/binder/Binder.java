@@ -20,10 +20,23 @@ import rolevm.runtime.RoleTypeConstants;
  * @author Martin Morgenstern
  */
 public class Binder implements BindingService, RoleTypeConstants {
+    /** Lock object used to guard bind/unbind operations. */
     private final Object mutex = new Object();
-    // TODO: replace with a HashMap with weak keys/values and reference equality
+
+    /**
+     * Maps objects to roles using reference equality instead of object equality.
+     * <p>
+     * Note: this mapping prevents garbage collection of the keys, i.e., the player
+     * objects. The resulting memory leak is a fundamental problem and cannot be
+     * fixed easily, e.g., using {@link java.util.WeakHashMap} or
+     * {@link java.lang.ref.WeakReference}, unless the JVM garbage collector
+     * implements support for ephemerons.
+     */
     private final Map<Object, Object> registry = new IdentityHashMap<>();
+
+    /** List of objects which subscribed to binding events. */
     private final List<BindingObserver> bindingObservers = new LinkedList<>();
+
     private final ClassValue<Optional<Field>> baseFields = new BaseFields();
 
     /**

@@ -164,8 +164,9 @@ The required JARs can be obtained using `mvn dependency:copy`.
 ## Current limitations
 
 - Only one role may be bound to an object.
-- Roles must be explicitly unbound to make the base and role object eligible for garbage
-  collection.
+- Roles must be explicitly unbound to make the base (and role) object eligible for garbage
+  collection. This is a result of the way RoleVM associates players with roles and vice versa, and
+  cannot be fixed without JVM support for [Ephemerons](https://en.wikipedia.org/wiki/Ephemeron). 
 - Only classes with a minimum class format version of 1.7 can be transformed.
 
 ## Performance
