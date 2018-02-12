@@ -5,15 +5,12 @@ import static java.lang.invoke.MethodType.methodType;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
-import rolevm.api.RoleBindingException;
 import rolevm.api.service.BindingService;
 import rolevm.runtime.RoleTypeConstants;
 import rolevm.runtime.binder.util.RefEqualWeakHashMap;
@@ -54,42 +51,16 @@ public class Binder implements BindingService, RoleTypeConstants {
     /** List of objects which subscribed to binding events. */
     private final List<BindingObserver> bindingObservers = new ArrayList<>();
 
-    private final ClassValue<Optional<Field>> baseFields = new BaseFields();
-
-    /**
-     * Lazily loads and caches base field references per type.
-     * <p>
-     * Using {@link ClassValue} avoids memory leaks and is better than using a
-     * {@link java.util.WeakHashMap} for this purpose (the latter one would fail
-     * here because {@link Field} strongly references the {@link Class}, i.e., the
-     * key of the map).
-     */
-    static class BaseFields extends ClassValue<Optional<Field>> {
-        @Override
-        protected Optional<Field> computeValue(final Class<?> type) {
-            for (Field field : type.getDeclaredFields()) {
-                if (field.getDeclaredAnnotationsByType(BASE_ANNOTATION).length > 0) {
-                    return Optional.of(field);
-                }
-            }
-            return Optional.empty();
-        }
-    };
-
     public void bind(final Object player, final Object role) {
         Objects.requireNonNull(player);
         if (player == role) {
             throw new IllegalArgumentException("player and role must be distinct objects");
         }
-        Class<?> roleType = TypeChecks.validateRoleType(role.getClass());
-        Field baseField = baseFields.get(roleType)
-                .orElseThrow(() -> new RoleBindingException("role type has no base field: " + roleType));
+        TypeChecks.validateRoleType(role.getClass());
         TypeChecks.validatePlayer(player);
-        TypeChecks.checkFieldAssignment(baseField, player);
         // TODO: handle binding of multiple roles
         synchronized (mutex) {
             if (registry.putIfAbsent(player, role) == null) {
-                safeSet(baseField, role, player);
                 bindingObservers.stream().forEach(o -> o.bindingAdded(player, role));
             }
         }
@@ -98,19 +69,8 @@ public class Binder implements BindingService, RoleTypeConstants {
     public void unbind(final Object player, final Object role) {
         synchronized (mutex) {
             if (registry.remove(player, role)) {
-                Field baseField = baseFields.get(role.getClass())
-                        .orElseThrow(() -> new AssertionError("bound role that has no base field"));
                 bindingObservers.stream().forEach(o -> o.bindingRemoved(player, role));
-                safeSet(baseField, role, null);
             }
-        }
-    }
-
-    static void safeSet(Field field, final Object obj, final Object value) {
-        try {
-            field.set(obj, value);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
         }
     }
 

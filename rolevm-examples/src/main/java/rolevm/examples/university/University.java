@@ -2,16 +2,12 @@ package rolevm.examples.university;
 
 import java.util.List;
 
-import rolevm.api.Base;
 import rolevm.api.Compartment;
 import rolevm.api.OverrideBase;
 import rolevm.api.Role;
 
 public class University extends Compartment {
     public @Role class Advisor {
-        @Base
-        Person base;
-
         private final List<Student> students;
         private final String title;
 
@@ -21,12 +17,12 @@ public class University extends Compartment {
         }
 
         @OverrideBase
-        public String getName() {
+        public String getName(Person base) {
             return title + " " + base.getName();
         }
 
         @OverrideBase
-        public void live() {
+        public void live(Person base) {
             advise();
             base.live();
         }
@@ -40,12 +36,10 @@ public class University extends Compartment {
     }
 
     public @Role class Student {
-        @Base
-        Person base;
         private int motivation = 0;
 
         @OverrideBase
-        public void greet(Person other) {
+        public void greet(Person base, Person other) {
             base.greet(other);
             if (motivation <= 0) {
                 System.out.println("I have no motivation :(");
@@ -55,7 +49,7 @@ public class University extends Compartment {
         }
 
         @OverrideBase
-        public void live() {
+        public void live(Person base) {
             System.out.println("Procrastinating...");
             motivation -= 5;
             base.live();
