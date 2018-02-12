@@ -249,4 +249,4 @@ With transformed classes, no bound role (after unbind of role):
 
 ## License and copyright
 
-See [LICENSE](LICENSE).
+Except otherwise noted in the source code, see [LICENSE](LICENSE).

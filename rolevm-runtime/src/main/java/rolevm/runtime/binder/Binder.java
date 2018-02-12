@@ -16,6 +16,7 @@ import java.util.Optional;
 import rolevm.api.RoleBindingException;
 import rolevm.api.service.BindingService;
 import rolevm.runtime.RoleTypeConstants;
+import rolevm.runtime.binder.util.RefEqualWeakHashMap;
 
 /**
  * Manages object-to-role bindings, provides binding operations, and answers
@@ -29,14 +30,8 @@ public class Binder implements BindingService, RoleTypeConstants {
 
     /**
      * Maps objects to roles using reference equality instead of object equality.
-     * <p>
-     * Note: this mapping prevents garbage collection of the keys, i.e., the player
-     * objects. The resulting memory leak is a fundamental problem and cannot be
-     * fixed easily, e.g., using {@link java.util.WeakHashMap} or
-     * {@link java.lang.ref.WeakReference}, unless the JVM garbage collector
-     * implements support for ephemerons.
      */
-    private final Map<Object, Object> registry = new IdentityHashMap<>();
+    private final Map<Object, Object> registry = new RefEqualWeakHashMap<>();
 
     /** Direct method handle to {@link IdentityHashMap#containsKey(Object)} */
     private static final MethodHandle containsKeyHandle;
@@ -47,9 +42,10 @@ public class Binder implements BindingService, RoleTypeConstants {
     static {
         Lookup lookup = MethodHandles.lookup();
         try {
-            containsKeyHandle = lookup.findVirtual(IdentityHashMap.class, "containsKey",
+            containsKeyHandle = lookup.findVirtual(RefEqualWeakHashMap.class, "containsKey",
                     methodType(boolean.class, Object.class));
-            getRoleHandle = lookup.findVirtual(IdentityHashMap.class, "get", methodType(Object.class, Object.class));
+            getRoleHandle = lookup.findVirtual(RefEqualWeakHashMap.class, "get",
+                    methodType(Object.class, Object.class));
         } catch (NoSuchMethodException | IllegalAccessException e) {
             throw (AssertionError) new AssertionError().initCause(e);
         }
