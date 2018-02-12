@@ -1,5 +1,6 @@
 package rolevm.bench.noop;
 
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.Benchmark;
@@ -13,9 +14,9 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.TearDown;
 
+import rolevm.examples.noop.BaseType;
 import rolevm.examples.noop.BenchmarkHelper;
 import rolevm.examples.noop.NoopCompartment;
-import rolevm.examples.noop.Person;
 import rolevm.examples.noop.NoopCompartment.NoopRole;
 
 @Fork(value = 1, jvmArgsAppend = "-javaagent:rolevm-agent/target/rolevm-agent-1.0-SNAPSHOT.jar")
@@ -24,8 +25,9 @@ import rolevm.examples.noop.NoopCompartment.NoopRole;
 public class NoopCompartmentBenchmark {
     @State(Scope.Benchmark)
     public static class BenchState {
-        Person p1, p2;
-        NoopRole ap;
+        int x, y;
+        BaseType b;
+        NoopRole r;
         NoopCompartment c;
 
         @Setup(Level.Trial)
@@ -35,14 +37,16 @@ public class NoopCompartmentBenchmark {
 
         @Setup(Level.Iteration)
         public void setup() {
-            p1 = new Person("Martin");
-            p2 = new Person("Max");
-            ap = c.bind(p1, c.new NoopRole());
+            b = new BaseType();
+            r = c.bind(b, c.new NoopRole());
+            Random random = new Random();
+            x = random.nextInt();
+            y = random.nextInt();
         }
 
         @TearDown(Level.Iteration)
         public void teardown() {
-            c.unbind(p1, ap);
+            c.unbind(b, r);
         }
     }
 
@@ -52,12 +56,17 @@ public class NoopCompartmentBenchmark {
     }
 
     @Benchmark
-    public String basecall_noargs(BenchState s) {
-        return BenchmarkHelper.performTest1(s.p1);
+    public Object basecall_noargs(BenchState s) {
+        return BenchmarkHelper.performTest1(s.b);
     }
 
     @Benchmark
-    public String basecall_withargs(BenchState s) {
-        return BenchmarkHelper.performTest2(s.p1, s.p2);
+    public Object basecall_withargs(BenchState s) {
+        return BenchmarkHelper.performTest2(s.b, s.b);
+    }
+
+    @Benchmark
+    public int basecall_primitiveargs(BenchState s) {
+        return BenchmarkHelper.performTest3(s.b, s.x, s.y);
     }
 }

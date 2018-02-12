@@ -7,16 +7,21 @@ import rolevm.api.Role;
 
 public class NoopCompartment extends Compartment {
     public @Role class NoopRole {
-        private @Base Person base;
+        private @Base BaseType base;
 
         @OverrideBase
-        public String sayHello() {
-            return base.sayHello();
+        public Object noArgs() {
+            return base.noArgs();
         }
 
         @OverrideBase
-        public String sayHelloTo(Person otherPerson) {
-            return base.sayHelloTo(otherPerson);
+        public Object referenceArgAndReturn(Object o) {
+            return base.referenceArgAndReturn(o);
+        }
+
+        @OverrideBase
+        public int primitiveArgsAndReturn(int x, int y) {
+            return base.primitiveArgsAndReturn(x, y);
         }
     }
 }

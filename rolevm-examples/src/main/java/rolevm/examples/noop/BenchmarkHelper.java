@@ -7,11 +7,15 @@ package rolevm.examples.noop;
  * @author Martin Morgenstern
  */
 public class BenchmarkHelper {
-    public static String performTest1(Person p) {
-        return p.sayHello();
+    public static Object performTest1(BaseType b) {
+        return b.noArgs();
     }
 
-    public static String performTest2(Person p1, Person p2) {
-        return p1.sayHelloTo(p2);
+    public static Object performTest2(BaseType b, Object o) {
+        return b.referenceArgAndReturn(o);
+    }
+
+    public static int performTest3(BaseType b, int x, int y) {
+        return b.primitiveArgsAndReturn(x, y);
     }
 }
