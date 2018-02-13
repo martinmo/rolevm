@@ -19,7 +19,11 @@ import rolevm.agent.RoleVMAgent;
  */
 public class DefaultTransformer implements ClassFileTransformer {
     final static Logger logger = LoggerFactory.getLogger(DefaultTransformer.class);
-    private final StandardBlacklist blacklist = new StandardBlacklist();
+    private final StandardBlacklist blacklist;
+
+    public DefaultTransformer(StandardBlacklist blacklist) {
+        this.blacklist = blacklist;
+    }
 
     @Override
     public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined,

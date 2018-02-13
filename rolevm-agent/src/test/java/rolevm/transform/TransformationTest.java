@@ -27,7 +27,7 @@ import org.objectweb.asm.util.TraceClassVisitor;
  * @author Martin Morgenstern
  */
 public class TransformationTest {
-    private DefaultTransformer tfm = new DefaultTransformer();
+    private DefaultTransformer tfm = new DefaultTransformer(new StandardBlacklist());
 
     /** Loads class file into a byte array. */
     static byte[] loadClassFile(final Class<?> clazz) throws IOException {

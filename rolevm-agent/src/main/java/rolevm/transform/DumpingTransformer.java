@@ -17,7 +17,8 @@ import java.util.Objects;
 public class DumpingTransformer extends DefaultTransformer {
     private final Path directory;
 
-    public DumpingTransformer(final Path directory) {
+    public DumpingTransformer(StandardBlacklist blacklist, final Path directory) {
+        super(blacklist);
         this.directory = Objects.requireNonNull(directory);
     }
 
