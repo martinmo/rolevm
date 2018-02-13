@@ -53,6 +53,7 @@ public class IndyMethodAdapter extends MethodVisitor implements BootstrapConstan
      */
     static String adaptDescriptor(final String owner, final String desc) {
         final int index = desc.indexOf(')');
-        return "(L" + owner + ";" + desc.substring(1, index) + "Ljava/lang/Object;" + desc.substring(index);
+        final String ownerTypeDesc = owner.startsWith("[") ? owner : "L" + owner + ";";
+        return "(" + ownerTypeDesc + desc.substring(1, index) + "Ljava/lang/Object;" + desc.substring(index);
     }
 }

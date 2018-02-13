@@ -11,4 +11,9 @@ public class MethodAdapterTest {
         assertEquals("(Lpkg/Type;Ljava/lang/Object;)V", adaptDescriptor("pkg/Type", "()V"));
         assertEquals("(Lpkg/Type;Lpkg2/Type2;Ljava/lang/Object;)I", adaptDescriptor("pkg/Type", "(Lpkg2/Type2;)I"));
     }
+
+    @Test
+    public void testAdaptDescriptorWhenOwnerIsArrayType() {
+        assertEquals("([Lpkg/Type$Inner;Ljava/lang/Object;)V", adaptDescriptor("[Lpkg/Type$Inner;", "()V"));
+    }
 }
