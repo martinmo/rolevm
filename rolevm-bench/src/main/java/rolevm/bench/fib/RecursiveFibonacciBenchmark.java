@@ -19,8 +19,7 @@ import rolevm.examples.fib.FastFib;
 import rolevm.examples.fib.FastFib.CachedFibonacci;
 import rolevm.examples.fib.RecursiveFibonacci;
 
-@Fork(value = 1, jvmArgsAppend = { "@rolevm-bench/jvm.options",
-        "-javaagent:rolevm-agent/target/rolevm-agent-1.0-SNAPSHOT.jar" })
+@Fork(value = 1, jvmArgsAppend = { "@rolevm-bench/jvm.options" })
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 public class RecursiveFibonacciBenchmark {

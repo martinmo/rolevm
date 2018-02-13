@@ -19,7 +19,7 @@ import rolevm.examples.noop.BenchmarkHelper;
 import rolevm.examples.noop.NoopCompartment;
 import rolevm.examples.noop.NoopCompartment.NoopRole;
 
-@Fork(value = 1, jvmArgsAppend = "-javaagent:rolevm-agent/target/rolevm-agent-1.0-SNAPSHOT.jar")
+@Fork(value = 1, jvmArgsAppend = { "@rolevm-bench/jvm.options" })
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 public class NoopCompartmentBenchmark {

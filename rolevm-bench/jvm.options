@@ -1,1 +1,2 @@
--Drolevm.exclude=com/google/common/base/
+-javaagent:rolevm-agent/target/rolevm-agent-1.0-SNAPSHOT.jar=dump
+-Drolevm.exclude=com/google/common/base/,rolevm/bench/,org/openjdk/jmh/
