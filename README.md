@@ -171,6 +171,21 @@ The required JARs can be obtained using the `dependency:copy` goal:
   cannot be fixed without JVM support for [Ephemerons](https://en.wikipedia.org/wiki/Ephemeron). 
 - Only classes with a minimum class format version of 1.7 can be transformed.
 
+## Caveats and workarounds
+
+- You can exclude problematic classes or packages from bytecode transformation using the system
+  property `rolevm.exclude`, e.g., `java -Drolevm.exclude=org/example/pkg1/,org/example/pkg2/ ...`.
+  (You still can attach roles to instances of untransformed classes, but self calls wont be
+  delegated to roles.)
+- Be careful not to perform base method calls in anonymous inner classes such as `Runnable` or
+  `Callable`, because this will lead to infinite recursion. You should use lambdas instead. For
+  more details, have a look at the role types in the [FastFib example compartment][fastfib].
+- You should disable the "Hot Code Replace" feature of the Eclipse Debugger, if you want to debug
+  programs that use the RoleVM agent. There is an awkward interference between that debugger and
+  the agent, which will make it jump around to arbitrary breakpoints on its own.
+
+[fastfib]: rolevm-examples/src/main/java/rolevm/examples/fib/FastFib.java
+
 ## Performance
 
 ### OT/J callin vs RoleVM basecall overhead
