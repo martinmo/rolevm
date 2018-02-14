@@ -9,4 +9,4 @@ jdk:
 
 install: true
 
-script: mvn test -B -V
+script: mvn verify -B -V
