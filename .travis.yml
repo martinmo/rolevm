@@ -7,4 +7,6 @@ cache:
 jdk:
   - oraclejdk9
 
-script: mvn clean verify
+install: true
+
+script: mvn test -B -V
