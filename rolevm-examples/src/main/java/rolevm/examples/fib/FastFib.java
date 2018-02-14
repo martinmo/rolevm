@@ -1,5 +1,7 @@
 package rolevm.examples.fib;
 
+import java.util.concurrent.ExecutionException;
+
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
@@ -18,13 +20,8 @@ public class FastFib extends Compartment {
         }
 
         @OverrideBase
-        public int fib(final int x) {
-            Integer cached = cache.getIfPresent(x);
-            if (cached != null)
-                return cached;
-            Integer result = base.fib(x);
-            cache.put(x, result);
-            return result;
+        public int fib(final int x) throws ExecutionException {
+            return cache.get(x, () -> base.fib(x));
         }
     }
 }
