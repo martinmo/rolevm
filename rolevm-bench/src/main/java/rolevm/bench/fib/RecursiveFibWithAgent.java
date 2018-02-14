@@ -22,7 +22,7 @@ import rolevm.examples.fib.RecursiveFibonacci;
 @Fork(value = 1, jvmArgsAppend = { "@rolevm-bench/jvm.options" })
 public class RecursiveFibWithAgent extends RecursiveFibPlainJava {
     @State(Scope.Benchmark)
-    public static class WithCaching {
+    public static class WithRole {
         RecursiveFibonacci fib;
         CachedFibonacci cachedFib;
         FastFib fastFib;
@@ -44,8 +44,26 @@ public class RecursiveFibWithAgent extends RecursiveFibPlainJava {
         }
     }
 
+    @State(Scope.Benchmark)
+    public static class WithInvalidatedSwitchPoint {
+        RecursiveFibonacci fib;
+
+        @Setup(Level.Trial)
+        public void setupTrial() {
+            fib = new RecursiveFibonacci();
+            FastFib fastFib = new FastFib();
+            CachedFibonacci cachedFib = fastFib.bind(fib, fastFib.new CachedFibonacci(30));
+            fastFib.unbind(fib, cachedFib);
+        }
+    }
+
     @Benchmark
-    public int with_caching(Shared shared, WithCaching state) {
+    public int with_role(Shared shared, WithRole state) {
+        return BenchmarkHelper.computeFib(state.fib, shared.n);
+    }
+
+    @Benchmark
+    public int without_role_invalidated_sp(Shared shared, WithInvalidatedSwitchPoint state) {
         return BenchmarkHelper.computeFib(state.fib, shared.n);
     }
 }

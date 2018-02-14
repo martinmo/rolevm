@@ -31,7 +31,7 @@ public class RecursiveFibPlainJava {
     }
 
     @State(Scope.Benchmark)
-    public static class WithoutCaching {
+    public static class WithoutRole {
         RecursiveFibonacci fib;
 
         @Setup(Level.Iteration)
@@ -41,7 +41,7 @@ public class RecursiveFibPlainJava {
     }
 
     @Benchmark
-    public int without_caching(Shared shared, WithoutCaching state) {
+    public int without_role(Shared shared, WithoutRole state) {
         return BenchmarkHelper.computeFib(state.fib, shared.n);
     }
 }
