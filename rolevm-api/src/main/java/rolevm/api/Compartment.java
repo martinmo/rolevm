@@ -1,6 +1,8 @@
 package rolevm.api;
 
+import java.util.HashSet;
 import java.util.ServiceLoader;
+import java.util.Set;
 
 import rolevm.api.service.BindingService;
 import rolevm.api.service.BindingServiceFactory;
@@ -14,6 +16,7 @@ import rolevm.api.service.BindingServiceFactory;
  */
 public class Compartment {
     private static final BindingService bindingService = initBindingService();
+    private final Set<Binding> bindings = new HashSet<>();
 
     /**
      * Discover the BindingService, which will be provided by {@link rolevm.runtime}
@@ -29,11 +32,18 @@ public class Compartment {
     // TODO: implement the usual compartment stuff (activate, deactivate, ...)
 
     public final <T> T bind(final Object player, final T role) {
+        bindings.add(new Binding(player, role));
         bindingService.bind(player, role);
         return role;
     }
 
     public final void unbind(final Object player, final Object role) {
+        bindings.remove(new Binding(player, role));
         bindingService.unbind(player, role);
+    }
+
+    public final void unbindAll() {
+        bindings.stream().forEach(b -> bindingService.unbind(b.player, b.role));
+        bindings.clear();
     }
 }

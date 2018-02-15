@@ -9,20 +9,12 @@ import java.util.Objects;
  * @author Martin Morgenstern
  */
 class Binding {
-    private final Object player;
-    private final Object role;
+    final Object player;
+    final Object role;
 
     public Binding(final Object player, final Object role) {
         this.player = Objects.requireNonNull(player);
         this.role = Objects.requireNonNull(role);
-    }
-
-    public Object getPlayer() {
-        return player;
-    }
-
-    public Object getRole() {
-        return role;
     }
 
     @Override
