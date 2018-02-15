@@ -1,6 +1,6 @@
 package rolevm.examples.bank;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import rolevm.api.Base;
@@ -9,8 +9,8 @@ import rolevm.api.OverrideBase;
 import rolevm.api.Role;
 
 public class Bank extends Compartment {
-    private List<Account> checkingAccounts = new LinkedList<>();
-    private List<Account> savingAccounts = new LinkedList<>();
+    private List<Account> checkingAccounts = new ArrayList<>();
+    private List<Account> savingAccounts = new ArrayList<>();
 
     public void addCheckingsAccount(Customer customer, Account accout) {
         checkingAccounts.add(accout);
@@ -32,7 +32,7 @@ public class Bank extends Compartment {
 
     public @Role class Customer {
         private @Base Person base;
-        private final List<Account> accounts = new LinkedList<>();
+        private final List<Account> accounts = new ArrayList<>();
 
         public void addAccount(Account account) {
             accounts.add(account);

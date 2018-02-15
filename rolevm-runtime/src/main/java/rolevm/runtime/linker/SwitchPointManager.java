@@ -1,8 +1,8 @@
 package rolevm.runtime.linker;
 
 import java.lang.invoke.SwitchPoint;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 import rolevm.runtime.binder.BindingObserver;
@@ -25,7 +25,7 @@ public class SwitchPointManager extends ClassValue<SwitchPoint> implements Bindi
     }
 
     public void invalidateSwitchPoints(Class<?> type) {
-        final List<SwitchPoint> switchPoints = new LinkedList<>();
+        final List<SwitchPoint> switchPoints = new ArrayList<>();
         for (Class<?> computed : assignmentCompatibleTypes(type)) {
             switchPoints.add(get(computed));
         }
@@ -38,7 +38,7 @@ public class SwitchPointManager extends ClassValue<SwitchPoint> implements Bindi
     }
 
     List<Class<?>> assignmentCompatibleTypes(Class<?> type) {
-        final List<Class<?>> types = new LinkedList<>();
+        final List<Class<?>> types = new ArrayList<>();
         final boolean itf = type.isInterface();
         types.addAll(Arrays.asList(type.getInterfaces()));
         do {

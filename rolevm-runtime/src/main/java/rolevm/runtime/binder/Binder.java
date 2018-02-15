@@ -1,8 +1,8 @@
 package rolevm.runtime.binder;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.IdentityHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -35,7 +35,7 @@ public class Binder implements BindingService, RoleTypeConstants {
     private final Map<Object, Object> registry = new IdentityHashMap<>();
 
     /** List of objects which subscribed to binding events. */
-    private final List<BindingObserver> bindingObservers = new LinkedList<>();
+    private final List<BindingObserver> bindingObservers = new ArrayList<>();
 
     private final ClassValue<Optional<Field>> baseFields = new BaseFields();
 
