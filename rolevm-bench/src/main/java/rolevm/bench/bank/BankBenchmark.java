@@ -29,7 +29,6 @@ public class BankBenchmark {
     @Setup(Level.Iteration)
     public void setup() {
         bank = new Bank();
-
         for (int i = 0; i < N; ++i) {
             Person p = new Person();
             Customer c = bank.bind(p, bank.new Customer());
@@ -44,7 +43,7 @@ public class BankBenchmark {
 
     @TearDown(Level.Iteration)
     public void teardown() {
-        // TODO: prevent memleak
+        bank.unbindAll();
     }
 
     @Benchmark
