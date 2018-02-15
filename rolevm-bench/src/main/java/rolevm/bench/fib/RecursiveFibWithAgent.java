@@ -19,7 +19,7 @@ import rolevm.examples.fib.RecursiveFibonacci;
  * 
  * @author Martin Morgenstern
  */
-@Fork(value = 1, jvmArgsAppend = { "@rolevm-bench/jvm.options" })
+@Fork(jvmArgsAppend = { "@rolevm-bench/jvm.options" })
 public class RecursiveFibWithAgent extends RecursiveFibPlainJava {
     @State(Scope.Benchmark)
     public static class WithRole {

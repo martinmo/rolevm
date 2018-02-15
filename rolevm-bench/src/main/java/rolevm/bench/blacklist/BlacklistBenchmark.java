@@ -3,14 +3,14 @@ package rolevm.bench.blacklist;
 import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
+
+import rolevm.bench.DefaultBenchmark;
 
 /**
  * Benchmark whether dynamic blacklists built with MethodHandles or "unrolled"
@@ -24,9 +24,8 @@ import org.openjdk.jmh.annotations.State;
  * 
  * @author Martin Morgenstern
  */
-@BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-public class BlacklistBenchmark {
+public class BlacklistBenchmark extends DefaultBenchmark {
     @State(Scope.Benchmark)
     public static class BlacklistsWithThreeEntries {
         Blacklist staticBlacklist, defaultBlacklist, fastBlacklist, indyBlacklist;

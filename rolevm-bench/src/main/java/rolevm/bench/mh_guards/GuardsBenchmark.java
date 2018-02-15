@@ -6,14 +6,14 @@ import java.lang.invoke.SwitchPoint;
 import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
+
+import rolevm.bench.DefaultBenchmark;
 
 /**
  * Benchmarks comparing the overheads of different kind of MH guards and switch
@@ -27,9 +27,8 @@ import org.openjdk.jmh.annotations.State;
  * 
  * @author Martin Morgenstern
  */
-@BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-public class GuardsBenchmark {
+public class GuardsBenchmark extends DefaultBenchmark {
     @State(Scope.Benchmark)
     public static class NormalHandleState {
         MethodHandle target;

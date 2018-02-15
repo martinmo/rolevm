@@ -1,16 +1,15 @@
 package rolevm.bench.bank;
 
 import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.TearDown;
 
+import rolevm.bench.DefaultBenchmark;
 import rolevm.examples.bank.Account;
 import rolevm.examples.bank.Bank;
 import rolevm.examples.bank.Bank.Customer;
@@ -18,9 +17,8 @@ import rolevm.examples.bank.Person;
 import rolevm.examples.bank.Transaction;
 
 @Fork(jvmArgsAppend = { "@rolevm-bench/jvm.options" })
-@BenchmarkMode(Mode.AverageTime)
 @State(Scope.Benchmark)
-public class BankBenchmark {
+public class BankBenchmark extends DefaultBenchmark {
     @Param("1500")
     int N;
 

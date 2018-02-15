@@ -7,13 +7,13 @@ import java.lang.invoke.MethodHandles;
 import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
+
+import rolevm.bench.DefaultBenchmark;
 
 /**
  * Benchmark "proxy" method handles created with
@@ -22,9 +22,8 @@ import org.openjdk.jmh.annotations.State;
  * 
  * @author Martin Morgenstern
  */
-@BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-public class CollectArgsBenchmark {
+public class CollectArgsBenchmark extends DefaultBenchmark {
     @State(Scope.Benchmark)
     public static class BenchState {
         ProxyRegistry registry;
