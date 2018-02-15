@@ -12,7 +12,7 @@ public class Bank extends Compartment {
     private List<Account> checkingAccounts = new LinkedList<>();
     private List<Account> savingAccounts = new LinkedList<>();
 
-    public void addCheckingAccount(Customer customer, Account accout) {
+    public void addCheckingsAccount(Customer customer, Account accout) {
         checkingAccounts.add(accout);
         customer.addAccount(accout);
     }
@@ -21,7 +21,7 @@ public class Bank extends Compartment {
         return checkingAccounts;
     }
 
-    public void addSavingAccount(Customer customer, Account accout) {
+    public void addSavingsAccount(Customer customer, Account accout) {
         savingAccounts.add(accout);
         customer.addAccount(accout);
     }

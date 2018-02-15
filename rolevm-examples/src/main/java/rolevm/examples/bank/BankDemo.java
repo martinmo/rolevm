@@ -16,8 +16,8 @@ public class BankDemo {
             bank.bind(sa, bank.new SavingsAccount());
             bank.bind(ca, bank.new CheckingsAccount());
 
-            bank.addSavingAccount(c, sa);
-            bank.addCheckingAccount(c, ca);
+            bank.addSavingsAccount(c, sa);
+            bank.addCheckingsAccount(c, ca);
         }
 
         for (Account from : bank.getCheckingAccounts()) {
