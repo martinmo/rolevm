@@ -67,20 +67,6 @@ public class Bank extends Compartment {
         }
     }
 
-    static public class Transaction {
-        final Account source, target;
-
-        public Transaction(Account source, Account target) {
-            this.source = source;
-            this.target = target;
-        }
-
-        public void execute(float amount) {
-            source.decrease(amount);
-            target.increase(amount);
-        }
-    }
-
     public @Role class VerboseTransaction {
         private @Base Transaction base;
 

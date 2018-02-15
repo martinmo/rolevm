@@ -23,7 +23,7 @@ public class BankDemo {
         for (Account from : bank.getCheckingAccounts()) {
             float amount = from.getBalance() / iterations;
             for (Account to : bank.getSavingAccounts()) {
-                Bank.Transaction transaction = new Bank.Transaction(from, to);
+                Transaction transaction = new Transaction(new Transaction.Source(from), new Transaction.Target(to));
                 bank.bind(transaction, bank.new VerboseTransaction());
                 transaction.execute(amount);
             }
