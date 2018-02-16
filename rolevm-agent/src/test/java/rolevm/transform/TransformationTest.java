@@ -34,7 +34,7 @@ public class TransformationTest {
         final String resource = clazz.getName().replace('.', '/') + ".class";
         final InputStream s = ClassLoader.getSystemResourceAsStream(resource);
         try (BufferedInputStream b = new BufferedInputStream(s)) {
-            return s.readAllBytes();
+            return b.readAllBytes();
         }
     }
 

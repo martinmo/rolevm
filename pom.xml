@@ -105,6 +105,12 @@
           <compilerVersion>${javac.target}</compilerVersion>
           <source>${javac.target}</source>
           <target>${javac.target}</target>
+          <showWarnings>true</showWarnings>
+          <showDeprecation>true</showDeprecation>
+          <compilerArgs>
+            <arg>-Xlint:all,-processing</arg>
+            <arg>-Werror</arg>
+          </compilerArgs>
         </configuration>
       </plugin>
       <plugin>
