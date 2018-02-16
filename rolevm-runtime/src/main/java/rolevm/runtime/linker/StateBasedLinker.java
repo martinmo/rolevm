@@ -124,9 +124,7 @@ public class StateBasedLinker implements BindingObserver, GuardingDynamicLinker 
             String name = getOperationName(desc);
             MethodType type = desc.getMethodType();
             Lookup lookup = desc.getLookup();
-            Object receiver = request.getReceiver();
-            Object sender = request.getArguments()[type.parameterCount() - 1];
-            Object role = binder.getRole(receiver);
+            Object role = binder.getRole(request.getReceiver());
 
             MethodType lookupType = lookupType(type);
             MethodHandle mh = lookup.findVirtual(type.parameterType(0), name, lookupType);
@@ -141,6 +139,7 @@ public class StateBasedLinker implements BindingObserver, GuardingDynamicLinker 
                 return new GuardedInvocation(dropSenderArgument(mh));
             }
 
+            Object sender = request.getArguments()[type.parameterCount() - 1];
             if (role == sender) {
                 // base call
                 // TODO: handle multiple roles per player
