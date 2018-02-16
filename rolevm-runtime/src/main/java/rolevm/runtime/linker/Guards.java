@@ -14,14 +14,13 @@ import rolevm.runtime.binder.Binder;
  * @author Martin Morgenstern
  */
 public class Guards {
-    private static final MethodHandle pureObjectHandle;
+    private static final MethodHandle notHandle;
     private static final MethodHandle roleTypePlayedByHandle;
 
     static {
         Lookup lookup = MethodHandles.lookup();
         try {
-            pureObjectHandle = lookup.findVirtual(Binder.class, "isPureObject",
-                    methodType(boolean.class, Object.class));
+            notHandle = lookup.findStatic(Guards.class, "not", methodType(boolean.class, boolean.class));
             roleTypePlayedByHandle = lookup.findVirtual(Binder.class, "isRoleTypePlayedBy",
                     methodType(boolean.class, Class.class, Object.class));
         } catch (NoSuchMethodException | IllegalAccessException e) {
@@ -33,10 +32,15 @@ public class Guards {
     }
 
     public static MethodHandle createPureObjectGuard(final Binder binder) {
-        return MethodHandles.insertArguments(pureObjectHandle, 0, binder);
+        return MethodHandles.filterReturnValue(binder.createContainsKeyHandle(), notHandle);
     }
 
     public static MethodHandle createRoleTypePlayedByGuard(final Binder binder, final Class<?> type) {
         return MethodHandles.insertArguments(roleTypePlayedByHandle, 0, binder, type);
+    }
+
+    @SuppressWarnings("unused")
+    private static boolean not(final boolean value) {
+        return !value;
     }
 }

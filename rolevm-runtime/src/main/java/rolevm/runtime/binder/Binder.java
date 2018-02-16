@@ -1,5 +1,10 @@
 package rolevm.runtime.binder;
 
+import static java.lang.invoke.MethodType.methodType;
+
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
@@ -33,6 +38,23 @@ public class Binder implements BindingService, RoleTypeConstants {
      * implements support for ephemerons.
      */
     private final Map<Object, Object> registry = new IdentityHashMap<>();
+
+    /** Direct method handle to {@link IdentityHashMap#containsKey(Object)} */
+    private static final MethodHandle containsKeyHandle;
+
+    /** Direct method handle to {@link IdentityHashMap#get(Object)} */
+    private static final MethodHandle getRoleHandle;
+
+    static {
+        Lookup lookup = MethodHandles.lookup();
+        try {
+            containsKeyHandle = lookup.findVirtual(IdentityHashMap.class, "containsKey",
+                    methodType(boolean.class, Object.class));
+            getRoleHandle = lookup.findVirtual(IdentityHashMap.class, "get", methodType(Object.class, Object.class));
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            throw (AssertionError) new AssertionError().initCause(e);
+        }
+    }
 
     /** List of objects which subscribed to binding events. */
     private final List<BindingObserver> bindingObservers = new ArrayList<>();
@@ -124,5 +146,22 @@ public class Binder implements BindingService, RoleTypeConstants {
     public boolean isRoleTypePlayedBy(final Class<?> roleType, final Object player) {
         Object role = registry.get(player);
         return role != null && role.getClass().equals(roleType);
+    }
+
+    /**
+     * Returns a direct method handle to
+     * {@link IdentityHashMap#containsKey(Object)}, bound to the internal
+     * object/role registry map.
+     */
+    public MethodHandle createContainsKeyHandle() {
+        return MethodHandles.insertArguments(containsKeyHandle, 0, registry);
+    }
+
+    /**
+     * Returns a direct method handle to {@link IdentityHashMap#get(Object)}, bound
+     * to the internal object/role registry map.
+     */
+    public MethodHandle createGetRoleHandle() {
+        return MethodHandles.insertArguments(getRoleHandle, 0, registry);
     }
 }

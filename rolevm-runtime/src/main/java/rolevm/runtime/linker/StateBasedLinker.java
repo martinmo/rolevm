@@ -51,7 +51,7 @@ public class StateBasedLinker implements BindingObserver, GuardingDynamicLinker 
         binder.addObserver(this);
         binder.addObserver(switchpoints);
         isPureObjectGuard = Guards.createPureObjectGuard(binder);
-        getRoleHandle = Handles.createGetRoleHandle(binder);
+        getRoleHandle = binder.createGetRoleHandle();
     }
 
     @Override
