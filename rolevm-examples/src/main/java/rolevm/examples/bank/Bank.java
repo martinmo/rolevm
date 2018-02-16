@@ -62,7 +62,7 @@ public class Bank extends Compartment {
             if (amount <= LIMIT) {
                 base.decrease(amount);
             } else {
-                throw new RuntimeException(amount + " is over the limit: " + LIMIT);
+                throw new IllegalArgumentException(amount + " is over the limit: " + LIMIT);
             }
         }
     }
