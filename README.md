@@ -190,23 +190,62 @@ The required JARs can be obtained using the `dependency:copy` goal:
 
 ## Performance
 
-### OT/J callin vs RoleVM basecall overhead
+### OT/J vs RoleVM vs SCROLL basecall overhead
 
-Measured using the synthetic NoopCompartment benchmarks.
+Measured with JDK 9.0.4 (VM 9.0.4+11) on the same machine using the synthetic NoopCompartment
+benchmarks.
 
 OT/J ([benchmark source](https://github.com/martinmo/otjbench)):
 
-    Benchmark                      Mode  Cnt    Score   Error  Units
-    NoopCallin.baseline            avgt   10    0,438 ± 0,010  ns/op
-    NoopCallin.callinTest          avgt   10  232,749 ± 6,563  ns/op
-    NoopCallin.callinWithArgsTest  avgt   10  253,201 ± 7,882  ns/op
+    Benchmark                                 Mode  Cnt    Score    Error  Units
+    NoopCallinBenchmark.callin_noargs         avgt   10  192,167 ± 11,004  ns/op
+    NoopCallinBenchmark.callin_primitiveargs  avgt   10  235,161 ±  8,173  ns/op
+    NoopCallinBenchmark.callin_withargs       avgt   10  201,160 ±  6,595  ns/op
+    NoopCallinBenchmark.baseline              avgt   10    0,418 ±  0,017  ns/op
 
 RoleVM ([benchmark source](rolevm-bench/src/main/java/rolevm/bench/noop)):
 
-    Benchmark                                   Mode  Cnt   Score   Error  Units
-    NoopCompartmentBenchmark.basecall_noargs    avgt   10  40,275 ± 1,397  ns/op
-    NoopCompartmentBenchmark.basecall_withargs  avgt   10  57,960 ± 2,435  ns/op
-    NoopCompartmentBenchmark.baseline           avgt   10   0,434 ± 0,019  ns/op
+    Benchmark                                        Mode  Cnt   Score   Error  Units
+    NoopCompartmentBenchmark.basecall_noargs         avgt   10  15,118 ± 1,348  ns/op
+    NoopCompartmentBenchmark.basecall_primitiveargs  avgt   10  14,519 ± 0,463  ns/op
+    NoopCompartmentBenchmark.basecall_withargs       avgt   10  14,934 ± 0,401  ns/op
+    NoopCompartmentBenchmark.baseline                avgt   10   0,419 ± 0,015  ns/op
+
+SCROLL (units are µs instead of ns, [benchmark source][scrollbench]):
+
+    Benchmark                             (cached)  Mode  Cnt   Score    Error  Units
+    NoopBenchmark.basecall_noargs             true  avgt   10   3,548 ±  0,155  us/op
+    NoopBenchmark.basecall_primitiveargs      true  avgt   10   4,732 ±  0,173  us/op
+    NoopBenchmark.basecall_withargs           true  avgt   10   5,590 ±  0,176  us/op
+    NoopBenchmark.baseline                     N/A  avgt   10  ≈ 10⁻³           us/op
+
+[scrollbench]: https://github.com/martinmo/SCROLL/tree/noop-benchmarks
+
+### Recursive Fibonacci
+
+Calculating `fib(n) = (n > 1) ? fib(n - 1) + fib(n - 2) : n` ([benchmark source][fibbench]).
+
+[fibbench]: rolevm-bench/src/main/java/rolevm/bench/fib
+
+Plain Java (untransformed classes):
+
+    Benchmark                                          (n)  Mode  Cnt    Score   Error  Units
+    RecursiveFibPlainJava.without_role                  20  avgt   10   46,068 ± 0,889  us/op
+
+With transformed classes and a role that caches results of previous `fib()` calls:
+
+    Benchmark                                          (n)  Mode  Cnt    Score   Error  Units
+    RecursiveFibWithAgent.with_role                     20  avgt   10    0,309 ± 0,011  us/op
+
+With transformed classes, no bound role:
+
+    Benchmark                                          (n)  Mode  Cnt    Score   Error  Units
+    RecursiveFibWithAgent.without_role                  20  avgt   10   47,069 ± 0,969  us/op
+
+With transformed classes, no bound role (after unbind of role):
+
+    Benchmark                                          (n)  Mode  Cnt    Score   Error  Units
+    RecursiveFibWithAgent.without_role_invalidated_sp   20  avgt   10  118,872 ± 2,383  us/op
 
 ## License and copyright
 
