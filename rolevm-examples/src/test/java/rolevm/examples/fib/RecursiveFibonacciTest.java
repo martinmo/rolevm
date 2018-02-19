@@ -2,8 +2,10 @@ package rolevm.examples.fib;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class RecursiveFibonacciTest {
     @Test
     public void withoutCaching() {
