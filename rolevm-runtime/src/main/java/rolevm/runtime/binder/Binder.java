@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.WeakHashMap;
 
 import rolevm.api.RoleBindingException;
 import rolevm.api.service.BindingService;
@@ -65,9 +64,9 @@ public class Binder implements BindingService, RoleTypeConstants {
      * Lazily loads and caches base field references per type.
      * <p>
      * Using {@link ClassValue} avoids memory leaks and is better than using a
-     * {@link WeakHashMap} for this purpose (the latter one would fail here because
-     * {@link Field} strongly references the {@link Class}, i.e., the key of the
-     * map).
+     * {@link java.util.WeakHashMap} for this purpose (the latter one would fail
+     * here because {@link Field} strongly references the {@link Class}, i.e., the
+     * key of the map).
      */
     static class BaseFields extends ClassValue<Optional<Field>> {
         @Override

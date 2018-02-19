@@ -3,9 +3,9 @@ package rolevm.api;
 import java.util.Objects;
 
 /**
- * Internal (currently unused) object-to-role mapping with reference-based
- * equality.
+ * Internally used object-to-role mapping with reference-based equality.
  * 
+ * @see Compartment
  * @author Martin Morgenstern
  */
 class Binding {

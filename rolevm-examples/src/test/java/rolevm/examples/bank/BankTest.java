@@ -46,8 +46,6 @@ public class BankTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testCheckingsAccountThrowsException() {
-        Account account = new Account(100.0f);
-        Bank bank = new Bank();
         bank.bind(account, bank.new CheckingsAccount());
         account.decrease(150.0f);
     }
