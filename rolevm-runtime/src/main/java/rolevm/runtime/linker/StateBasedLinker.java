@@ -126,8 +126,9 @@ public class StateBasedLinker implements BindingObserver, GuardingDynamicLinker 
             Lookup lookup = desc.getLookup();
             Object role = binder.getRole(request.getReceiver());
 
+            Class<?> baseType = type.parameterType(0);
             MethodType lookupType = lookupType(type);
-            MethodHandle mh = lookup.findVirtual(type.parameterType(0), name, lookupType);
+            MethodHandle mh = lookup.findVirtual(baseType, name, lookupType);
 
             if (role == null) {
                 // not bound
@@ -147,25 +148,16 @@ public class StateBasedLinker implements BindingObserver, GuardingDynamicLinker 
             }
 
             Class<?> roleType = role.getClass();
-            return new GuardedInvocation(dropSenderArgument(maybeRoleHandle(roleType, name, lookupType, mh)),
+            return new GuardedInvocation(dropSenderArgument(maybeRoleHandle(baseType, roleType, name, lookupType, mh)),
                     Guards.createRoleTypePlayedByGuard(binder, roleType));
         }
     }
 
-    /**
-     * Tries to find an overriding method in the role type, matching the given name
-     * and method type, and if found, returns a method handle that dynamically
-     * replaces the original receiver with its bound role. Otherwise, if no
-     * overriding method is found in the role type, the fallback method handle is
-     * returned as-is.
-     * 
-     * @see MethodHandles#collectArguments(MethodHandle, int, MethodHandle)
-     */
-    private MethodHandle maybeRoleHandle(final Class<?> roleType, final String name, final MethodType lookupType,
-            final MethodHandle fallback) {
+    private MethodHandle maybeRoleHandle(final Class<?> baseType, final Class<?> roleType, final String name,
+            final MethodType lookupType, final MethodHandle fallback) {
         try {
-            MethodHandle handle = lookup.findVirtual(roleType, name, lookupType);
-            return MethodHandles.collectArguments(handle, 0, makeGetRoleHandle(roleType));
+            MethodHandle handle = lookup.findVirtual(roleType, name, lookupType.insertParameterTypes(0, baseType));
+            return MethodHandles.foldArguments(handle, makeGetRoleHandle(baseType, roleType));
         } catch (NoSuchMethodException | IllegalAccessException e) {
             return fallback;
         }
@@ -177,8 +169,8 @@ public class StateBasedLinker implements BindingObserver, GuardingDynamicLinker 
      * as the filter method handle in
      * {@link MethodHandles#collectArguments(MethodHandle, int, MethodHandle)}.
      */
-    private MethodHandle makeGetRoleHandle(final Class<?> roleType) {
-        return getRoleHandle.asType(getRoleHandle.type().changeReturnType(roleType));
+    private MethodHandle makeGetRoleHandle(final Class<?> baseType, final Class<?> roleType) {
+        return getRoleHandle.asType(methodType(roleType, baseType));
     }
 
     /**
