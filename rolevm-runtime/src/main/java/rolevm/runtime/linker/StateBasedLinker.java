@@ -21,6 +21,7 @@ import jdk.dynalink.linker.GuardedInvocation;
 import jdk.dynalink.linker.GuardingDynamicLinker;
 import jdk.dynalink.linker.LinkRequest;
 import jdk.dynalink.linker.LinkerServices;
+import rolevm.api.Role;
 import rolevm.runtime.binder.Binder;
 import rolevm.runtime.binder.BindingObserver;
 
@@ -43,6 +44,7 @@ public class StateBasedLinker implements BindingObserver, GuardingDynamicLinker 
     private final Lookup lookup = MethodHandles.publicLookup();
     private final MethodHandle isPureObjectGuard;
     private final MethodHandle getRoleHandle;
+    private final TrampolineFactory trampolines;
     private final Binder binder;
     private LinkerState currentLinker = new InitialLinker();
 
@@ -52,6 +54,7 @@ public class StateBasedLinker implements BindingObserver, GuardingDynamicLinker 
         binder.addObserver(switchpoints);
         isPureObjectGuard = Guards.createPureObjectGuard(binder);
         getRoleHandle = binder.createGetRoleHandle();
+        trampolines = new TrampolineFactory(binder.createNextRoleHandle());
     }
 
     @Override
@@ -141,16 +144,20 @@ public class StateBasedLinker implements BindingObserver, GuardingDynamicLinker 
             }
 
             Object sender = request.getArguments()[type.parameterCount() - 1];
-            if (role == sender) {
+            if (isRole(sender)) {
                 // base call
-                // TODO: handle multiple roles per player
-                return new GuardedInvocation(dropSenderArgument(mh));
+                return new GuardedInvocation(trampolines.createTrampoline(desc));
             }
 
             Class<?> roleType = role.getClass();
             return new GuardedInvocation(dropSenderArgument(maybeRoleHandle(baseType, roleType, name, lookupType, mh)),
                     Guards.createRoleTypePlayedByGuard(binder, roleType));
         }
+
+    }
+
+    private static boolean isRole(final Object sender) {
+        return sender.getClass().getDeclaredAnnotation(Role.class) != null;
     }
 
     private MethodHandle maybeRoleHandle(final Class<?> baseType, final Class<?> roleType, final String name,

@@ -36,6 +36,11 @@ public class Binder implements BindingService, RoleTypeConstants {
     /** Direct method handle to {@link IdentityHashMap#get(Object)} */
     private static final MethodHandle getRoleHandle;
 
+    /**
+     * Direct method handle to {@link IdentityHashMap#getOrDefault(Object, Object)}
+     */
+    private static final MethodHandle nextRoleHandle;
+
     static {
         Lookup lookup = MethodHandles.lookup();
         try {
@@ -43,6 +48,8 @@ public class Binder implements BindingService, RoleTypeConstants {
                     methodType(boolean.class, Object.class));
             getRoleHandle = lookup.findVirtual(RefEqualWeakHashMap.class, "get",
                     methodType(Object.class, Object.class));
+            nextRoleHandle = lookup.findVirtual(RefEqualWeakHashMap.class, "getOrDefault",
+                    methodType(Object.class, Object.class, Object.class));
         } catch (NoSuchMethodException | IllegalAccessException e) {
             throw (AssertionError) new AssertionError().initCause(e);
         }
@@ -118,5 +125,9 @@ public class Binder implements BindingService, RoleTypeConstants {
      */
     public MethodHandle createGetRoleHandle() {
         return MethodHandles.insertArguments(getRoleHandle, 0, registry);
+    }
+
+    public MethodHandle createNextRoleHandle() {
+        return MethodHandles.insertArguments(nextRoleHandle, 0, registry);
     }
 }
