@@ -51,7 +51,7 @@ public class TrampolineCallSiteTest {
         assertEquals(2, (int) handle.invokeExact((Object) r2, b1, "foo", (Object) this));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void roleInvocationMissingMethod() throws Throwable {
         assertEquals(3, (int) handle.invokeExact((Object) r3, b1, "foo", (Object) this));
     }

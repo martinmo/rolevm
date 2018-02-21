@@ -55,6 +55,17 @@ public class TrampolineFactory {
                 adaptNextRoleHandle(descriptor.getMethodType()));
     }
 
+    /**
+     * Creates a method that can be used to bridge over a role instance that does
+     * not implement the method given in the call site description.
+     */
+    private MethodHandle createBridgeMethod(final CallSiteDescriptor descriptor) {
+        MethodType oldType = descriptor.getMethodType().dropParameterTypes(0, 1);
+        MethodHandle handle = MethodHandles.foldArguments(createCallSiteHandle(descriptor),
+                adaptNextRoleHandle(oldType));
+        return MethodHandles.dropArguments(handle, 0, Object.class);
+    }
+
     private MethodHandle adaptNextRoleHandle(final MethodType type) {
         Class<?> baseType = type.parameterType(0);
         MethodType newType = type.changeReturnType(Object.class);
@@ -92,8 +103,7 @@ public class TrampolineFactory {
                         lookupType);
                 return newGuardedInvocation(handle, owner);
             } catch (NoSuchMethodException | IllegalAccessException e) {
-                // TODO: handle this case
-                throw new RuntimeException(e);
+                return new GuardedInvocation(createBridgeMethod(descriptor), Guards.getInstanceOfGuard(owner));
             }
         }
 
