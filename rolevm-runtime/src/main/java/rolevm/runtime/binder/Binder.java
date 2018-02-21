@@ -65,16 +65,19 @@ public class Binder implements BindingService, RoleTypeConstants {
         }
         TypeChecks.validateRoleType(role.getClass());
         TypeChecks.validatePlayer(player);
-        // TODO: handle binding of multiple roles
         synchronized (mutex) {
-            if (registry.putIfAbsent(player, role) == null) {
-                bindingObservers.stream().forEach(o -> o.bindingAdded(player, role));
-            }
+            // TODO: enhance this data structure
+            Object playerToTry = player;
+            do {
+                playerToTry = registry.putIfAbsent(playerToTry, role);
+            } while (playerToTry != null);
+            bindingObservers.stream().forEach(o -> o.bindingAdded(player, role));
         }
     }
 
     public void unbind(final Object player, final Object role) {
         synchronized (mutex) {
+            // TODO: this doesn't work with multiple bound roles
             if (registry.remove(player, role)) {
                 bindingObservers.stream().forEach(o -> o.bindingRemoved(player, role));
             }

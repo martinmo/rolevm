@@ -7,25 +7,26 @@ import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.annotations.TearDown;
 
 import rolevm.bench.DefaultBenchmark;
 import rolevm.examples.noop.BaseType;
 import rolevm.examples.noop.BenchmarkHelper;
 import rolevm.examples.noop.NoopCompartment;
-import rolevm.examples.noop.NoopCompartment.NoopRole;
 
 @Fork(jvmArgsAppend = { "@rolevm-bench/jvm.options" })
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 public class NoopCompartmentBenchmark extends DefaultBenchmark {
     @State(Scope.Benchmark)
     public static class BenchState {
+        @Param({ "1", "2", "3" })
+        int numRoles;
+
         int x, y;
         BaseType b;
-        NoopRole r;
         NoopCompartment c;
 
         @Setup(Level.Trial)
@@ -36,15 +37,12 @@ public class NoopCompartmentBenchmark extends DefaultBenchmark {
         @Setup(Level.Iteration)
         public void setup() {
             b = new BaseType();
-            r = c.bind(b, c.new NoopRole());
+            for (int i = 0; i < numRoles; ++i) {
+                c.bind(b, c.new NoopRole());
+            }
             Random random = new Random();
             x = random.nextInt();
             y = random.nextInt();
-        }
-
-        @TearDown(Level.Iteration)
-        public void teardown() {
-            c.unbind(b, r);
         }
     }
 

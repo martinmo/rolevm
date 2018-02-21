@@ -24,6 +24,19 @@ public class SimpleCompartmentTest {
     }
 
     @Test
+    public void multipleRoles() {
+        SimpleCompartment c = new SimpleCompartment();
+        BaseType b = new BaseType();
+        RoleType r1 = c.new RoleType(3);
+        RoleType r2 = c.new RoleType(2);
+        assertEquals(6, b.delegation());
+        c.bind(b, r1);
+        assertEquals(9, b.delegation());
+        c.bind(b, r2);
+        assertEquals(11, b.delegation());
+    }
+
+    @Test
     public void multipleRoleTypesPerCallSite() {
         SimpleCompartment c = new SimpleCompartment();
         BaseType b = new BaseType();
