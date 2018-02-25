@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import rolevm.api.service.BindingService;
-import rolevm.runtime.binder.util.RefEqualWeakHashMap;
+import rolevm.runtime.binder.util.ConcurrentWeakHashMap;
 
 /**
  * Manages object-to-role bindings, provides binding operations, and answers
@@ -26,7 +26,7 @@ public class Binder implements BindingService {
     /**
      * Maps objects to roles using reference equality instead of object equality.
      */
-    private final Map<Object, Object> registry = new RefEqualWeakHashMap<>();
+    private final Map<Object, Object> registry = new ConcurrentWeakHashMap<>();
 
     /** Direct method handle to {@link Map#containsKey(Object)} */
     private static final MethodHandle containsKeyHandle;
@@ -67,16 +67,15 @@ public class Binder implements BindingService {
             do {
                 playerToTry = registry.putIfAbsent(playerToTry, role);
             } while (playerToTry != null);
-            bindingObservers.stream().forEach(o -> o.bindingAdded(player, role));
         }
+        // "alien" methods should be called outside synchronized blocks:
+        bindingObservers.stream().forEach(o -> o.bindingAdded(player, role));
     }
 
     public void unbind(final Object player, final Object role) {
-        synchronized (mutex) {
-            // TODO: this doesn't work with multiple bound roles
-            if (registry.remove(player, role)) {
-                bindingObservers.stream().forEach(o -> o.bindingRemoved(player, role));
-            }
+        // TODO: this doesn't work with multiple bound roles
+        if (registry.remove(player, role)) {
+            bindingObservers.stream().forEach(o -> o.bindingRemoved(player, role));
         }
     }
 
