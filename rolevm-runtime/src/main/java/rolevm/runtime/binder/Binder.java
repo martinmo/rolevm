@@ -6,7 +6,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -29,25 +28,23 @@ public class Binder implements BindingService {
      */
     private final Map<Object, Object> registry = new RefEqualWeakHashMap<>();
 
-    /** Direct method handle to {@link IdentityHashMap#containsKey(Object)} */
+    /** Direct method handle to {@link Map#containsKey(Object)} */
     private static final MethodHandle containsKeyHandle;
 
-    /** Direct method handle to {@link IdentityHashMap#get(Object)} */
+    /** Direct method handle to {@link Map#get(Object)} */
     private static final MethodHandle getRoleHandle;
 
     /**
-     * Direct method handle to {@link IdentityHashMap#getOrDefault(Object, Object)}
+     * Direct method handle to {@link Map#getOrDefault(Object, Object)}
      */
     private static final MethodHandle nextRoleHandle;
 
     static {
         Lookup lookup = MethodHandles.lookup();
         try {
-            containsKeyHandle = lookup.findVirtual(RefEqualWeakHashMap.class, "containsKey",
-                    methodType(boolean.class, Object.class));
-            getRoleHandle = lookup.findVirtual(RefEqualWeakHashMap.class, "get",
-                    methodType(Object.class, Object.class));
-            nextRoleHandle = lookup.findVirtual(RefEqualWeakHashMap.class, "getOrDefault",
+            containsKeyHandle = lookup.findVirtual(Map.class, "containsKey", methodType(boolean.class, Object.class));
+            getRoleHandle = lookup.findVirtual(Map.class, "get", methodType(Object.class, Object.class));
+            nextRoleHandle = lookup.findVirtual(Map.class, "getOrDefault",
                     methodType(Object.class, Object.class, Object.class));
         } catch (NoSuchMethodException | IllegalAccessException e) {
             throw (AssertionError) new AssertionError().initCause(e);
@@ -113,17 +110,16 @@ public class Binder implements BindingService {
     }
 
     /**
-     * Returns a direct method handle to
-     * {@link IdentityHashMap#containsKey(Object)}, bound to the internal
-     * object/role registry map.
+     * Returns a direct method handle to {@link Map#containsKey(Object)}, bound to
+     * the internal object/role registry map.
      */
     public MethodHandle createContainsKeyHandle() {
         return MethodHandles.insertArguments(containsKeyHandle, 0, registry);
     }
 
     /**
-     * Returns a direct method handle to {@link IdentityHashMap#get(Object)}, bound
-     * to the internal object/role registry map.
+     * Returns a direct method handle to {@link Map#get(Object)}, bound to the
+     * internal object/role registry map.
      */
     public MethodHandle createGetRoleHandle() {
         return MethodHandles.insertArguments(getRoleHandle, 0, registry);
