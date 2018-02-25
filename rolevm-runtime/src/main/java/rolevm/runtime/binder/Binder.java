@@ -38,18 +38,17 @@ public class Binder implements BindingService {
      */
     private final Map<Object, Object> registry = new IdentityHashMap<>();
 
-    /** Direct method handle to {@link IdentityHashMap#containsKey(Object)} */
+    /** Direct method handle to {@link Map#containsKey(Object)} */
     private static final MethodHandle containsKeyHandle;
 
-    /** Direct method handle to {@link IdentityHashMap#get(Object)} */
+    /** Direct method handle to {@link Map#get(Object)} */
     private static final MethodHandle getRoleHandle;
 
     static {
         Lookup lookup = MethodHandles.lookup();
         try {
-            containsKeyHandle = lookup.findVirtual(IdentityHashMap.class, "containsKey",
-                    methodType(boolean.class, Object.class));
-            getRoleHandle = lookup.findVirtual(IdentityHashMap.class, "get", methodType(Object.class, Object.class));
+            containsKeyHandle = lookup.findVirtual(Map.class, "containsKey", methodType(boolean.class, Object.class));
+            getRoleHandle = lookup.findVirtual(Map.class, "get", methodType(Object.class, Object.class));
         } catch (NoSuchMethodException | IllegalAccessException e) {
             throw (AssertionError) new AssertionError().initCause(e);
         }
@@ -148,17 +147,16 @@ public class Binder implements BindingService {
     }
 
     /**
-     * Returns a direct method handle to
-     * {@link IdentityHashMap#containsKey(Object)}, bound to the internal
-     * object/role registry map.
+     * Returns a direct method handle to {@link Map#containsKey(Object)}, bound to
+     * the internal object/role registry map.
      */
     public MethodHandle createContainsKeyHandle() {
         return MethodHandles.insertArguments(containsKeyHandle, 0, registry);
     }
 
     /**
-     * Returns a direct method handle to {@link IdentityHashMap#get(Object)}, bound
-     * to the internal object/role registry map.
+     * Returns a direct method handle to {@link Map#get(Object)}, bound to the
+     * internal object/role registry map.
      */
     public MethodHandle createGetRoleHandle() {
         return MethodHandles.insertArguments(getRoleHandle, 0, registry);
