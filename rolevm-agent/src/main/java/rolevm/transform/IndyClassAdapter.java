@@ -1,15 +1,17 @@
 package rolevm.transform;
 
+import static org.objectweb.asm.Opcodes.ASM5;
+import static org.objectweb.asm.Opcodes.V1_7;
+
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
 
 /**
  * Adapts classes using the {@link IndyMethodAdapter}.
  * 
  * @author Martin Morgenstern
  */
-public class IndyClassAdapter extends ClassVisitor implements Opcodes {
+public class IndyClassAdapter extends ClassVisitor {
     private String className;
 
     public IndyClassAdapter(ClassVisitor cv) {

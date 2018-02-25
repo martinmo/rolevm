@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import rolevm.api.service.BindingService;
-import rolevm.runtime.RoleTypeConstants;
 import rolevm.runtime.binder.util.RefEqualWeakHashMap;
 
 /**
@@ -21,7 +20,7 @@ import rolevm.runtime.binder.util.RefEqualWeakHashMap;
  * 
  * @author Martin Morgenstern
  */
-public class Binder implements BindingService, RoleTypeConstants {
+public class Binder implements BindingService {
     /** Lock object used to guard bind/unbind operations. */
     private final Object mutex = new Object();
 

@@ -10,8 +10,12 @@ import rolevm.api.Role;
  * 
  * @author Martin Morgenstern
  */
-public interface RoleTypeConstants {
-    final Class<Base> BASE_ANNOTATION = Base.class;
-    final Class<Role> ROLE_ANNOTATION = Role.class;
-    final Class<Compartment> COMPARTMENT_CLASS = Compartment.class;
+public class RoleTypeConstants {
+    /** Should not be instantiated. */
+    private RoleTypeConstants() {
+    }
+
+    public static final Class<Base> BASE_ANNOTATION = Base.class;
+    public static final Class<Role> ROLE_ANNOTATION = Role.class;
+    public static final Class<Compartment> COMPARTMENT_CLASS = Compartment.class;
 }
