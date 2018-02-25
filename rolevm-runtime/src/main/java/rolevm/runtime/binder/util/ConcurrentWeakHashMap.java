@@ -62,9 +62,7 @@ public class ConcurrentWeakHashMap<K, V> implements Map<K, V> {
     /** Removes entries belonging to stale keys from this map. */
     private void removeStaleReferences() {
         for (Object x; (x = queue.poll()) != null;) {
-            synchronized (queue) {
-                storage.remove(x);
-            }
+            storage.remove(x);
         }
     }
 
