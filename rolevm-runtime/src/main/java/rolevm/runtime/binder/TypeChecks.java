@@ -1,16 +1,19 @@
 package rolevm.runtime.binder;
 
+import static rolevm.runtime.RoleTypeConstants.COMPARTMENT_CLASS;
+import static rolevm.runtime.RoleTypeConstants.ROLE_ANNOTATION;
+
 import java.lang.reflect.Field;
 
 import rolevm.api.RoleBindingException;
-import rolevm.runtime.RoleTypeConstants;
 
 /**
  * Static utility methods to validate role types.
  * 
  * @author Martin Morgenstern
  */
-public class TypeChecks implements RoleTypeConstants {
+public class TypeChecks {
+    /** Should not be instantiated. */
     private TypeChecks() {
     }
 

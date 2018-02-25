@@ -1,6 +1,7 @@
 package rolevm.runtime.binder;
 
 import static java.lang.invoke.MethodType.methodType;
+import static rolevm.runtime.RoleTypeConstants.BASE_ANNOTATION;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -15,7 +16,6 @@ import java.util.Optional;
 
 import rolevm.api.RoleBindingException;
 import rolevm.api.service.BindingService;
-import rolevm.runtime.RoleTypeConstants;
 
 /**
  * Manages object-to-role bindings, provides binding operations, and answers
@@ -23,7 +23,7 @@ import rolevm.runtime.RoleTypeConstants;
  * 
  * @author Martin Morgenstern
  */
-public class Binder implements BindingService, RoleTypeConstants {
+public class Binder implements BindingService {
     /** Lock object used to guard bind/unbind operations. */
     private final Object mutex = new Object();
 

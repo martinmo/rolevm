@@ -1,8 +1,17 @@
 package rolevm.transform;
 
+import static org.objectweb.asm.Opcodes.ACC_STATIC;
+import static org.objectweb.asm.Opcodes.ALOAD;
+import static org.objectweb.asm.Opcodes.ASM5;
+import static org.objectweb.asm.Opcodes.H_INVOKESTATIC;
+import static org.objectweb.asm.Opcodes.INVOKEINTERFACE;
+import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
+import static rolevm.transform.BootstrapConstants.BSM_CLASS;
+import static rolevm.transform.BootstrapConstants.BSM_NAME;
+import static rolevm.transform.BootstrapConstants.BSM_TYPE;
+
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 /**
@@ -13,7 +22,7 @@ import org.objectweb.asm.Type;
  * 
  * @author Martin Morgenstern
  */
-public class IndyMethodAdapter extends MethodVisitor implements BootstrapConstants, Opcodes {
+public class IndyMethodAdapter extends MethodVisitor {
     private static final Handle BSM_HANDLE = new Handle(H_INVOKESTATIC, BSM_CLASS, BSM_NAME, BSM_TYPE, false);
     private final MethodInfo info;
     private boolean senderAdded = false;
