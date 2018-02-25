@@ -18,16 +18,22 @@ import rolevm.runtime.binder.BindingObserver;
  * 
  * @author Martin Morgenstern
  */
-public class SwitchPointManager extends ClassValue<SwitchPoint> implements BindingObserver {
-    @Override
-    protected SwitchPoint computeValue(final Class<?> type) {
-        return new SwitchPoint();
+public class SwitchPointManager implements BindingObserver {
+    private final ClassValue<SwitchPoint> switchpoints = new ClassValue<>() {
+        @Override
+        protected SwitchPoint computeValue(final Class<?> type) {
+            return new SwitchPoint();
+        }
+    };
+
+    public SwitchPoint getSwitchPointForType(final Class<?> type) {
+        return switchpoints.get(type);
     }
 
-    public void invalidateSwitchPoints(Class<?> type) {
+    public void invalidateSwitchPoints(final Class<?> type) {
         final List<SwitchPoint> switchPoints = new ArrayList<>();
         for (Class<?> computed : assignmentCompatibleTypes(type)) {
-            switchPoints.add(get(computed));
+            switchPoints.add(switchpoints.get(computed));
         }
         SwitchPoint.invalidateAll(switchPoints.toArray(new SwitchPoint[0]));
         // We do not manually remove invalidated SwitchPoints from the mapping.

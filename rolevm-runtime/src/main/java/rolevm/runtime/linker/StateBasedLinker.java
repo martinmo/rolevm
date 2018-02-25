@@ -103,7 +103,7 @@ public class StateBasedLinker implements BindingObserver, GuardingDynamicLinker 
             MethodType type = desc.getMethodType();
             String name = getOperationName(desc);
             MethodHandle mh = desc.getLookup().findVirtual(type.parameterType(0), name, lookupType(type));
-            return new GuardedInvocation(dropSenderArgument(mh), switchpoints.get(type.parameterType(0)));
+            return new GuardedInvocation(dropSenderArgument(mh), switchpoints.getSwitchPointForType(type.parameterType(0)));
         }
 
         @Override
