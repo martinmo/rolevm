@@ -12,6 +12,7 @@ import org.openjdk.jmh.annotations.State;
 
 import rolevm.bench.DefaultBenchmark;
 import rolevm.examples.fib.BenchmarkHelper;
+import rolevm.examples.fib.PureJavaCachedFib;
 import rolevm.examples.fib.RecursiveFibonacci;
 
 /**
@@ -36,8 +37,23 @@ public class RecursiveFibPlainJava extends DefaultBenchmark {
         }
     }
 
+    @State(Scope.Benchmark)
+    public static class CachedWithoutRole {
+        PureJavaCachedFib fib;
+
+        @Setup(Level.Iteration)
+        public void setupIteration() {
+            fib = new PureJavaCachedFib();
+        }
+    }
+
     @Benchmark
     public int without_role(Shared shared, WithoutRole state) {
         return BenchmarkHelper.computeFib(state.fib, shared.n);
+    }
+
+    @Benchmark
+    public int cached_without_role(Shared shared, CachedWithoutRole state) throws Throwable {
+        return BenchmarkHelper.computeCachedFib(state.fib, shared.n);
     }
 }

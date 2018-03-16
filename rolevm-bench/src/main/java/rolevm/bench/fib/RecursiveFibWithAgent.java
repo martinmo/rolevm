@@ -9,38 +9,62 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.TearDown;
 
 import rolevm.examples.fib.BenchmarkHelper;
-import rolevm.examples.fib.FastFib;
-import rolevm.examples.fib.FastFib.CachedFibonacci;
+import rolevm.examples.fib.FibBenchmark;
+import rolevm.examples.fib.FibBenchmark.CachedFib;
+import rolevm.examples.fib.FibBenchmark.NoopFib;
 import rolevm.examples.fib.RecursiveFibonacci;
 
 /**
  * Measures Fibonacci performance with a loaded RoleVM agent, with and without a
- * bound {@link CachedFibonacci} role.
+ * bound {@link CachedFib} role.
  * 
  * @author Martin Morgenstern
  */
 @Fork(jvmArgsAppend = { "@rolevm-bench/jvm.options" })
 public class RecursiveFibWithAgent extends RecursiveFibPlainJava {
     @State(Scope.Benchmark)
-    public static class WithRole {
+    public static class WithCachingRole {
         RecursiveFibonacci fib;
-        CachedFibonacci cachedFib;
-        FastFib fastFib;
+        CachedFib cachedFib;
+        FibBenchmark fibBench;
 
         @Setup(Level.Trial)
         public void setupTrial() {
-            fastFib = new FastFib();
+            fibBench = new FibBenchmark();
         }
 
         @Setup(Level.Iteration)
         public void setupIteration() {
             fib = new RecursiveFibonacci();
-            cachedFib = fastFib.bind(fib, fastFib.new CachedFibonacci(30));
+            cachedFib = fibBench.bind(fib, fibBench.new CachedFib());
         }
 
         @TearDown(Level.Iteration)
         public void teardownIteration() {
-            fastFib.unbind(fib, cachedFib);
+            fibBench.unbind(fib, cachedFib);
+        }
+    }
+
+    @State(Scope.Benchmark)
+    public static class WithNoopRole {
+        RecursiveFibonacci fib;
+        NoopFib noopFib;
+        FibBenchmark fibBench;
+
+        @Setup(Level.Trial)
+        public void setupTrial() {
+            fibBench = new FibBenchmark();
+        }
+
+        @Setup(Level.Iteration)
+        public void setupIteration() {
+            fib = new RecursiveFibonacci();
+            noopFib = fibBench.bind(fib, fibBench.new NoopFib());
+        }
+
+        @TearDown(Level.Iteration)
+        public void teardownIteration() {
+            fibBench.unbind(fib, noopFib);
         }
     }
 
@@ -51,14 +75,19 @@ public class RecursiveFibWithAgent extends RecursiveFibPlainJava {
         @Setup(Level.Trial)
         public void setupTrial() {
             fib = new RecursiveFibonacci();
-            FastFib fastFib = new FastFib();
-            CachedFibonacci cachedFib = fastFib.bind(fib, fastFib.new CachedFibonacci(30));
-            fastFib.unbind(fib, cachedFib);
+            FibBenchmark fibBench = new FibBenchmark();
+            CachedFib cachedFib = fibBench.bind(fib, fibBench.new CachedFib());
+            fibBench.unbind(fib, cachedFib);
         }
     }
 
     @Benchmark
-    public int with_role(Shared shared, WithRole state) {
+    public int with_caching_role(Shared shared, WithCachingRole state) {
+        return BenchmarkHelper.computeFib(state.fib, shared.n);
+    }
+
+    @Benchmark
+    public int with_noop_role(Shared shared, WithNoopRole state) {
         return BenchmarkHelper.computeFib(state.fib, shared.n);
     }
 
