@@ -2,9 +2,13 @@
 
 [![Build Status](https://travis-ci.org/martinmo/rolevm.svg?branch=master)](https://travis-ci.org/martinmo/rolevm)
 
-RoleVM is a minimal, efficient role-based programming runtime for Java, based on
-`java.lang.invoke` and `jdk.dynalink`. It is entirely written in Java and consists of a small Java
-agent and an accompanying runtime library.
+RoleVM is a research prototype of a minimal, efficient role-based programming runtime for Java,
+based on `java.lang.invoke` and `jdk.dynalink`. It is entirely written in Java and consists of a
+small Java agent and an accompanying runtime library. This version can handle more than one role
+per player as well as more than one player per role. Furthermore, it solves the inherent memory
+leaks and concurrency issues of the first version, which is still available in the `rolevm-1.x`
+branch.
+
 
 ## How does it work?
 
@@ -22,6 +26,7 @@ agent and an accompanying runtime library.
 For more details, please read the Javadocs. An aggregated Javadoc for all Maven subprojects can be
 generated using `mvn javadoc:aggregate`.
 
+
 ## Build
 
 The library is not yet available on Maven Central. You have to build and install it locally using
@@ -38,6 +43,7 @@ Furthermore, it is decoupled into multiple subprojects:
 
 The `rolevm-{bench,examples}` submodules are non-essential modules and contain benchmarks and usage
 examples.
+
 
 ## Usage
 
@@ -62,12 +68,11 @@ artifact:
 
 The RoleVM API can bind roles to arbitrary objects, and base and role types are *not* required to
 implement some particular interface or extend a particular class. Instead, role types are annotated
-using `@Role` and `@Base` annotations:
+using the `@Role` annotation:
 
 ```java
-import rolevm.api.*;
+import rolevm.api.Role;
 public @Role class RoleType {
-  private @Base BaseType base;
 }
 ```
 
@@ -87,21 +92,22 @@ Then the accompanying, minimum role definition looks like this:
 
 ```java
 public @Role class R {
-  private @Base A base;
 }
 ```
 
-To override a method of the base class, it must exactly *match the method signature* in the base
-class. (Methods defined in `java.lang.Object`, such as `hashCode()` or `equals()`, cannot be
-overridden by a role.)
+To override a method *m* with the signature *rtype m(ptype0, ptype1, …)* in the base class *A*,
+you have to define a method *m* in the role class *R* with a signature of *rtype m(A, ptype0,
+ptype1, …)*. During execution of the program, the RoleVM runtime will bind the additional leading
+argument to the base object.
+(Please note that methods defined in `java.lang.Object`, such as `hashCode()` or `equals()`, cannot
+be overridden by a role.)
 
 Here are some examples of how to adjust the behavior of method `int A.m(int)`:
 
 ```java
 /* Add behavior around, before or after the base method */
 public @Role class R1 {
-  private @Base A base;
-  public int m(int x) {
+  public int m(A base, int x) {
     System.out.println("Before");
     int r = base.m(x);
     System.out.println("After");
@@ -110,16 +116,14 @@ public @Role class R1 {
 }
 /* Replace the base method */
 public @Role class R2 {
-  private @Base A base;
-  public int m(int x) {
+  public int m(A base, int x) {
     // no call to base.m()
     return x * x * x;
   }
 }
 /* Conditionally replace the base method */
 public @Role class R3 {
-  private @Base A base;
-  public int m(int x) {
+  public int m(A base, int x) {
     if (x < 42) {
       // no call to base.m()
       return x * x * x;
@@ -138,7 +142,6 @@ that extends `rolevm.api.Compartment`:
 import rolevm.api.*;
 public MyCompartment extends Compartment {
   public @Role class RoleType {
-    private @Base BaseType base;
   }
 }
 ```
@@ -165,13 +168,11 @@ The required JARs can be obtained using the `dependency:copy` goal:
 
     mvn dependency:copy -DoutputDirectory=path/to/a/directory
 
+
 ## Current limitations
 
-- Only one role may be bound to an object.
-- Roles must be explicitly unbound to make the base (and role) object eligible for garbage
-  collection. This is a result of the way RoleVM associates players with roles and vice versa, and
-  cannot be fixed without JVM support for [Ephemerons](https://en.wikipedia.org/wiki/Ephemeron). 
 - Only classes with a minimum class format version of 1.7 can be transformed.
+
 
 ## Caveats and workarounds
 
@@ -180,13 +181,11 @@ The required JARs can be obtained using the `dependency:copy` goal:
   (You still can attach roles to instances of untransformed classes, but self calls wont be
   delegated to roles.)
 - Be careful not to perform base method calls in anonymous inner classes such as `Runnable` or
-  `Callable`, because this will lead to infinite recursion. You should use lambdas instead. For
-  more details, have a look at the role types in the [FastFib example compartment][fastfib].
+  `Callable`, because this will lead to infinite recursion.
 - You should disable the "Hot Code Replace" feature of the Eclipse Debugger, if you want to debug
   programs that use the RoleVM agent. There is an awkward interference between that debugger and
   the agent, which will make it jump around to arbitrary breakpoints on its own.
 
-[fastfib]: rolevm-examples/src/main/java/rolevm/examples/fib/FastFib.java
 
 ## Performance
 
@@ -203,13 +202,17 @@ OT/J ([benchmark source](https://github.com/martinmo/otjbench)):
     NoopCallinBenchmark.callin_withargs       avgt   10  201,160 ±  6,595  ns/op
     NoopCallinBenchmark.baseline              avgt   10    0,418 ±  0,017  ns/op
 
-RoleVM ([benchmark source](rolevm-bench/src/main/java/rolevm/bench/noop)):
+RoleVM 1.x ([benchmark source](rolevm-bench/src/main/java/rolevm/bench/noop)):
 
     Benchmark                                        Mode  Cnt   Score   Error  Units
     NoopCompartmentBenchmark.basecall_noargs         avgt   10  15,118 ± 1,348  ns/op
     NoopCompartmentBenchmark.basecall_primitiveargs  avgt   10  14,519 ± 0,463  ns/op
     NoopCompartmentBenchmark.basecall_withargs       avgt   10  14,934 ± 0,401  ns/op
     NoopCompartmentBenchmark.baseline                avgt   10   0,419 ± 0,015  ns/op
+
+RoleVM 2.x:
+
+    TBD
 
 SCROLL (units are µs instead of ns, [benchmark source][scrollbench]):
 
@@ -221,31 +224,6 @@ SCROLL (units are µs instead of ns, [benchmark source][scrollbench]):
 
 [scrollbench]: https://github.com/martinmo/SCROLL/tree/noop-benchmarks
 
-### Recursive Fibonacci
-
-Calculating `fib(n) = (n > 1) ? fib(n - 1) + fib(n - 2) : n` ([benchmark source][fibbench]).
-
-[fibbench]: rolevm-bench/src/main/java/rolevm/bench/fib
-
-Plain Java (untransformed classes):
-
-    Benchmark                                          (n)  Mode  Cnt    Score   Error  Units
-    RecursiveFibPlainJava.without_role                  20  avgt   10   46,068 ± 0,889  us/op
-
-With transformed classes and a role that caches results of previous `fib()` calls:
-
-    Benchmark                                          (n)  Mode  Cnt    Score   Error  Units
-    RecursiveFibWithAgent.with_role                     20  avgt   10    0,309 ± 0,011  us/op
-
-With transformed classes, no bound role:
-
-    Benchmark                                          (n)  Mode  Cnt    Score   Error  Units
-    RecursiveFibWithAgent.without_role                  20  avgt   10   47,069 ± 0,969  us/op
-
-With transformed classes, no bound role (after unbind of role):
-
-    Benchmark                                          (n)  Mode  Cnt    Score   Error  Units
-    RecursiveFibWithAgent.without_role_invalidated_sp   20  avgt   10  118,872 ± 2,383  us/op
 
 ## License and copyright
 
