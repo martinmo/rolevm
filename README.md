@@ -1,7 +1,5 @@
 # RoleVM
 
-[![Build Status](https://travis-ci.org/martinmo/rolevm.svg?branch=master)](https://travis-ci.org/martinmo/rolevm)
-
 RoleVM is a minimal, efficient role-based programming runtime for Java, based on
 `java.lang.invoke` and `jdk.dynalink`. It is entirely written in Java and consists of a small Java
 agent and an accompanying runtime library.
