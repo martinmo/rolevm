@@ -19,7 +19,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <javac.target>9</javac.target>
-    <asm.version>6.1-beta</asm.version>
+    <asm.version>6.1.1</asm.version>
     <junit.version>4.12</junit.version>
     <slf4j.version>1.7.25</slf4j.version>
     <lang3.version>3.7</lang3.version>

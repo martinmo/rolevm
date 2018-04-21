@@ -83,7 +83,8 @@ public class TransformationTest {
     public void staticSenderLoadInstructionIsPresent() throws Exception {
         byte[] transformed = tfm.transform(null, "", A.class, null, loadClassFile(A.class));
         String instructions = disassemble(transformed);
-        String invoke = join("LDC \"E\"", String.format("LDC %s.class", A.class.getName()), "INVOKEDYNAMIC println");
+        String invoke = join("LDC \"E\"", String.format("LDC L%s;.class", A.class.getName().replace('.', '/')),
+                "INVOKEDYNAMIC println");
         assertThat(instructions, containsString(invoke));
     }
 
