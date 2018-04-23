@@ -12,7 +12,33 @@ public class SimpleCompartmentDemo {
         System.out.println(b.delegation());
 
         c.bind(b, r);
+        System.out.println("--- One role ---");
         System.out.println(b.calculate(3));
         System.out.println(b.delegation());
+
+        c.bind(b, c.new RoleType(10));
+        System.out.println("--- Two roles ---");
+        System.out.println(b.calculate(3));
+        System.out.println(b.delegation());
+
+        c.bind(b, c.new AnotherRoleType());
+        System.out.println("--- Three roles ---");
+        System.out.println(b.calculate(3));
+        System.out.println(b.delegation());
+
+        c.bind(b, c.new EmptyRoleType());
+        System.out.println("--- Four roles, but the 3rd ends the chain ---");
+        System.out.println(b.calculate(3));
+        System.out.println(b.delegation());
+
+        // results in a StackOverflowError:
+
+        BaseType b2 = new BaseType();
+        c.bind(b2, c.new RoleType(10));
+        c.bind(b2, c.new EmptyRoleType());
+        c.bind(b2, c.new AnotherRoleType());
+        System.out.println("--- Three roles, the second must be bridged ---");
+        System.out.println(b2.calculate(3));
+        System.out.println(b2.delegation());
     }
 }

@@ -14,6 +14,7 @@ public class SimpleCompartment extends Compartment {
 
         @OverrideBase
         public int calculate(BaseType base, int x) {
+            System.out.printf("RoleType(%s)::calculate()%n", this);
             return base.calculate(x) + y;
         }
 
@@ -25,7 +26,11 @@ public class SimpleCompartment extends Compartment {
     public @Role class AnotherRoleType {
         @OverrideBase
         public int calculate(BaseType base, int x) {
+            System.out.printf("AnotherRoleType(%s)::calculate()%n", this);
             return -x;
         }
+    }
+
+    public @Role class EmptyRoleType {
     }
 }
