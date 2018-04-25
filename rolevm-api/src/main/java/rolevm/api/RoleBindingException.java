@@ -2,8 +2,8 @@ package rolevm.api;
 
 /**
  * Thrown when a binding operation cannot be executed, e.g., when reflective
- * operations fail, or if the {@link Base} and {@link Role} annotations have not
- * been used correctly. Note that this exception is unchecked.
+ * operations fail, or if the {@link Role} annotation has not been used
+ * correctly. Note that this exception is unchecked.
  * 
  * @author Martin Morgenstern
  */

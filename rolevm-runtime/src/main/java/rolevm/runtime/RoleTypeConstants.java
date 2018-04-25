@@ -1,6 +1,5 @@
 package rolevm.runtime;
 
-import rolevm.api.Base;
 import rolevm.api.Compartment;
 import rolevm.api.Role;
 
@@ -15,7 +14,6 @@ public class RoleTypeConstants {
     private RoleTypeConstants() {
     }
 
-    public static final Class<Base> BASE_ANNOTATION = Base.class;
     public static final Class<Role> ROLE_ANNOTATION = Role.class;
     public static final Class<Compartment> COMPARTMENT_CLASS = Compartment.class;
 }

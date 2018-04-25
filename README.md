@@ -64,7 +64,7 @@ artifact:
 </dependency>
 ```
 
-### Role and Base annotations
+### Role annotation
 
 The RoleVM API can bind roles to arbitrary objects, and base and role types are *not* required to
 implement some particular interface or extend a particular class. Instead, role types are annotated
