@@ -26,8 +26,12 @@ public class TypeChecks {
     }
 
     public static void validatePlayer(final Object player) {
-        if (player.getClass().getDeclaredAnnotationsByType(ROLE_ANNOTATION).length != 0) {
+        if (isRole(player)) {
             throw new RoleBindingException("a role cannot be a player");
         }
+    }
+
+    public static boolean isRole(final Object object) {
+        return object.getClass().getDeclaredAnnotation(ROLE_ANNOTATION) != null;
     }
 }

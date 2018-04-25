@@ -1,6 +1,7 @@
 package rolevm.runtime.linker;
 
 import static java.lang.invoke.MethodType.methodType;
+import static rolevm.runtime.binder.TypeChecks.isRole;
 import static rolevm.runtime.linker.MethodHandleConversions.dropSenderArgument;
 import static rolevm.runtime.linker.MethodHandleConversions.lookupType;
 
@@ -21,7 +22,6 @@ import jdk.dynalink.linker.GuardedInvocation;
 import jdk.dynalink.linker.GuardingDynamicLinker;
 import jdk.dynalink.linker.LinkRequest;
 import jdk.dynalink.linker.LinkerServices;
-import rolevm.api.Role;
 import rolevm.runtime.binder.Binder;
 import rolevm.runtime.binder.BindingObserver;
 
@@ -103,7 +103,8 @@ public class StateBasedLinker implements BindingObserver, GuardingDynamicLinker 
             MethodType type = desc.getMethodType();
             String name = getOperationName(desc);
             MethodHandle mh = desc.getLookup().findVirtual(type.parameterType(0), name, lookupType(type));
-            return new GuardedInvocation(dropSenderArgument(mh), switchpoints.getSwitchPointForType(type.parameterType(0)));
+            return new GuardedInvocation(dropSenderArgument(mh),
+                    switchpoints.getSwitchPointForType(type.parameterType(0)));
         }
 
         @Override
@@ -154,10 +155,6 @@ public class StateBasedLinker implements BindingObserver, GuardingDynamicLinker 
                     Guards.createRoleTypePlayedByGuard(binder, roleType));
         }
 
-    }
-
-    private static boolean isRole(final Object sender) {
-        return sender.getClass().getDeclaredAnnotation(Role.class) != null;
     }
 
     private MethodHandle maybeRoleHandle(final Class<?> baseType, final Class<?> roleType, final String name,
