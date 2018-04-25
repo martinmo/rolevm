@@ -9,12 +9,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Provides a {@link ConcurrentHashMap} with weak keys and reference-equality in
- * place of object-equality. Please not that some operations are unsupported.
- * <p>
- * Implementation note: using {@link java.util.Collections#synchronizedMap(Map)}
- * to wrap a {@link ConcurrentHashMap} was not fast enough for our use case.
- * Still, this implementation also has a drawback, because it must create a new
- * {@link Key} object for every retrieval or modification.
+ * place of object-equality. Please note that some operations are unsupported.
+ *
+ *
+ * @implNote using {@link java.util.Collections#synchronizedMap(Map)} to wrap a
+ *           {@link java.util.WeakHashMap} was not fast enough for our use case
+ *           and also does not use reference-equality comparison. Still, this
+ *           implementation also has a drawback, because it must create a new
+ *           {@link Key} object for every retrieval or modification.
  *
  * @param <K>
  *            the type of keys maintained by this map
