@@ -24,7 +24,7 @@ public class ProceedFactoryTest {
         core = new Core();
         roleAlike = new RoleAlike();
         anotherRoleAlike = new AnotherRoleAlike();
-        invoker = new ProceedFactory().dynamicInvoker(lookup(), "roleMethod", genericReceiver(RoleAlike.HANDLE).type());
+        invoker = new ProceedFactory().dynamicInvoker(lookup(), "method", genericReceiver(RoleAlike.HANDLE).type());
     }
 
     @Test
@@ -95,7 +95,7 @@ public class ProceedFactoryTest {
 class Core {
     List<Object> calledWithArgs = List.of();
 
-    void roleMethod(int arg) {
+    void method(int arg) {
         calledWithArgs = List.of(arg);
     }
 }
@@ -103,7 +103,7 @@ class Core {
 class RoleAlike {
     List<Object> calledWithArgs = List.of();
 
-    void roleMethod(DispatchContext ctx, Core core, int arg) {
+    void method(DispatchContext ctx, Core core, int arg) {
         calledWithArgs = List.of(ctx, core, arg);
     }
 
@@ -111,7 +111,7 @@ class RoleAlike {
     static {
         Lookup lookup = MethodHandles.lookup();
         try {
-            HANDLE = lookup.findVirtual(RoleAlike.class, "roleMethod",
+            HANDLE = lookup.findVirtual(RoleAlike.class, "method",
                     methodType(void.class, DispatchContext.class, Core.class, int.class));
         } catch (ReflectiveOperationException e) {
             throw (AssertionError) new AssertionError().initCause(e);
@@ -122,7 +122,7 @@ class RoleAlike {
 class AnotherRoleAlike {
     List<Object> calledWithArgs = List.of();
 
-    void roleMethod(DispatchContext ctx, Core core, int arg) {
+    void method(DispatchContext ctx, Core core, int arg) {
         calledWithArgs = List.of(ctx, core, arg);
     }
 
