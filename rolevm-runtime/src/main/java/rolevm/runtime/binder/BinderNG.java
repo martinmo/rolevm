@@ -90,10 +90,19 @@ public class BinderNG implements BindingService {
      * Deletes the first found binding of {@code role} to {@code player}.
      */
     public void unbind(final Object player, final Object role) {
+        boolean modified = false;
         synchronized (mutex) {
-
+            List<Object> currentRoles = registry.get(player);
+            if (currentRoles != null) {
+                modified = currentRoles.remove(role);
+                if (modified) {
+                    contexts.put(player, DispatchContext.of(currentRoles));
+                }
+            }
         }
-        // bindingObservers.stream().forEach(o -> o.bindingRemoved(player, role));
+        if (modified) {
+            bindingObservers.stream().forEach(o -> o.bindingRemoved(player, role));
+        }
     }
 
     /** Adds an observer that will be notified on binding events. */
