@@ -1,5 +1,6 @@
 package rolevm.runtime.linker;
 
+import static java.lang.invoke.MethodHandles.dropArguments;
 import static java.lang.invoke.MethodHandles.filterArguments;
 import static java.lang.invoke.MethodHandles.foldArguments;
 import static jdk.dynalink.StandardOperation.CALL;
@@ -69,9 +70,15 @@ public class ProceedFactory {
             CallSiteDescriptor descriptor = linkRequest.getCallSiteDescriptor();
             Object receiver = linkRequest.getReceiver();
             Lookup lookup = descriptor.getLookup();
-            MethodHandle handle = lookup.findVirtual(receiver.getClass(), getOperationName(descriptor),
-                    lookupType(descriptor.getMethodType()));
-            return new GuardedInvocation(handle);
+            if (receiver != null) {
+                MethodHandle handle = lookup.findVirtual(receiver.getClass(), getOperationName(descriptor),
+                        lookupType(descriptor.getMethodType()));
+                return new GuardedInvocation(handle);
+            }
+            Class<?> coreType = descriptor.getMethodType().parameterType(2);
+            MethodType coreMethodType = descriptor.getMethodType().dropParameterTypes(0, 3);
+            MethodHandle handle = lookup.findVirtual(coreType, getOperationName(descriptor), coreMethodType);
+            return new GuardedInvocation(dropArguments(handle, 0, Object.class, DispatchContext.class));
         }
     }
 

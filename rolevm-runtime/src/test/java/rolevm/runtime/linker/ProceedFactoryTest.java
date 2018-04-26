@@ -39,9 +39,21 @@ public class ProceedFactoryTest {
         DispatchContext ctx = DispatchContext.ofRoles(roleAlike);
         invoker.invokeExact((Object) roleAlike, ctx, core, 42);
         assertEquals(List.of(ctx, core, 42), roleAlike.calledWithArgs);
-        // TODO: test dynamicInvoker with receiver == null
-        // TODO: test dynamicInvoker with another role-alike type
-        // TODO: test combinations
+        // TODO: test different types on one call site
+    }
+
+    @Test
+    public void dynamicInvokerInvokeWithAnotherRole() throws Throwable {
+        AnotherRoleAlike roleAlike2 = new AnotherRoleAlike();
+        DispatchContext ctx = DispatchContext.ofRoles(roleAlike2);
+        invoker.invokeExact((Object) roleAlike2, ctx, core, 451);
+        assertEquals(List.of(ctx, core, 451), roleAlike2.calledWithArgs);
+    }
+
+    @Test
+    public void dynamicInvokerInvokeWithCore() throws Throwable {
+        invoker.invokeExact((Object) null, (DispatchContext) null, core, 1337);
+        assertEquals(List.of(1337), core.calledWithArgs);
     }
 
     // utils
@@ -55,6 +67,11 @@ public class ProceedFactoryTest {
 // test classes
 
 class Core {
+    List<Object> calledWithArgs;
+
+    void roleMethod(int arg) {
+        calledWithArgs = List.of(arg);
+    }
 }
 
 class RoleAlike {
@@ -73,5 +90,13 @@ class RoleAlike {
         } catch (ReflectiveOperationException e) {
             throw (AssertionError) new AssertionError().initCause(e);
         }
+    }
+}
+
+class AnotherRoleAlike {
+    List<Object> calledWithArgs = Collections.emptyList();
+
+    void roleMethod(DispatchContext ctx, Core core, int arg) {
+        calledWithArgs = List.of(ctx, core, arg);
     }
 }
