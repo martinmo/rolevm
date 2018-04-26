@@ -96,7 +96,12 @@ public class BinderNG implements BindingService {
             if (currentRoles != null) {
                 modified = currentRoles.remove(role);
                 if (modified) {
-                    contexts.put(player, DispatchContext.of(currentRoles));
+                    if (currentRoles.isEmpty()) {
+                        registry.remove(player);
+                        contexts.remove(player);
+                    } else {
+                        contexts.put(player, DispatchContext.of(currentRoles));
+                    }
                 }
             }
         }
