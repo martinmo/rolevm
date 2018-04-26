@@ -1,6 +1,7 @@
 package rolevm.runtime.linker;
 
 import static java.lang.invoke.MethodHandles.lookup;
+import static java.lang.invoke.MethodType.methodType;
 import static org.junit.Assert.assertEquals;
 
 import java.lang.invoke.MethodHandle;
@@ -62,6 +63,15 @@ public class ProceedHandleTest extends ProceedTestBase {
         proceed = factory.getInvocation(lookup(), "method", TYPE).getHandle();
         proceed.invokeExact(ctx, core, 7);
         assertEquals(List.of(7), core.calledWithArgs);
+    }
+
+    @Test
+    public void proceedMultipleMissingNonVoidMethods() throws Throwable {
+        DispatchContext ctx = DispatchContext.ofRoles(new RoleAlikeEmpty(), new RoleAlikeEmpty());
+        MethodType type = methodType(int.class, DispatchContext.class, Integer.class);
+        proceed = factory.getInvocation(lookup(), "intValue", type).getHandle();
+        int result = (int) proceed.invokeExact(ctx, Integer.valueOf(451));
+        assertEquals(451, result);
     }
 
     @Test(expected = NoSuchMethodException.class)

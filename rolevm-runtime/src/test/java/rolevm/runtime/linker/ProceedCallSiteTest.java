@@ -1,6 +1,7 @@
 package rolevm.runtime.linker;
 
 import static java.lang.invoke.MethodHandles.lookup;
+import static java.lang.invoke.MethodType.methodType;
 import static org.junit.Assert.assertEquals;
 
 import java.lang.invoke.MethodHandle;
@@ -66,5 +67,13 @@ public class ProceedCallSiteTest extends ProceedTestBase {
         invoker = factory.getInvocation(lookup(), "anotherMethod", TYPE).callSiteInvoker();
         invoker.invokeExact((Object) anotherRoleAlike, ctx, core, 42);
         assertEquals(List.of(), anotherRoleAlike.calledWithArgs);
+    }
+
+    @Test
+    public void invokeNonVoidCoreMethodWithoutArgs() throws Throwable {
+        MethodType type = methodType(int.class, DispatchContext.class, Integer.class);
+        invoker = factory.getInvocation(lookup(), "intValue", type).callSiteInvoker();
+        int result = (int) invoker.invokeExact((Object) null, (DispatchContext) null, Integer.valueOf(42));
+        assertEquals(42, result);
     }
 }
