@@ -56,6 +56,24 @@ public class ProceedFactoryTest {
         assertEquals(List.of(1337), core.calledWithArgs);
     }
 
+    @Test
+    public void dynamicInvokerInvokeMultipleTimes() throws Throwable {
+        DispatchContext ctx1 = DispatchContext.ofRoles(roleAlike, anotherRoleAlike);
+        invoker.invokeExact((Object) roleAlike, ctx1, core, 42);
+        assertEquals(List.of(ctx1, core, 42), roleAlike.calledWithArgs);
+        invoker.invokeExact((Object) anotherRoleAlike, ctx1, core, 451);
+        assertEquals(List.of(ctx1, core, 451), anotherRoleAlike.calledWithArgs);
+        invoker.invokeExact((Object) null, (DispatchContext) null, core, 1337);
+        assertEquals(List.of(1337), core.calledWithArgs);
+        DispatchContext ctx2 = DispatchContext.ofRoles(roleAlike, anotherRoleAlike);
+        invoker.invokeExact((Object) roleAlike, ctx2, core, 43);
+        assertEquals(List.of(ctx2, core, 43), roleAlike.calledWithArgs);
+        invoker.invokeExact((Object) anotherRoleAlike, ctx2, core, 450);
+        assertEquals(List.of(ctx2, core, 450), anotherRoleAlike.calledWithArgs);
+        invoker.invokeExact((Object) null, (DispatchContext) null, core, 1336);
+        assertEquals(List.of(1336), core.calledWithArgs);
+    }
+
     // utils
 
     /** Change the first parameter type of the given handle to {@link Object}. */

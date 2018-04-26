@@ -21,6 +21,7 @@ import jdk.dynalink.linker.GuardedInvocation;
 import jdk.dynalink.linker.GuardingDynamicLinker;
 import jdk.dynalink.linker.LinkRequest;
 import jdk.dynalink.linker.LinkerServices;
+import jdk.dynalink.linker.support.Guards;
 import jdk.dynalink.support.ChainedCallSite;
 
 public class ProceedFactory {
@@ -73,12 +74,14 @@ public class ProceedFactory {
             if (receiver != null) {
                 MethodHandle handle = lookup.findVirtual(receiver.getClass(), getOperationName(descriptor),
                         lookupType(descriptor.getMethodType()));
-                return new GuardedInvocation(handle);
+                return new GuardedInvocation(handle,
+                        Guards.isInstance(receiver.getClass(), descriptor.getMethodType()));
             }
             Class<?> coreType = descriptor.getMethodType().parameterType(2);
             MethodType coreMethodType = descriptor.getMethodType().dropParameterTypes(0, 3);
             MethodHandle handle = lookup.findVirtual(coreType, getOperationName(descriptor), coreMethodType);
-            return new GuardedInvocation(dropArguments(handle, 0, Object.class, DispatchContext.class));
+            return new GuardedInvocation(dropArguments(handle, 0, Object.class, DispatchContext.class),
+                    Guards.isNull());
         }
     }
 
