@@ -139,6 +139,7 @@ public class BinderNG implements BindingService {
      * internal object/dispatch context map.
      */
     public MethodHandle createGetContextHandle() {
-        return MethodHandles.insertArguments(getContextHandle, 0, contexts);
+        return MethodHandles.insertArguments(getContextHandle, 0, contexts)
+                .asType(methodType(DispatchContext.class, Object.class));
     }
 }
