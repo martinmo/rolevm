@@ -73,7 +73,7 @@ public class BinderTest {
     public void basicAssumptionsWithHandle() throws Throwable {
         MethodHandle getContext = binder.createGetContextHandle();
         MethodHandle containsKey = binder.createContainsKeyHandle();
-        assertNull(getContext.invokeExact(player));
+        assertNull((DispatchContext) getContext.invokeExact(player));
         assertFalse((boolean) containsKey.invokeExact(player));
     }
 

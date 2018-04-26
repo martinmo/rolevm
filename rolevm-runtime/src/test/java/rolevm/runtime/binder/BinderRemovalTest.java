@@ -51,12 +51,12 @@ public class BinderRemovalTest {
     public void basicAssumptionsWithHandle() throws Throwable {
         MethodHandle getContext = binder.createGetContextHandle();
         MethodHandle containsKey = binder.createContainsKeyHandle();
-        assertTrue(getContext.invokeExact(player) instanceof DispatchContext);
+        assertTrue((DispatchContext) getContext.invokeExact(player) instanceof DispatchContext);
         assertTrue((boolean) containsKey.invokeExact(player));
         binder.unbind(player, role3);
         binder.unbind(player, role2);
         binder.unbind(player, role1);
-        assertNull(getContext.invokeExact(player));
+        assertNull((DispatchContext) getContext.invokeExact(player));
         assertFalse((boolean) containsKey.invokeExact(player));
     }
 
