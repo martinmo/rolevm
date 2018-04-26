@@ -8,7 +8,6 @@ import static rolevm.runtime.linker.ProceedFactory.proceedHandle;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.Before;
@@ -94,7 +93,7 @@ public class ProceedFactoryTest {
 // test classes
 
 class Core {
-    List<Object> calledWithArgs;
+    List<Object> calledWithArgs = List.of();
 
     void roleMethod(int arg) {
         calledWithArgs = List.of(arg);
@@ -102,7 +101,7 @@ class Core {
 }
 
 class RoleAlike {
-    List<Object> calledWithArgs = Collections.emptyList();
+    List<Object> calledWithArgs = List.of();
 
     void roleMethod(DispatchContext ctx, Core core, int arg) {
         calledWithArgs = List.of(ctx, core, arg);
@@ -121,7 +120,7 @@ class RoleAlike {
 }
 
 class AnotherRoleAlike {
-    List<Object> calledWithArgs = Collections.emptyList();
+    List<Object> calledWithArgs = List.of();
 
     void roleMethod(DispatchContext ctx, Core core, int arg) {
         calledWithArgs = List.of(ctx, core, arg);
