@@ -4,6 +4,7 @@ import static java.lang.invoke.MethodType.methodType;
 import static rolevm.runtime.binder.TypeChecks.isRole;
 import static rolevm.runtime.linker.MethodHandleConversions.dropSenderArgument;
 import static rolevm.runtime.linker.MethodHandleConversions.lookupType;
+import static rolevm.runtime.linker.Utils.JLO_METHODS;
 import static rolevm.runtime.linker.Utils.unwrapName;
 
 import java.lang.invoke.MethodHandle;
@@ -11,9 +12,6 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.SwitchPoint;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 import jdk.dynalink.CallSiteDescriptor;
@@ -38,7 +36,6 @@ import rolevm.runtime.binder.BindingObserver;
  * @author Martin Morgenstern
  */
 public class StateBasedLinker implements BindingObserver, GuardingDynamicLinker {
-    private static final Map<String, MethodType> alwaysBaseMethods = objectMethods();
     private final SwitchPointManager switchpoints = new SwitchPointManager();
     private final Lookup lookup = MethodHandles.publicLookup();
     private final MethodHandle isPureObjectGuard;
@@ -138,7 +135,7 @@ public class StateBasedLinker implements BindingObserver, GuardingDynamicLinker 
                 return new GuardedInvocation(dropSenderArgument(mh), isPureObjectGuard);
             }
 
-            if (lookupType.equals(alwaysBaseMethods.get(name))) {
+            if (lookupType.equals(JLO_METHODS.get(name))) {
                 // cannot be overridden by a role
                 return new GuardedInvocation(dropSenderArgument(mh));
             }
@@ -154,36 +151,24 @@ public class StateBasedLinker implements BindingObserver, GuardingDynamicLinker 
                     Guards.createRoleTypePlayedByGuard(binder, roleType));
         }
 
-    }
-
-    private MethodHandle maybeRoleHandle(final Class<?> baseType, final Class<?> roleType, final String name,
-            final MethodType lookupType, final MethodHandle fallback) {
-        try {
-            MethodHandle handle = lookup.findVirtual(roleType, name, lookupType.insertParameterTypes(0, baseType));
-            return MethodHandles.foldArguments(handle, makeGetRoleHandle(baseType, roleType));
-        } catch (NoSuchMethodException | IllegalAccessException e) {
-            return fallback;
+        private MethodHandle maybeRoleHandle(final Class<?> baseType, final Class<?> roleType, final String name,
+                final MethodType lookupType, final MethodHandle fallback) {
+            try {
+                MethodHandle handle = lookup.findVirtual(roleType, name, lookupType.insertParameterTypes(0, baseType));
+                return MethodHandles.foldArguments(handle, makeGetRoleHandle(baseType, roleType));
+            } catch (NoSuchMethodException | IllegalAccessException e) {
+                return fallback;
+            }
         }
-    }
 
-    /**
-     * Returns the object-to-role mapping method handle, with its return type
-     * adapted to the given role type. The resulting handle is intended to be used
-     * as the filter method handle in
-     * {@link MethodHandles#collectArguments(MethodHandle, int, MethodHandle)}.
-     */
-    private MethodHandle makeGetRoleHandle(final Class<?> baseType, final Class<?> roleType) {
-        return getRoleHandle.asType(methodType(roleType, baseType));
-    }
-
-    /**
-     * Return the names and method types of the methods in {@link Object}.
-     */
-    private static Map<String, MethodType> objectMethods() {
-        Map<String, MethodType> namesAndType = new HashMap<>();
-        for (Method method : Object.class.getMethods()) {
-            namesAndType.put(method.getName(), methodType(method.getReturnType(), method.getParameterTypes()));
+        /**
+         * Returns the object-to-role mapping method handle, with its return type
+         * adapted to the given role type. The resulting handle is intended to be used
+         * as the filter method handle in
+         * {@link MethodHandles#collectArguments(MethodHandle, int, MethodHandle)}.
+         */
+        private MethodHandle makeGetRoleHandle(final Class<?> baseType, final Class<?> roleType) {
+            return getRoleHandle.asType(methodType(roleType, baseType));
         }
-        return namesAndType;
     }
 }
