@@ -17,11 +17,13 @@ import org.junit.Test;
 public class ProceedFactoryTest {
     private Core core;
     private RoleAlike roleAlike;
+    private MethodHandle invoker;
 
     @Before
     public void setUp() {
         core = new Core();
         roleAlike = new RoleAlike();
+        invoker = new ProceedFactory().dynamicInvoker(lookup(), "roleMethod", genericReceiver(RoleAlike.HANDLE).type());
     }
 
     @Test
@@ -33,14 +35,12 @@ public class ProceedFactoryTest {
     }
 
     @Test
-    public void dynamicInvoker() throws Throwable {
+    public void dynamicInvokerInvokeWithRole() throws Throwable {
         DispatchContext ctx = DispatchContext.ofRoles(roleAlike);
-        MethodHandle invoker = new ProceedFactory().dynamicInvoker(lookup(), "roleMethod",
-                genericReceiver(RoleAlike.HANDLE).type());
         invoker.invokeExact((Object) roleAlike, ctx, core, 42);
         assertEquals(List.of(ctx, core, 42), roleAlike.calledWithArgs);
-        // TODO: test dynamicInvoker with another role-alike type
         // TODO: test dynamicInvoker with receiver == null
+        // TODO: test dynamicInvoker with another role-alike type
         // TODO: test combinations
     }
 
