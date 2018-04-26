@@ -36,27 +36,27 @@ public class ProceedFactoryTest {
     }
 
     @Test
-    public void dynamicInvokerInvokeWithRole() throws Throwable {
+    public void invokeWithRole() throws Throwable {
         DispatchContext ctx = DispatchContext.ofRoles(roleAlike);
         invoker.invokeExact((Object) roleAlike, ctx, core, 42);
         assertEquals(List.of(ctx, core, 42), roleAlike.calledWithArgs);
     }
 
     @Test
-    public void dynamicInvokerInvokeWithAnotherRole() throws Throwable {
+    public void invokeWithAnotherRole() throws Throwable {
         DispatchContext ctx = DispatchContext.ofRoles(anotherRoleAlike);
         invoker.invokeExact((Object) anotherRoleAlike, ctx, core, 451);
         assertEquals(List.of(ctx, core, 451), anotherRoleAlike.calledWithArgs);
     }
 
     @Test
-    public void dynamicInvokerInvokeWithCore() throws Throwable {
+    public void invokeWithCore() throws Throwable {
         invoker.invokeExact((Object) null, (DispatchContext) null, core, 1337);
         assertEquals(List.of(1337), core.calledWithArgs);
     }
 
     @Test
-    public void dynamicInvokerInvokeMultipleTimes() throws Throwable {
+    public void invokeMultipleTimes() throws Throwable {
         DispatchContext ctx1 = DispatchContext.ofRoles(roleAlike, anotherRoleAlike);
         invoker.invokeExact((Object) roleAlike, ctx1, core, 42);
         assertEquals(List.of(ctx1, core, 42), roleAlike.calledWithArgs);
