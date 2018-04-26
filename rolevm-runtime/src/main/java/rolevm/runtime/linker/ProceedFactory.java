@@ -57,7 +57,7 @@ public class ProceedFactory {
     }
 
     MethodHandle dynamicInvoker(Lookup lookup, String name, MethodType type) {
-        return dynamicInvoker(new CallSiteDescriptor(lookup, CALL.named("roleMethod"), type));
+        return dynamicInvoker(new CallSiteDescriptor(lookup, CALL.named(name), type));
     }
 
     MethodHandle dynamicInvoker(CallSiteDescriptor descriptor) {

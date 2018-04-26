@@ -74,6 +74,15 @@ public class ProceedFactoryTest {
         assertEquals(List.of(1336), core.calledWithArgs);
     }
 
+    @Test
+    public void dynamicInvokerInvokeAnotherMethod() throws Throwable {
+        DispatchContext ctx = DispatchContext.ofRoles(anotherRoleAlike);
+        invoker = new ProceedFactory().dynamicInvoker(lookup(), "anotherMethod",
+                genericReceiver(RoleAlike.HANDLE).type());
+        invoker.invokeExact((Object) anotherRoleAlike, ctx, core, 42);
+        assertEquals(List.of(), anotherRoleAlike.calledWithArgs);
+    }
+
     // utils
 
     /** Change the first parameter type of the given handle to {@link Object}. */
@@ -116,5 +125,8 @@ class AnotherRoleAlike {
 
     void roleMethod(DispatchContext ctx, Core core, int arg) {
         calledWithArgs = List.of(ctx, core, arg);
+    }
+
+    void anotherMethod(DispatchContext ctx, Core core, int arg) {
     }
 }
