@@ -61,7 +61,7 @@ public class ProceedCallSiteTest extends ProceedTestBase {
     }
 
     @Test
-    public void dynamicInvokerInvokeAnotherMethod() throws Throwable {
+    public void invokeAnotherMethod() throws Throwable {
         DispatchContext ctx = DispatchContext.ofRoles(anotherRoleAlike);
         invoker = factory.getInvocation(lookup(), "anotherMethod", TYPE).callSiteInvoker();
         invoker.invokeExact((Object) anotherRoleAlike, ctx, core, 42);
