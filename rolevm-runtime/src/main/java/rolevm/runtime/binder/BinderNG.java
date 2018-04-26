@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 import rolevm.api.service.BindingService;
 import rolevm.runtime.binder.util.ConcurrentWeakHashMap;
@@ -38,7 +37,7 @@ public class BinderNG implements BindingService {
      * to {@link DispatchContext}s. Must be recomputed whenever {@link #registry}
      * changes.
      */
-    private final Map<Object, DispatchContext> contexts = new ConcurrentHashMap<>();
+    private final Map<Object, DispatchContext> contexts = new ConcurrentWeakHashMap<>();
 
     /** List of objects which subscribed to binding events. */
     private final List<BindingObserver> bindingObservers = new ArrayList<>();
