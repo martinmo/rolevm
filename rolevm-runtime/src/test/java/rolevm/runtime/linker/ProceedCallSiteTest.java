@@ -11,7 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class ProceedCallSiteTest extends ProceedTestBase {
-    private static final MethodType TYPE = genericReceiver(RoleAlike.HANDLE).type();
+    private static final MethodType TYPE = RoleAlike.HANDLE.type().dropParameterTypes(0, 1);
     private ProceedInvocations factory;
     private MethodHandle invoker;
 

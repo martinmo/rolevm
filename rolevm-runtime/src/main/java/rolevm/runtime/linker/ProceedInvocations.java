@@ -1,7 +1,6 @@
 package rolevm.runtime.linker;
 
 import static java.lang.invoke.MethodHandles.dropArguments;
-import static jdk.dynalink.StandardOperation.CALL;
 import static rolevm.runtime.linker.Utils.unwrapName;
 
 import java.lang.invoke.MethodHandle;
@@ -22,11 +21,7 @@ public class ProceedInvocations {
     private final DynamicLinker linker = initLinker();
 
     public ProceedInvocation getInvocation(Lookup lookup, String name, MethodType type) {
-        return getInvocation(new CallSiteDescriptor(lookup, CALL.named(name), type));
-    }
-
-    private ProceedInvocation getInvocation(CallSiteDescriptor descriptor) {
-        return new ProceedInvocation(linker, descriptor);
+        return new ProceedInvocation(linker, lookup, name, type);
     }
 
     /**

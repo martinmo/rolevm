@@ -2,10 +2,12 @@ package rolevm.runtime.linker;
 
 import static java.lang.invoke.MethodHandles.filterArguments;
 import static java.lang.invoke.MethodHandles.foldArguments;
+import static jdk.dynalink.StandardOperation.CALL;
 import static rolevm.runtime.linker.DispatchContext.NEXT_HANDLE;
 import static rolevm.runtime.linker.DispatchContext.TARGET_HANDLE;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 
 import jdk.dynalink.CallSiteDescriptor;
@@ -16,9 +18,13 @@ public class ProceedInvocation {
     private final DynamicLinker linker;
     private final CallSiteDescriptor descriptor;
 
-    public ProceedInvocation(DynamicLinker linker, CallSiteDescriptor descriptor) {
+    public ProceedInvocation(DynamicLinker linker, Lookup lookup, String name, MethodType type) {
+        if (!type.parameterType(0).equals(DispatchContext.class)) {
+            throw new IllegalArgumentException("invalid method type " + type);
+        }
+        MethodType callSiteType = type.insertParameterTypes(0, Object.class);
+        this.descriptor = new CallSiteDescriptor(lookup, CALL.named(name), callSiteType);
         this.linker = linker;
-        this.descriptor = descriptor;
     }
 
     public MethodHandle getHandle() {
