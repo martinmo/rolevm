@@ -76,7 +76,7 @@ public class BinderNG implements BindingService {
         synchronized (mutex) {
         }
         // "alien" methods should be called outside synchronized blocks:
-        bindingObservers.stream().forEach(o -> o.bindingAdded(player, role));
+        // bindingObservers.stream().forEach(o -> o.bindingAdded(player, role));
     }
 
     /**
@@ -86,7 +86,7 @@ public class BinderNG implements BindingService {
         synchronized (mutex) {
 
         }
-        bindingObservers.stream().forEach(o -> o.bindingRemoved(player, role));
+        // bindingObservers.stream().forEach(o -> o.bindingRemoved(player, role));
     }
 
     /** Adds an observer that will be notified on binding events. */
@@ -131,7 +131,7 @@ public class BinderNG implements BindingService {
      * Returns a direct method handle to {@link Map#get(Object)}, bound to the
      * internal object/dispatch context map.
      */
-    public MethodHandle createGetRoleHandle() {
+    public MethodHandle createGetContextHandle() {
         return MethodHandles.insertArguments(getContextHandle, 0, contexts);
     }
 }
