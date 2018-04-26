@@ -24,6 +24,10 @@ public class ProceedInvocations {
         return new ProceedInvocation(linker, lookup, name, type);
     }
 
+    public ProceedInvocation getAdaptedInvocation(Lookup lookup, String name, MethodType type) {
+        return new AdaptedProceedInvocation(linker, lookup, name, type);
+    }
+
     /**
      * Initializes the {@link jdk.dynalink} linker which is used to link the nested
      * {@link java.lang.invoke.CallSite}s inside proceed handles.
