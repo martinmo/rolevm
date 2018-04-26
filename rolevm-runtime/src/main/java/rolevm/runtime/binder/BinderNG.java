@@ -74,9 +74,16 @@ public class BinderNG implements BindingService {
         TypeChecks.validateRoleType(role.getClass());
         TypeChecks.validatePlayer(player);
         synchronized (mutex) {
+            List<Object> currentRoles = registry.get(player);
+            if (currentRoles == null) {
+                currentRoles = new ArrayList<>();
+            }
+            currentRoles.add(role);
+            registry.put(player, currentRoles);
+            contexts.put(player, DispatchContext.of(currentRoles));
         }
         // "alien" methods should be called outside synchronized blocks:
-        // bindingObservers.stream().forEach(o -> o.bindingAdded(player, role));
+        bindingObservers.stream().forEach(o -> o.bindingAdded(player, role));
     }
 
     /**

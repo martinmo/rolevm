@@ -99,6 +99,6 @@ public class BinderTest {
         assertEquals(role, context.get().target());
         assertNotNull(context.get().next());
         assertNotNull(context.get().next().next());
-        assertNull(context.get().next().next().next());
+        assertNull(context.get().next().next().next().next());
     }
 }
