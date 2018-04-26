@@ -27,44 +27,44 @@ public abstract class ProceedTestBase {
     static MethodHandle genericReceiver(MethodHandle mh) {
         return mh.asType(mh.type().changeParameterType(0, Object.class));
     }
-}
 
-// test classes
+    // test classes
 
-class Core {
-    List<Object> calledWithArgs = List.of();
+    static class Core {
+        List<Object> calledWithArgs = List.of();
 
-    void method(int arg) {
-        calledWithArgs = List.of(arg);
-    }
-}
-
-class RoleAlike {
-    List<Object> calledWithArgs = List.of();
-
-    void method(DispatchContext ctx, Core core, int arg) {
-        calledWithArgs = List.of(ctx, core, arg);
-    }
-
-    public static final MethodHandle HANDLE;
-    static {
-        Lookup lookup = MethodHandles.lookup();
-        try {
-            HANDLE = lookup.findVirtual(RoleAlike.class, "method",
-                    methodType(void.class, DispatchContext.class, Core.class, int.class));
-        } catch (ReflectiveOperationException e) {
-            throw (AssertionError) new AssertionError().initCause(e);
+        void method(int arg) {
+            calledWithArgs = List.of(arg);
         }
     }
-}
 
-class AnotherRoleAlike {
-    List<Object> calledWithArgs = List.of();
+    static class RoleAlike {
+        List<Object> calledWithArgs = List.of();
 
-    void method(DispatchContext ctx, Core core, int arg) {
-        calledWithArgs = List.of(ctx, core, arg);
+        void method(DispatchContext ctx, Core core, int arg) {
+            calledWithArgs = List.of(ctx, core, arg);
+        }
+
+        public static final MethodHandle HANDLE;
+        static {
+            Lookup lookup = MethodHandles.lookup();
+            try {
+                HANDLE = lookup.findVirtual(RoleAlike.class, "method",
+                        methodType(void.class, DispatchContext.class, Core.class, int.class));
+            } catch (ReflectiveOperationException e) {
+                throw (AssertionError) new AssertionError().initCause(e);
+            }
+        }
     }
 
-    void anotherMethod(DispatchContext ctx, Core core, int arg) {
+    static class AnotherRoleAlike {
+        List<Object> calledWithArgs = List.of();
+
+        void method(DispatchContext ctx, Core core, int arg) {
+            calledWithArgs = List.of(ctx, core, arg);
+        }
+
+        void anotherMethod(DispatchContext ctx, Core core, int arg) {
+        }
     }
 }
