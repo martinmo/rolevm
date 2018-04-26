@@ -39,7 +39,7 @@ public class ProceedInvocations {
         return factory.createLinker();
     }
 
-    private static class ProceedLinker implements GuardingDynamicLinker {
+    private class ProceedLinker implements GuardingDynamicLinker {
         @Override
         public GuardedInvocation getGuardedInvocation(LinkRequest linkRequest, LinkerServices linkerServices)
                 throws Exception {
@@ -47,10 +47,7 @@ public class ProceedInvocations {
             Object receiver = linkRequest.getReceiver();
             Lookup lookup = descriptor.getLookup();
             if (receiver != null) {
-                MethodHandle handle = lookup.findVirtual(receiver.getClass(), unwrapName(descriptor),
-                        lookupType(descriptor.getMethodType()));
-                return new GuardedInvocation(handle,
-                        Guards.isInstance(receiver.getClass(), descriptor.getMethodType()));
+                return roleOrProceedInvocation(receiver.getClass(), descriptor);
             }
             Class<?> coreType = descriptor.getMethodType().parameterType(2);
             MethodType coreMethodType = descriptor.getMethodType().dropParameterTypes(0, 3);
@@ -59,8 +56,18 @@ public class ProceedInvocations {
                     Guards.isNull());
         }
 
-        private static MethodType lookupType(MethodType type) {
-            return type.dropParameterTypes(0, 1);
+        private GuardedInvocation roleOrProceedInvocation(Class<?> receiverType, CallSiteDescriptor descriptor)
+                throws IllegalAccessException {
+            Lookup lookup = descriptor.getLookup();
+            String name = unwrapName(descriptor);
+            MethodType type = descriptor.getMethodType();
+            MethodHandle guard = Guards.isInstance(receiverType, type);
+            try {
+                return new GuardedInvocation(lookup.findVirtual(receiverType, name, type.dropParameterTypes(0, 1)),
+                        guard);
+            } catch (NoSuchMethodException e) {
+                return new GuardedInvocation(getAdaptedInvocation(lookup, name, type).getHandle(), guard);
+            }
         }
     }
 }

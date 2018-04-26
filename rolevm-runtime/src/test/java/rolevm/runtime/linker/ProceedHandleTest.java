@@ -47,4 +47,38 @@ public class ProceedHandleTest extends ProceedTestBase {
         assertEquals(List.of(), anotherRoleAlike.calledWithArgs);
         assertEquals(List.of(), core.calledWithArgs);
     }
+
+    @Test
+    public void proceedMissingMethod() throws Throwable {
+        DispatchContext ctx = DispatchContext.ofRoles(new RoleAlikeEmpty());
+        proceed = factory.getInvocation(lookup(), "method", TYPE).getHandle();
+        proceed.invokeExact(ctx, core, 6);
+        assertEquals(List.of(6), core.calledWithArgs);
+    }
+
+    @Test
+    public void proceedMultipleMissingMethod() throws Throwable {
+        DispatchContext ctx = DispatchContext.ofRoles(new RoleAlikeEmpty(), new RoleAlikeEmpty());
+        proceed = factory.getInvocation(lookup(), "method", TYPE).getHandle();
+        proceed.invokeExact(ctx, core, 7);
+        assertEquals(List.of(7), core.calledWithArgs);
+    }
+
+    @Test(expected = NoSuchMethodException.class)
+    public void missingCoreMethod() throws Throwable {
+        DispatchContext ctx = DispatchContext.ofRoles();
+        proceed = factory.getInvocation(lookup(), "noSuchMethod", TYPE).getHandle();
+        proceed.invokeExact(ctx, core, 8);
+    }
+
+    @Test(expected = NoSuchMethodException.class)
+    public void eventuallyMissingCoreMethod() throws Throwable {
+        DispatchContext ctx = DispatchContext.ofRoles(new RoleAlikeEmpty(), new RoleAlikeEmpty());
+        proceed = factory.getInvocation(lookup(), "noSuchMethod", TYPE).getHandle();
+        proceed.invokeExact(ctx, core, 9);
+    }
+
+    static class RoleAlikeEmpty {
+        // no method named "method" -> will be bridged
+    }
 }
