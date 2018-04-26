@@ -55,15 +55,12 @@ public class Proceed {
         assert type.parameterCount() >= 3; // third is some core type
     }
 
-    MethodHandle dynamicInvoker(Lookup lookup, String name, MethodType type) {
-        return dynamicInvoker(new CallSiteDescriptor(lookup, CALL.named(name), type));
-    }
-
-    MethodHandle dynamicInvoker(CallSiteDescriptor descriptor) {
+    public MethodHandle dynamicInvoker(Lookup lookup, String name, MethodType type) {
+        CallSiteDescriptor descriptor = new CallSiteDescriptor(lookup, CALL.named(name), type);
         return linker.link(new ChainedCallSite(descriptor)).dynamicInvoker();
     }
 
-    static class ProceedLinker implements GuardingDynamicLinker {
+    private static class ProceedLinker implements GuardingDynamicLinker {
         @Override
         public GuardedInvocation getGuardedInvocation(LinkRequest linkRequest, LinkerServices linkerServices)
                 throws Exception {
