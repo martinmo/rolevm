@@ -18,11 +18,13 @@ public class ProceedFactoryTest {
     private Core core;
     private RoleAlike roleAlike;
     private MethodHandle invoker;
+    private AnotherRoleAlike anotherRoleAlike;
 
     @Before
     public void setUp() {
         core = new Core();
         roleAlike = new RoleAlike();
+        anotherRoleAlike = new AnotherRoleAlike();
         invoker = new ProceedFactory().dynamicInvoker(lookup(), "roleMethod", genericReceiver(RoleAlike.HANDLE).type());
     }
 
@@ -39,15 +41,13 @@ public class ProceedFactoryTest {
         DispatchContext ctx = DispatchContext.ofRoles(roleAlike);
         invoker.invokeExact((Object) roleAlike, ctx, core, 42);
         assertEquals(List.of(ctx, core, 42), roleAlike.calledWithArgs);
-        // TODO: test different types on one call site
     }
 
     @Test
     public void dynamicInvokerInvokeWithAnotherRole() throws Throwable {
-        AnotherRoleAlike roleAlike2 = new AnotherRoleAlike();
-        DispatchContext ctx = DispatchContext.ofRoles(roleAlike2);
-        invoker.invokeExact((Object) roleAlike2, ctx, core, 451);
-        assertEquals(List.of(ctx, core, 451), roleAlike2.calledWithArgs);
+        DispatchContext ctx = DispatchContext.ofRoles(anotherRoleAlike);
+        invoker.invokeExact((Object) anotherRoleAlike, ctx, core, 451);
+        assertEquals(List.of(ctx, core, 451), anotherRoleAlike.calledWithArgs);
     }
 
     @Test
