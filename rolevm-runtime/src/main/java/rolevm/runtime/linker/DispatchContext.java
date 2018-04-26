@@ -72,10 +72,7 @@ public class DispatchContext {
     }
 
     /**
-     * private DispatchContext() { this.target = null; this.next = null; }
-     * 
-     * /** Returns the next {@link DispatchContext} in this chain, or
-     * <code>null</code>.
+     * Returns the next {@link DispatchContext} in this chain, or <code>null</code>.
      */
     public DispatchContext next() {
         return next;
