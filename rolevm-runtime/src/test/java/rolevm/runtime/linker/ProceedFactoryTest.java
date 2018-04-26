@@ -1,5 +1,6 @@
 package rolevm.runtime.linker;
 
+import static java.lang.invoke.MethodHandles.lookup;
 import static java.lang.invoke.MethodType.methodType;
 import static org.junit.Assert.assertEquals;
 import static rolevm.runtime.linker.ProceedFactory.proceedHandle;
@@ -27,8 +28,20 @@ public class ProceedFactoryTest {
     public void proceedCombinator() throws Throwable {
         DispatchContext ctx = DispatchContext.ofRoles(roleAlike);
         MethodHandle proceed = proceedHandle(genericReceiver(RoleAlike.HANDLE));
-        proceed.invoke(ctx, core, 3);
+        proceed.invokeExact(ctx, core, 3);
         assertEquals(List.of(ctx.next(), core, 3), roleAlike.calledWithArgs);
+    }
+
+    @Test
+    public void dynamicInvoker() throws Throwable {
+        DispatchContext ctx = DispatchContext.ofRoles(roleAlike);
+        MethodHandle invoker = new ProceedFactory().dynamicInvoker(lookup(), "roleMethod",
+                genericReceiver(RoleAlike.HANDLE).type());
+        invoker.invokeExact((Object) roleAlike, ctx, core, 42);
+        assertEquals(List.of(ctx, core, 42), roleAlike.calledWithArgs);
+        // TODO: test dynamicInvoker with another role-alike type
+        // TODO: test dynamicInvoker with receiver == null
+        // TODO: test combinations
     }
 
     // utils
