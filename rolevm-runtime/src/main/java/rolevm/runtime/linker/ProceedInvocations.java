@@ -42,13 +42,17 @@ public class ProceedInvocations {
     private class ProceedLinker implements GuardingDynamicLinker {
         @Override
         public GuardedInvocation getGuardedInvocation(LinkRequest linkRequest, LinkerServices linkerServices)
-                throws Exception {
+                throws ReflectiveOperationException {
             CallSiteDescriptor descriptor = linkRequest.getCallSiteDescriptor();
             Object receiver = linkRequest.getReceiver();
-            Lookup lookup = descriptor.getLookup();
-            if (receiver != null) {
-                return roleOrProceedInvocation(receiver.getClass(), descriptor);
+            if (receiver == null) {
+                return coreInvocation(descriptor);
             }
+            return roleOrProceedInvocation(receiver.getClass(), descriptor);
+        }
+
+        private GuardedInvocation coreInvocation(CallSiteDescriptor descriptor) throws ReflectiveOperationException {
+            Lookup lookup = descriptor.getLookup();
             Class<?> coreType = descriptor.getMethodType().parameterType(2);
             MethodType coreMethodType = descriptor.getMethodType().dropParameterTypes(0, 3);
             MethodHandle handle = lookup.findVirtual(coreType, unwrapName(descriptor), coreMethodType);
