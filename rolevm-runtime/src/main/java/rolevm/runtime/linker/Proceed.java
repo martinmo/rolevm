@@ -6,6 +6,7 @@ import static java.lang.invoke.MethodHandles.foldArguments;
 import static jdk.dynalink.StandardOperation.CALL;
 import static rolevm.runtime.linker.DispatchContext.NEXT_HANDLE;
 import static rolevm.runtime.linker.DispatchContext.TARGET_HANDLE;
+import static rolevm.runtime.linker.Utils.unwrapName;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
@@ -15,8 +16,6 @@ import java.util.Collections;
 import jdk.dynalink.CallSiteDescriptor;
 import jdk.dynalink.DynamicLinker;
 import jdk.dynalink.DynamicLinkerFactory;
-import jdk.dynalink.NamedOperation;
-import jdk.dynalink.Operation;
 import jdk.dynalink.linker.GuardedInvocation;
 import jdk.dynalink.linker.GuardingDynamicLinker;
 import jdk.dynalink.linker.LinkRequest;
@@ -72,14 +71,14 @@ public class Proceed {
             Object receiver = linkRequest.getReceiver();
             Lookup lookup = descriptor.getLookup();
             if (receiver != null) {
-                MethodHandle handle = lookup.findVirtual(receiver.getClass(), getOperationName(descriptor),
+                MethodHandle handle = lookup.findVirtual(receiver.getClass(), unwrapName(descriptor),
                         lookupType(descriptor.getMethodType()));
                 return new GuardedInvocation(handle,
                         Guards.isInstance(receiver.getClass(), descriptor.getMethodType()));
             }
             Class<?> coreType = descriptor.getMethodType().parameterType(2);
             MethodType coreMethodType = descriptor.getMethodType().dropParameterTypes(0, 3);
-            MethodHandle handle = lookup.findVirtual(coreType, getOperationName(descriptor), coreMethodType);
+            MethodHandle handle = lookup.findVirtual(coreType, unwrapName(descriptor), coreMethodType);
             return new GuardedInvocation(dropArguments(handle, 0, Object.class, DispatchContext.class),
                     Guards.isNull());
         }
@@ -87,17 +86,5 @@ public class Proceed {
 
     private static MethodType lookupType(MethodType type) {
         return type.dropParameterTypes(0, 1);
-    }
-
-    /**
-     * Unwraps the method name from the {@link Operation} referenced by the
-     * {@link CallSiteDescriptor}.
-     */
-    private static String getOperationName(final CallSiteDescriptor descriptor) {
-        Operation op = descriptor.getOperation();
-        if (op instanceof NamedOperation) {
-            return ((NamedOperation) op).getName().toString();
-        }
-        throw new AssertionError();
     }
 }

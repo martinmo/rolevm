@@ -3,6 +3,7 @@ package rolevm.runtime.linker;
 import static java.lang.invoke.MethodType.methodType;
 import static rolevm.runtime.linker.MethodHandleConversions.dropSenderArgument;
 import static rolevm.runtime.linker.MethodHandleConversions.lookupType;
+import static rolevm.runtime.linker.Utils.unwrapName;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -13,8 +14,6 @@ import java.util.Objects;
 import jdk.dynalink.CallSiteDescriptor;
 import jdk.dynalink.DynamicLinker;
 import jdk.dynalink.DynamicLinkerFactory;
-import jdk.dynalink.NamedOperation;
-import jdk.dynalink.Operation;
 import jdk.dynalink.linker.GuardedInvocation;
 import jdk.dynalink.linker.GuardingDynamicLinker;
 import jdk.dynalink.linker.LinkRequest;
@@ -99,8 +98,7 @@ public class TrampolineFactory {
         private GuardedInvocation makeRoleInvocation(final CallSiteDescriptor descriptor, final Class<?> owner) {
             try {
                 MethodType lookupType = lookupType(descriptor.getMethodType());
-                MethodHandle handle = descriptor.getLookup().findVirtual(owner, getOperationName(descriptor),
-                        lookupType);
+                MethodHandle handle = descriptor.getLookup().findVirtual(owner, unwrapName(descriptor), lookupType);
                 return newGuardedInvocation(handle, owner);
             } catch (NoSuchMethodException | IllegalAccessException e) {
                 return new GuardedInvocation(createBridgeMethod(descriptor), Guards.getInstanceOfGuard(owner));
@@ -110,7 +108,7 @@ public class TrampolineFactory {
         private GuardedInvocation makeBaseInvocation(final CallSiteDescriptor descriptor, final Class<?> owner)
                 throws NoSuchMethodException, IllegalAccessException {
             MethodType lookupType = lookupType(descriptor.getMethodType()).dropParameterTypes(0, 1);
-            MethodHandle handle = descriptor.getLookup().findVirtual(owner, getOperationName(descriptor), lookupType);
+            MethodHandle handle = descriptor.getLookup().findVirtual(owner, unwrapName(descriptor), lookupType);
             return newGuardedInvocation(MethodHandles.dropArguments(handle, 0, owner), owner);
         }
 
@@ -131,17 +129,5 @@ public class TrampolineFactory {
     /** Returns true if the given type is a role type. */
     private boolean isRoleType(final Class<?> type) {
         return type.getDeclaredAnnotation(Role.class) != null;
-    }
-
-    /**
-     * Unwraps the method name from the {@link Operation} referenced by the
-     * {@link CallSiteDescriptor}.
-     */
-    private static String getOperationName(final CallSiteDescriptor descriptor) {
-        Operation op = descriptor.getOperation();
-        if (op instanceof NamedOperation) {
-            return ((NamedOperation) op).getName().toString();
-        }
-        throw new AssertionError();
     }
 }

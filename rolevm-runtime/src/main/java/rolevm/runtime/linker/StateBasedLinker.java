@@ -4,6 +4,7 @@ import static java.lang.invoke.MethodType.methodType;
 import static rolevm.runtime.binder.TypeChecks.isRole;
 import static rolevm.runtime.linker.MethodHandleConversions.dropSenderArgument;
 import static rolevm.runtime.linker.MethodHandleConversions.lookupType;
+import static rolevm.runtime.linker.Utils.unwrapName;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -16,8 +17,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import jdk.dynalink.CallSiteDescriptor;
-import jdk.dynalink.NamedOperation;
-import jdk.dynalink.Operation;
 import jdk.dynalink.linker.GuardedInvocation;
 import jdk.dynalink.linker.GuardingDynamicLinker;
 import jdk.dynalink.linker.LinkRequest;
@@ -101,7 +100,7 @@ public class StateBasedLinker implements BindingObserver, GuardingDynamicLinker 
                 throws Exception {
             CallSiteDescriptor desc = request.getCallSiteDescriptor();
             MethodType type = desc.getMethodType();
-            String name = getOperationName(desc);
+            String name = unwrapName(desc);
             MethodHandle mh = desc.getLookup().findVirtual(type.parameterType(0), name, lookupType(type));
             return new GuardedInvocation(dropSenderArgument(mh),
                     switchpoints.getSwitchPointForType(type.parameterType(0)));
@@ -125,7 +124,7 @@ public class StateBasedLinker implements BindingObserver, GuardingDynamicLinker 
         public GuardedInvocation getGuardedInvocation(final LinkRequest request, final LinkerServices services)
                 throws Exception {
             CallSiteDescriptor desc = request.getCallSiteDescriptor();
-            String name = getOperationName(desc);
+            String name = unwrapName(desc);
             MethodType type = desc.getMethodType();
             Lookup lookup = desc.getLookup();
             Object role = binder.getRole(request.getReceiver());
@@ -175,18 +174,6 @@ public class StateBasedLinker implements BindingObserver, GuardingDynamicLinker 
      */
     private MethodHandle makeGetRoleHandle(final Class<?> baseType, final Class<?> roleType) {
         return getRoleHandle.asType(methodType(roleType, baseType));
-    }
-
-    /**
-     * Unwraps the method name from the {@link Operation} referenced by the
-     * {@link CallSiteDescriptor}.
-     */
-    private static String getOperationName(final CallSiteDescriptor descriptor) {
-        Operation op = descriptor.getOperation();
-        if (op instanceof NamedOperation) {
-            return ((NamedOperation) op).getName().toString();
-        }
-        throw new AssertionError();
     }
 
     /**
