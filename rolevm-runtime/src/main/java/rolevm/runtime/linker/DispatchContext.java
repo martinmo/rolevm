@@ -12,7 +12,7 @@ import java.util.Objects;
  * 
  * @author Martin Morgenstern
  */
-public class DispatchContext {
+public final class DispatchContext {
     /** End of the chain. */
     private static final DispatchContext END = new DispatchContext();
 
