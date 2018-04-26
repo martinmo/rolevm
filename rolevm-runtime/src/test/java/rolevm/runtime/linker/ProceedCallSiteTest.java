@@ -4,18 +4,22 @@ import static java.lang.invoke.MethodHandles.lookup;
 import static org.junit.Assert.assertEquals;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodType;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 
 public class ProceedCallSiteTest extends ProceedTestBase {
+    private static final MethodType TYPE = genericReceiver(RoleAlike.HANDLE).type();
+    private ProceedInvocations factory;
     private MethodHandle invoker;
 
     @Before
     public void setUp() {
         super.setUp();
-        invoker = new Proceed().dynamicInvoker(lookup(), "method", genericReceiver(RoleAlike.HANDLE).type());
+        factory = new ProceedInvocations();
+        invoker = factory.getInvocation(lookup(), "method", TYPE).callSiteInvoker();
     }
 
     @Test
@@ -59,8 +63,7 @@ public class ProceedCallSiteTest extends ProceedTestBase {
     @Test
     public void dynamicInvokerInvokeAnotherMethod() throws Throwable {
         DispatchContext ctx = DispatchContext.ofRoles(anotherRoleAlike);
-        invoker = new Proceed().dynamicInvoker(lookup(), "anotherMethod",
-                genericReceiver(RoleAlike.HANDLE).type());
+        invoker = factory.getInvocation(lookup(), "anotherMethod", TYPE).callSiteInvoker();
         invoker.invokeExact((Object) anotherRoleAlike, ctx, core, 42);
         assertEquals(List.of(), anotherRoleAlike.calledWithArgs);
     }
