@@ -24,7 +24,7 @@ import jdk.dynalink.linker.LinkerServices;
 import jdk.dynalink.linker.support.Guards;
 import jdk.dynalink.support.ChainedCallSite;
 
-public class ProceedFactory {
+public class Proceed {
     private final DynamicLinker linker = initLinker();
 
     /**

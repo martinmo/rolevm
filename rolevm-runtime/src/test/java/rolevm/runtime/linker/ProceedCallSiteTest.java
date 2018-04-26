@@ -15,7 +15,7 @@ public class ProceedCallSiteTest extends ProceedTestBase {
     @Before
     public void setUp() {
         super.setUp();
-        invoker = new ProceedFactory().dynamicInvoker(lookup(), "method", genericReceiver(RoleAlike.HANDLE).type());
+        invoker = new Proceed().dynamicInvoker(lookup(), "method", genericReceiver(RoleAlike.HANDLE).type());
     }
 
     @Test
@@ -59,7 +59,7 @@ public class ProceedCallSiteTest extends ProceedTestBase {
     @Test
     public void dynamicInvokerInvokeAnotherMethod() throws Throwable {
         DispatchContext ctx = DispatchContext.ofRoles(anotherRoleAlike);
-        invoker = new ProceedFactory().dynamicInvoker(lookup(), "anotherMethod",
+        invoker = new Proceed().dynamicInvoker(lookup(), "anotherMethod",
                 genericReceiver(RoleAlike.HANDLE).type());
         invoker.invokeExact((Object) anotherRoleAlike, ctx, core, 42);
         assertEquals(List.of(), anotherRoleAlike.calledWithArgs);
