@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import rolevm.api.service.BindingService;
-import rolevm.runtime.binder.util.ConcurrentWeakHashMap;
 
 /**
  * Manages object-to-role bindings, provides binding operations, and answers

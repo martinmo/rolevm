@@ -12,7 +12,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import rolevm.api.service.BindingService;
-import rolevm.runtime.binder.util.ConcurrentWeakHashMap;
 import rolevm.runtime.linker.DispatchContext;
 
 /**

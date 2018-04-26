@@ -1,4 +1,4 @@
-package rolevm.runtime.binder.util;
+package rolevm.runtime.binder;
 
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
