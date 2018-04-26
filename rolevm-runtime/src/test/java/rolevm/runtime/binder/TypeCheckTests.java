@@ -8,40 +8,29 @@ import static rolevm.runtime.binder.TypeChecks.validateRoleType;
 
 import org.junit.Test;
 
-import rolevm.api.Compartment;
-import rolevm.api.Role;
 import rolevm.api.RoleBindingException;
-import rolevm.runtime.binder.TestComparment.TestRole;
+import rolevm.runtime.binder.TestCompartment.ValidRole;
 
 public class TypeCheckTests {
     @Test
     public void basicChecks() {
         assertFalse(isRole("this is a string, not a role"));
-        assertTrue(isRole(new TestComparment().new TestRole()));
+        assertTrue(isRole(new TestCompartment().new ValidRole()));
     }
 
     @Test
     public void validityChecks() {
         validatePlayer(new Object());
-        validateRoleType(TestRole.class);
+        validateRoleType(ValidRole.class);
     }
 
     @Test(expected = RoleBindingException.class)
     public void roleAsPlayerThrowsException() {
-        validatePlayer(new TestComparment().new TestRole());
+        validatePlayer(new TestCompartment().new ValidRole());
     }
 
     @Test(expected = RoleBindingException.class)
     public void unenclosedRoleThrowsException() {
         validateRoleType(InvalidRole.class);
     }
-}
-
-class TestComparment extends Compartment {
-    public @Role class TestRole {
-    }
-}
-
-@Role
-class InvalidRole {
 }
