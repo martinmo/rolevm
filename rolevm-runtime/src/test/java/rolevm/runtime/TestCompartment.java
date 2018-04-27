@@ -1,8 +1,8 @@
 package rolevm.runtime;
 
 import rolevm.api.Compartment;
+import rolevm.api.DispatchContext;
 import rolevm.api.Role;
-import rolevm.runtime.linker.DispatchContext;
 
 public class TestCompartment extends Compartment {
     public @Role class ValidRole {

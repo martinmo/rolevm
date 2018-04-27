@@ -18,6 +18,7 @@ import jdk.dynalink.linker.GuardingDynamicLinker;
 import jdk.dynalink.linker.LinkRequest;
 import jdk.dynalink.linker.LinkerServices;
 import jdk.dynalink.linker.support.Lookup;
+import rolevm.api.DispatchContext;
 import rolevm.runtime.binder.BinderNG;
 import rolevm.runtime.binder.BindingObserver;
 

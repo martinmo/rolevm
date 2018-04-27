@@ -11,10 +11,10 @@ import java.lang.invoke.MethodType;
 import org.junit.Before;
 import org.junit.Test;
 
+import rolevm.api.DispatchContext;
 import rolevm.runtime.TestCompartment.RoleForSomeCore;
 import rolevm.runtime.binder.BinderFactory;
 import rolevm.runtime.binder.BinderNG;
-import rolevm.runtime.linker.DispatchContext;
 
 public class BootstrapTest {
     private final MethodType type = methodType(int.class, SomeCore.class, int.class);

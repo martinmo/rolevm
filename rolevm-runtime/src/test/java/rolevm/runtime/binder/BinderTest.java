@@ -16,11 +16,11 @@ import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 
+import rolevm.api.DispatchContext;
 import rolevm.api.RoleBindingException;
 import rolevm.runtime.InvalidRole;
 import rolevm.runtime.TestCompartment;
 import rolevm.runtime.TestCompartment.ValidRole;
-import rolevm.runtime.linker.DispatchContext;
 
 public class BinderTest {
     private BinderNG binder;

@@ -15,6 +15,7 @@ import jdk.dynalink.linker.GuardingDynamicLinker;
 import jdk.dynalink.linker.LinkRequest;
 import jdk.dynalink.linker.LinkerServices;
 import jdk.dynalink.linker.support.Guards;
+import rolevm.api.DispatchContext;
 
 public class ProceedInvocations {
     private final DynamicLinker linker = createDynamicLinker(new ProceedLinker());

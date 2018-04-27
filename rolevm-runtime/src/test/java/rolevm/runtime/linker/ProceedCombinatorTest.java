@@ -7,6 +7,8 @@ import java.util.List;
 
 import org.junit.Test;
 
+import rolevm.api.DispatchContext;
+
 public class ProceedCombinatorTest extends ProceedTestBase {
     @Test
     public void proceedCombinator() throws Throwable {

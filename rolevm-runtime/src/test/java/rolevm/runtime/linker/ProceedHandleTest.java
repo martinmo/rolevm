@@ -11,6 +11,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import rolevm.api.DispatchContext;
+
 public class ProceedHandleTest extends ProceedTestBase {
     private static final MethodType TYPE = RoleAlike.HANDLE.type().dropParameterTypes(0, 1);
     private static final MethodType ADAPTED_TYPE = TYPE.insertParameterTypes(0, MethodHandle.class);

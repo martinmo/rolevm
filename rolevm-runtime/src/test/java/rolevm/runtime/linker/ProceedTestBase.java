@@ -9,6 +9,7 @@ import java.util.List;
 import org.junit.Before;
 
 import jdk.dynalink.linker.support.Lookup;
+import rolevm.api.DispatchContext;
 
 public abstract class ProceedTestBase {
     protected Core core;

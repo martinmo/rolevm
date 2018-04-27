@@ -11,8 +11,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 import jdk.dynalink.linker.support.Lookup;
+import rolevm.api.DispatchContext;
 import rolevm.api.service.BindingService;
-import rolevm.runtime.linker.DispatchContext;
 
 /**
  * Manages object-to-role bindings, provides binding operations, and answers

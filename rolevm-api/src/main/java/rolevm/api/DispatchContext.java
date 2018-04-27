@@ -1,4 +1,4 @@
-package rolevm.runtime.linker;
+package rolevm.api;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;

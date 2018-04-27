@@ -11,9 +11,9 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import rolevm.api.DispatchContext;
 import rolevm.runtime.TestCompartment;
 import rolevm.runtime.TestCompartment.ValidRole;
-import rolevm.runtime.linker.DispatchContext;
 
 public class BinderRemovalTest {
     private BinderNG binder;
