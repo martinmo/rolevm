@@ -3,6 +3,7 @@ package rolevm.runtime.linker;
 import static java.lang.invoke.MethodHandles.filterReturnValue;
 import static java.lang.invoke.MethodHandles.foldArguments;
 import static java.lang.invoke.MethodHandles.lookup;
+import static java.lang.invoke.MethodType.methodType;
 import static rolevm.runtime.linker.Utils.JLO_METHODS;
 import static rolevm.runtime.linker.Utils.unwrapName;
 
@@ -109,7 +110,8 @@ public class StateBasedLinkerNG implements BindingObserver, GuardingDynamicLinke
             CallSiteDescriptor descriptor = request.getCallSiteDescriptor();
             MethodType type = descriptor.getMethodType();
             Class<?> receiverType = type.parameterType(0);
-            MethodHandle handle = descriptor.getLookup().findVirtual(receiverType, unwrapName(descriptor), type);
+            MethodHandle handle = descriptor.getLookup().findVirtual(receiverType, unwrapName(descriptor),
+                    type.dropParameterTypes(0, 1));
             return new GuardedInvocation(handle, switchpoints.getSwitchPointForType(receiverType));
         }
 
@@ -143,7 +145,8 @@ public class StateBasedLinkerNG implements BindingObserver, GuardingDynamicLinke
             MethodHandle proceed = factory
                     .getInvocation(descriptor.getLookup(), name, type.insertParameterTypes(0, DispatchContext.class))
                     .getHandle();
-            MethodHandle lifted = foldArguments(proceed, getContextHandle);
+            MethodHandle lifted = foldArguments(proceed,
+                    getContextHandle.asType(methodType(DispatchContext.class, receiverType)));
             return new GuardedInvocation(lifted.asType(type), isNotPureHandle);
         }
     }
