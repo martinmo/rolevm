@@ -13,6 +13,11 @@
 
   <dependencies>
     <dependency>
+      <groupId>com.github.martinmo.rolevm</groupId>
+      <artifactId>rolevm-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm</artifactId>
     </dependency>
