@@ -1,5 +1,6 @@
 package rolevm.transform;
 
+import static rolevm.transform.ClassFileUtils.defineClass;
 import static rolevm.transform.ClassFileUtils.disassemble;
 import static rolevm.transform.ClassFileUtils.loadClassFile;
 
@@ -7,6 +8,7 @@ import java.lang.instrument.IllegalClassFormatException;
 import java.util.regex.Pattern;
 
 import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Common test infrastructure for bytecode transformation tests.
@@ -31,6 +33,12 @@ public abstract class TransformationTestBase {
         original = disassemble(originalClass);
         transformedClass = tfm.transform(null, clazz.getName(), clazz, null, originalClass);
         transformed = disassemble(transformedClass);
+    }
+
+    @Test
+    public void canBeInstantiated() throws Exception {
+        Class<?> clazz = defineClass(transformedClass);
+        clazz.getConstructor().newInstance();
     }
 
     protected abstract Class<?> classUnderTest();

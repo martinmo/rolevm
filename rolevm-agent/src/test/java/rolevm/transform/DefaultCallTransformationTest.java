@@ -7,7 +7,6 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static rolevm.transform.ClassFileUtils.defineClass;
 import static rolevm.transform.ClassFileUtils.methodDescriptor;
 
 import java.io.PrintStream;
@@ -30,11 +29,6 @@ public class DefaultCallTransformationTest extends TransformationTestBase {
     @Override
     protected Class<?> classUnderTest() {
         return ClassWithDefaultCalls.class;
-    }
-
-    @Test
-    public void canBeDefined() throws Exception {
-        defineClass(transformedClass);
     }
 
     @Test
