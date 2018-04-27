@@ -4,13 +4,13 @@ import static java.lang.invoke.MethodType.methodType;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import jdk.dynalink.linker.support.Lookup;
 import rolevm.api.service.BindingService;
 import rolevm.runtime.linker.DispatchContext;
 
@@ -41,21 +41,16 @@ public class BinderNG implements BindingService {
     /** List of objects which subscribed to binding events. */
     private final List<BindingObserver> bindingObservers = new ArrayList<>();
 
+    /** MethodHandle factory that we use to find method handles. */
+    private static final Lookup lookup = new Lookup(MethodHandles.lookup());
+
     /** Direct method handle to {@link Map#containsKey(Object)} */
-    private static final MethodHandle containsKeyHandle;
+    private static final MethodHandle containsKeyHandle = lookup.findVirtual(Map.class, "containsKey",
+            methodType(boolean.class, Object.class));
 
     /** Direct method handle to {@link Map#get(Object)} */
-    private static final MethodHandle getContextHandle;
-
-    static {
-        Lookup lookup = MethodHandles.lookup();
-        try {
-            containsKeyHandle = lookup.findVirtual(Map.class, "containsKey", methodType(boolean.class, Object.class));
-            getContextHandle = lookup.findVirtual(Map.class, "get", methodType(Object.class, Object.class));
-        } catch (ReflectiveOperationException e) {
-            throw (AssertionError) new AssertionError().initCause(e);
-        }
-    }
+    private static final MethodHandle getContextHandle = lookup.findVirtual(Map.class, "get",
+            methodType(Object.class, Object.class));
 
     /**
      * Binds {@code role} to {@code player}. Both must be distinct, non-null

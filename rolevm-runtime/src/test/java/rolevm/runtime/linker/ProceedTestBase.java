@@ -4,10 +4,11 @@ import static java.lang.invoke.MethodType.methodType;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
 import java.util.List;
 
 import org.junit.Before;
+
+import jdk.dynalink.linker.support.Lookup;
 
 public abstract class ProceedTestBase {
     protected Core core;
@@ -47,13 +48,9 @@ public abstract class ProceedTestBase {
 
         public static final MethodHandle HANDLE;
         static {
-            Lookup lookup = MethodHandles.lookup();
-            try {
-                HANDLE = lookup.findVirtual(RoleAlike.class, "method",
-                        methodType(void.class, DispatchContext.class, Core.class, int.class));
-            } catch (ReflectiveOperationException e) {
-                throw (AssertionError) new AssertionError().initCause(e);
-            }
+            Lookup lookup = new Lookup(MethodHandles.lookup());
+            HANDLE = lookup.findVirtual(RoleAlike.class, "method",
+                    methodType(void.class, DispatchContext.class, Core.class, int.class));
         }
     }
 

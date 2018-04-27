@@ -2,11 +2,11 @@ package rolevm.runtime.linker;
 
 import static java.lang.invoke.MethodHandles.filterReturnValue;
 import static java.lang.invoke.MethodHandles.foldArguments;
+import static java.lang.invoke.MethodHandles.lookup;
 import static rolevm.runtime.linker.Utils.JLO_METHODS;
 import static rolevm.runtime.linker.Utils.unwrapName;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.SwitchPoint;
 import java.util.Objects;
@@ -59,8 +59,7 @@ public class StateBasedLinkerNG implements BindingObserver, GuardingDynamicLinke
         return isNotPureHandle;
     }
 
-    private static final Lookup LOOKUP = new Lookup(MethodHandles.lookup());
-    private static final MethodHandle NOT = LOOKUP.findOwnStatic("not", boolean.class, boolean.class);
+    private static final MethodHandle NOT = Lookup.findOwnStatic(lookup(), "not", boolean.class, boolean.class);
 
     @SuppressWarnings("unused") // used through a MethodHandle
     private static final boolean not(final boolean value) {
