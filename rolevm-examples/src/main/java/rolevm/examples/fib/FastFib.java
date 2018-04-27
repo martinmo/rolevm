@@ -7,6 +7,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 import rolevm.api.Compartment;
+import rolevm.api.DispatchContext;
 import rolevm.api.OverrideBase;
 import rolevm.api.Role;
 
@@ -19,8 +20,14 @@ public class FastFib extends Compartment {
         }
 
         @OverrideBase
-        public int fib(RecursiveFibonacci base, final int x) throws ExecutionException {
-            return cache.get(x, () -> base.fib(x));
+        public int fib(DispatchContext ctx, RecursiveFibonacci base, final int x) throws Throwable {
+            Integer value = cache.getIfPresent(x);
+            if (value != null) {
+                return value;
+            }
+            value = (int) ctx.proceed().invoke(ctx, base, x);
+            cache.put(x, value);
+            return value;
         }
     }
 

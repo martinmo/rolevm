@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rolevm.api.Compartment;
+import rolevm.api.DispatchContext;
 import rolevm.api.OverrideBase;
 import rolevm.api.Role;
 
@@ -45,8 +46,8 @@ public class Bank extends Compartment {
         }
 
         @OverrideBase
-        public void increase(Account base, float amount) {
-            base.increase(amount - transactionFee(amount));
+        public void increase(DispatchContext ctx, Account base, float amount) throws Throwable {
+            ctx.proceed().invoke(ctx, base, amount - transactionFee(amount));
         }
     }
 
@@ -54,9 +55,9 @@ public class Bank extends Compartment {
         private static final float LIMIT = 100.0f;
 
         @OverrideBase
-        public void decrease(Account base, float amount) {
+        public void decrease(DispatchContext ctx, Account base, float amount) throws Throwable {
             if (amount <= LIMIT) {
-                base.decrease(amount);
+                ctx.proceed().invoke(ctx, base, amount);
             } else {
                 throw new IllegalArgumentException(amount + " is over the limit: " + LIMIT);
             }
@@ -65,9 +66,9 @@ public class Bank extends Compartment {
 
     public @Role class VerboseTransaction {
         @OverrideBase
-        public void execute(Transaction base, float amount) {
+        public void execute(DispatchContext ctx, Transaction base, float amount) throws Throwable {
             System.out.printf("Transfering %.2f from %s to %s%n", amount, base.source, base.target);
-            base.execute(amount);
+            ctx.proceed().invoke(ctx, base, amount);
         }
     }
 }
