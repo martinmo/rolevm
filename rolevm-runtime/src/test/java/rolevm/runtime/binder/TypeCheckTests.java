@@ -9,7 +9,9 @@ import static rolevm.runtime.binder.TypeChecks.validateRoleType;
 import org.junit.Test;
 
 import rolevm.api.RoleBindingException;
-import rolevm.runtime.binder.TestCompartment.ValidRole;
+import rolevm.runtime.InvalidRole;
+import rolevm.runtime.TestCompartment;
+import rolevm.runtime.TestCompartment.ValidRole;
 
 public class TypeCheckTests {
     @Test

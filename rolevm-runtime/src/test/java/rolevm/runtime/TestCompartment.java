@@ -1,9 +1,9 @@
-package rolevm.runtime.binder;
+package rolevm.runtime;
 
 import rolevm.api.Compartment;
 import rolevm.api.Role;
 
-class TestCompartment extends Compartment {
+public class TestCompartment extends Compartment {
     public @Role class ValidRole {
     }
 }
