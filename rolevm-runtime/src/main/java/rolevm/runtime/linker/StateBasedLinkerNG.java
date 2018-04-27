@@ -1,10 +1,12 @@
 package rolevm.runtime.linker;
 
+import static java.lang.invoke.MethodHandles.filterReturnValue;
 import static java.lang.invoke.MethodHandles.foldArguments;
 import static rolevm.runtime.linker.Utils.JLO_METHODS;
 import static rolevm.runtime.linker.Utils.unwrapName;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.SwitchPoint;
 import java.util.Objects;
@@ -14,6 +16,7 @@ import jdk.dynalink.linker.GuardedInvocation;
 import jdk.dynalink.linker.GuardingDynamicLinker;
 import jdk.dynalink.linker.LinkRequest;
 import jdk.dynalink.linker.LinkerServices;
+import jdk.dynalink.linker.support.Lookup;
 import rolevm.runtime.binder.BinderNG;
 import rolevm.runtime.binder.BindingObserver;
 
@@ -33,8 +36,8 @@ import rolevm.runtime.binder.BindingObserver;
 public class StateBasedLinkerNG implements BindingObserver, GuardingDynamicLinker {
     private final SwitchPointManager switchpoints = new SwitchPointManager();
     private final ProceedInvocations factory = new ProceedInvocations();
-    private final MethodHandle isPureObjectGuard;
-    private final MethodHandle isNotPureObjectGuard;
+    private final MethodHandle isPureHandle;
+    private final MethodHandle isNotPureHandle;
     private final MethodHandle getContextHandle;
     private final BinderNG binder;
     private LinkerState currentLinker = new InitialLinker();
@@ -43,17 +46,25 @@ public class StateBasedLinkerNG implements BindingObserver, GuardingDynamicLinke
         this.binder = Objects.requireNonNull(binder);
         binder.addObserver(this);
         binder.addObserver(switchpoints);
-        isPureObjectGuard = createPureObjectGuard();
-        isNotPureObjectGuard = createIsNotPureObjectGuard();
+        isNotPureHandle = binder.createContainsKeyHandle();
+        isPureHandle = filterReturnValue(isNotPureHandle, NOT);
         getContextHandle = binder.createGetContextHandle();
     }
 
-    private MethodHandle createIsNotPureObjectGuard() {
-        return null;
+    public MethodHandle getIsPureHandle() {
+        return isPureHandle;
     }
 
-    private MethodHandle createPureObjectGuard() {
-        return null;
+    public MethodHandle getIsNotPureHandle() {
+        return isNotPureHandle;
+    }
+
+    private static final Lookup LOOKUP = new Lookup(MethodHandles.lookup());
+    private static final MethodHandle NOT = LOOKUP.findOwnStatic("not", boolean.class, boolean.class);
+
+    @SuppressWarnings("unused") // used through a MethodHandle
+    private static final boolean not(final boolean value) {
+        return !value;
     }
 
     @Override
@@ -125,7 +136,7 @@ public class StateBasedLinkerNG implements BindingObserver, GuardingDynamicLinke
             Class<?> receiverType = type.parameterType(0);
             MethodHandle handle = descriptor.getLookup().findVirtual(receiverType, name, lookupType); // always execute
             if (binder.isPureObject(receiver)) {
-                return new GuardedInvocation(handle, isPureObjectGuard);
+                return new GuardedInvocation(handle, isPureHandle);
             }
             if (lookupType.equals(JLO_METHODS.get(name))) {
                 return new GuardedInvocation(handle);
@@ -134,7 +145,7 @@ public class StateBasedLinkerNG implements BindingObserver, GuardingDynamicLinke
                     .getInvocation(descriptor.getLookup(), name, type.insertParameterTypes(0, DispatchContext.class))
                     .getHandle();
             MethodHandle lifted = foldArguments(proceed, getContextHandle);
-            return new GuardedInvocation(lifted.asType(type), isNotPureObjectGuard);
+            return new GuardedInvocation(lifted.asType(type), isNotPureHandle);
         }
     }
 }
