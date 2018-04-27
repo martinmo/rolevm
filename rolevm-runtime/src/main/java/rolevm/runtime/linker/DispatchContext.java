@@ -2,10 +2,11 @@ package rolevm.runtime.linker;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
+
+import jdk.dynalink.linker.support.Lookup;
 
 /**
  * Immutable, chained dispatch context for multiple role dispatch.
@@ -16,21 +17,18 @@ public final class DispatchContext {
     /** End of the chain. */
     private static final DispatchContext END = new DispatchContext();
 
+    private static final Lookup lookup = new Lookup(MethodHandles.lookup());
+
     /** Direct handle to the {@link DispatchContext#next} field. */
-    static final MethodHandle NEXT_HANDLE;
+    public static final MethodHandle NEXT_HANDLE;
 
     /** Direct handle to the {@link DispatchContext#target} field. */
-    static final MethodHandle TARGET_HANDLE;
+    public static final MethodHandle TARGET_HANDLE;
 
     static {
-        Lookup lookup = MethodHandles.lookup();
         Class<?> myself = DispatchContext.class;
-        try {
-            NEXT_HANDLE = lookup.findGetter(myself, "next", myself);
-            TARGET_HANDLE = lookup.findGetter(myself, "target", Object.class);
-        } catch (ReflectiveOperationException e) {
-            throw (AssertionError) new AssertionError().initCause(e);
-        }
+        NEXT_HANDLE = lookup.findGetter(myself, "next", myself);
+        TARGET_HANDLE = lookup.findGetter(myself, "target", Object.class);
     }
 
     /** The next context in the chain (may be <code>null</code>). */
