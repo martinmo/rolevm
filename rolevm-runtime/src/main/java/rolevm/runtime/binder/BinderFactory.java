@@ -9,10 +9,10 @@ import rolevm.api.service.BindingServiceFactory;
  * @author Martin Morgenstern
  */
 public class BinderFactory implements BindingServiceFactory {
-    private static final Binder binder = new Binder();
+    private static final BinderNG binder = new BinderNG();
 
     @Override
-    public Binder getBindingService() {
+    public BinderNG getBindingService() {
         return binder;
     }
 }

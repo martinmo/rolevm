@@ -11,8 +11,6 @@ import jdk.dynalink.CallSiteDescriptor;
 import jdk.dynalink.DynamicLinker;
 import jdk.dynalink.DynamicLinkerFactory;
 import jdk.dynalink.support.ChainedCallSite;
-import rolevm.runtime.binder.Binder;
-import rolevm.runtime.binder.BinderFactory;
 import rolevm.runtime.linker.StateBasedLinker;
 
 /**
@@ -27,8 +25,7 @@ public class Runtime {
     private static final DynamicLinker dynamicLinker = createDynamicLinker();
 
     private static StateBasedLinker createStateBasedLinker() {
-        Binder binder = new BinderFactory().getBindingService();
-        return new StateBasedLinker(binder);
+        return new StateBasedLinker(null);
     }
 
     private static DynamicLinker createDynamicLinker() {

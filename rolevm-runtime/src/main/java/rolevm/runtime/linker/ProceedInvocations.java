@@ -1,16 +1,15 @@
 package rolevm.runtime.linker;
 
 import static java.lang.invoke.MethodHandles.dropArguments;
+import static rolevm.runtime.linker.Utils.createDynamicLinker;
 import static rolevm.runtime.linker.Utils.unwrapName;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
-import java.util.Collections;
 
 import jdk.dynalink.CallSiteDescriptor;
 import jdk.dynalink.DynamicLinker;
-import jdk.dynalink.DynamicLinkerFactory;
 import jdk.dynalink.linker.GuardedInvocation;
 import jdk.dynalink.linker.GuardingDynamicLinker;
 import jdk.dynalink.linker.LinkRequest;
@@ -18,7 +17,7 @@ import jdk.dynalink.linker.LinkerServices;
 import jdk.dynalink.linker.support.Guards;
 
 public class ProceedInvocations {
-    private final DynamicLinker linker = initLinker();
+    private final DynamicLinker linker = createDynamicLinker(new ProceedLinker());
 
     public ProceedInvocation getInvocation(Lookup lookup, String name, MethodType type) {
         return new ProceedInvocation(linker, lookup, name, type);
@@ -26,17 +25,6 @@ public class ProceedInvocations {
 
     public ProceedInvocation getAdaptedInvocation(Lookup lookup, String name, MethodType type) {
         return new AdaptedProceedInvocation(linker, lookup, name, type);
-    }
-
-    /**
-     * Initializes the {@link jdk.dynalink} linker which is used to link the nested
-     * {@link java.lang.invoke.CallSite}s inside proceed handles.
-     */
-    private DynamicLinker initLinker() {
-        DynamicLinkerFactory factory = new DynamicLinkerFactory();
-        factory.setPrioritizedLinker(new ProceedLinker());
-        factory.setFallbackLinkers(Collections.emptyList());
-        return factory.createLinker();
     }
 
     private class ProceedLinker implements GuardingDynamicLinker {
