@@ -5,7 +5,10 @@ import static org.apache.commons.lang3.StringUtils.countMatches;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static rolevm.transform.ClassFileUtils.defineClass;
 import static rolevm.transform.ClassFileUtils.disassemble;
 import static rolevm.transform.ClassFileUtils.loadClassFile;
 import static rolevm.transform.ClassFileUtils.methodDescriptor;
@@ -13,6 +16,12 @@ import static rolevm.transform.ClassFileUtils.typeDescriptor;
 
 import java.io.PrintStream;
 import java.lang.instrument.IllegalClassFormatException;
+import java.lang.invoke.CallSite;
+import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.MethodType;
+import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import org.junit.Before;
@@ -27,6 +36,7 @@ import org.junit.Test;
  */
 public class TransformationTest {
     private final DefaultTransformer tfm = new DefaultTransformer(new StandardBlacklist());
+    private final Pattern pattern = Pattern.compile("INVOKEDYNAMIC (.*?) \\[(.*?)\\]\\n", Pattern.DOTALL);
     private byte[] transformedClass;
     private String original;
     private String transformed;
@@ -46,8 +56,8 @@ public class TransformationTest {
     }
 
     @Test
-    public void defineClass() throws Exception {
-        // TODO
+    public void canBeDefined() throws Exception {
+        defineClass(transformedClass);
     }
 
     @Test
@@ -57,28 +67,31 @@ public class TransformationTest {
     }
 
     @Test
-    public void originalInstructionsAreReplaced() throws Exception {
-        assertThat(countMatches(transformed, "INVOKEDYNAMIC"), is(2));
-        assertThat(transformed, not(containsString("INVOKEVIRTUAL")));
-    }
-
-    @Test
     public void senderLoadInstructionIsPresent() throws Exception {
-        String invoke = join("LDC \"C\"", "ALOAD 0", "INVOKEDYNAMIC println");
-        assertThat(transformed, containsString(invoke));
+        String instructions = join("LDC \"C\"", "ALOAD 0", "INVOKEDYNAMIC println");
+        assertThat(transformed, containsString(instructions));
     }
 
     @Test
     public void staticSenderLoadInstructionIsPresent() throws Exception {
-        String invoke = join("LDC \"E\"", String.format("LDC %s.class", typeDescriptor(A.class)),
-                "INVOKEDYNAMIC println");
+        String invoke = join("LDC \"E\"", "LDC " + typeDescriptor(A.class) + ".class", "INVOKEDYNAMIC println");
         assertThat(transformed, containsString(invoke));
     }
 
     @Test
     public void methodDescriptorIsAdapted() throws Exception {
+        Matcher matcher = pattern.matcher(transformed);
+        assertTrue(matcher.find());
+        MatchResult firstMatch = matcher.toMatchResult();
+        assertTrue(matcher.find());
+        MatchResult secondMatch = matcher.toMatchResult();
+        assertFalse(matcher.find());
         String descriptor = methodDescriptor(void.class, PrintStream.class, String.class, Object.class);
-        assertThat(countMatches(transformed, "INVOKEDYNAMIC println" + descriptor), is(2));
+        assertThat(firstMatch.group(1), containsString("println" + descriptor));
+        assertThat(secondMatch.group(1), containsString("println" + descriptor));
+        String descriptor2 = methodDescriptor(CallSite.class, Lookup.class, String.class, MethodType.class);
+        assertThat(firstMatch.group(2), containsString("rolevm/runtime/Runtime.bootstrap" + descriptor2));
+        assertThat(secondMatch.group(2), containsString("rolevm/runtime/Runtime.bootstrap" + descriptor2));
     }
 
     // Test class to be transformed

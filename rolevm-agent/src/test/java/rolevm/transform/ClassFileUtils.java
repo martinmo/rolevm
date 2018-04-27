@@ -49,4 +49,15 @@ public class ClassFileUtils {
     public static String typeDescriptor(Class<?> clazz) {
         return Type.getType(clazz).getDescriptor();
     }
+
+    /** Define a class in the given buffer using a newly created class loader. */
+    public static Class<?> defineClass(byte[] b) {
+        return new MyClassLoader().defineClass(b);
+    }
+
+    private static class MyClassLoader extends ClassLoader {
+        public Class<?> defineClass(byte[] b) {
+            return defineClass(null, b, 0, b.length);
+        }
+    }
 }
