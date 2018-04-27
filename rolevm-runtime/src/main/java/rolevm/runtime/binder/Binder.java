@@ -20,7 +20,7 @@ import rolevm.api.service.BindingService;
  * 
  * @author Martin Morgenstern
  */
-public class BinderNG implements BindingService {
+public class Binder implements BindingService {
     /** Lock object used to guard bind/unbind operations. */
     private final Object mutex = new Object();
 

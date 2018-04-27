@@ -11,10 +11,10 @@ import java.lang.invoke.MethodType;
 import jdk.dynalink.CallSiteDescriptor;
 import jdk.dynalink.DynamicLinker;
 import jdk.dynalink.support.ChainedCallSite;
+import rolevm.runtime.binder.Binder;
 import rolevm.runtime.binder.BinderFactory;
-import rolevm.runtime.binder.BinderNG;
 import rolevm.runtime.linker.ProceedInvocations;
-import rolevm.runtime.linker.StateBasedLinkerNG;
+import rolevm.runtime.linker.StateBasedLinker;
 
 /**
  * Sets up the RoleVM linker and provides the bootstrap methods for the
@@ -29,10 +29,10 @@ public class Bootstrap {
     /** Factory for {@code proceed()} invocations. */
     private static final ProceedInvocations proceedFactory = new ProceedInvocations();
 
-    /** Create a {@link StateBasedLinker} using the global {@link BinderNG}. */
-    private static StateBasedLinkerNG newStateBasedLinker() {
-        BinderNG binder = new BinderFactory().getBindingService();
-        return new StateBasedLinkerNG(binder);
+    /** Create a {@link StateBasedLinker} using the global {@link Binder}. */
+    private static StateBasedLinker newStateBasedLinker() {
+        Binder binder = new BinderFactory().getBindingService();
+        return new StateBasedLinker(binder);
     }
 
     /** Initializes default call sites. */

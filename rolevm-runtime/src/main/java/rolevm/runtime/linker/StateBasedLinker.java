@@ -19,7 +19,7 @@ import jdk.dynalink.linker.LinkRequest;
 import jdk.dynalink.linker.LinkerServices;
 import jdk.dynalink.linker.support.Lookup;
 import rolevm.api.DispatchContext;
-import rolevm.runtime.binder.BinderNG;
+import rolevm.runtime.binder.Binder;
 import rolevm.runtime.binder.BindingObserver;
 
 /**
@@ -35,16 +35,16 @@ import rolevm.runtime.binder.BindingObserver;
  * 
  * @author Martin Morgenstern
  */
-public class StateBasedLinkerNG implements BindingObserver, GuardingDynamicLinker {
+public class StateBasedLinker implements BindingObserver, GuardingDynamicLinker {
     private final SwitchPointManager switchpoints = new SwitchPointManager();
     private final ProceedInvocations factory = new ProceedInvocations();
     private final MethodHandle isPureHandle;
     private final MethodHandle isNotPureHandle;
     private final MethodHandle getContextHandle;
-    private final BinderNG binder;
+    private final Binder binder;
     private LinkerState currentLinker = new InitialLinker();
 
-    public StateBasedLinkerNG(final BinderNG binder) {
+    public StateBasedLinker(final Binder binder) {
         this.binder = Objects.requireNonNull(binder);
         binder.addObserver(this);
         binder.addObserver(switchpoints);

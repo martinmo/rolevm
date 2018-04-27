@@ -16,14 +16,14 @@ import rolevm.runtime.TestCompartment;
 import rolevm.runtime.TestCompartment.ValidRole;
 
 public class BinderRemovalTest {
-    private BinderNG binder;
+    private Binder binder;
     private Object player;
     private TestCompartment compartment;
     private ValidRole role1, role2, role3;
 
     @Before
     public void setUp() {
-        binder = new BinderNG();
+        binder = new Binder();
         player = new Object();
         compartment = new TestCompartment();
         role1 = compartment.new ValidRole();

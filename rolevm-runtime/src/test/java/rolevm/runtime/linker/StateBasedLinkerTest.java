@@ -22,21 +22,21 @@ import jdk.dynalink.linker.LinkRequest;
 import rolevm.runtime.SomeCore;
 import rolevm.runtime.TestCompartment;
 import rolevm.runtime.TestCompartment.RoleForSomeCore;
-import rolevm.runtime.binder.BinderNG;
+import rolevm.runtime.binder.Binder;
 
 public class StateBasedLinkerTest {
     private final CallSiteDescriptor descriptor = new CallSiteDescriptor(lookup(), CALL.named("someMethod"),
             methodType(int.class, SomeCore.class, int.class));
-    private BinderNG binder;
-    private StateBasedLinkerNG linker;
+    private Binder binder;
+    private StateBasedLinker linker;
     private SomeCore core;
     private RoleForSomeCore role;
     private LinkRequest request;
 
     @Before
     public void setUp() {
-        binder = new BinderNG();
-        linker = new StateBasedLinkerNG(binder);
+        binder = new Binder();
+        linker = new StateBasedLinker(binder);
         core = new SomeCore();
         role = new TestCompartment().new RoleForSomeCore();
         request = mock(LinkRequest.class);

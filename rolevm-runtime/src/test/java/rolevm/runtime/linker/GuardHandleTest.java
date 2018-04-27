@@ -10,19 +10,19 @@ import org.junit.Test;
 
 import rolevm.runtime.TestCompartment;
 import rolevm.runtime.TestCompartment.ValidRole;
-import rolevm.runtime.binder.BinderNG;
+import rolevm.runtime.binder.Binder;
 
 public class GuardHandleTest {
-    private BinderNG binder;
-    private StateBasedLinkerNG linker;
+    private Binder binder;
+    private StateBasedLinker linker;
     private MethodHandle isPure;
     private MethodHandle isNotPure;
     private ValidRole role;
 
     @Before
     public void setUp() {
-        binder = new BinderNG();
-        linker = new StateBasedLinkerNG(binder);
+        binder = new Binder();
+        linker = new StateBasedLinker(binder);
         isPure = linker.getIsPureHandle();
         isNotPure = linker.getIsNotPureHandle();
         role = new TestCompartment().new ValidRole();
