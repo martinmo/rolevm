@@ -5,6 +5,7 @@ import static java.lang.invoke.MethodType.methodType;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -29,14 +30,14 @@ public class Binder implements BindingService {
      * updated, the corresponding cached entry in {@link #contexts} must be updated
      * as well.
      */
-    private final Map<Object, List<Object>> registry = new ConcurrentWeakHashMap<>();
+    private final Map<Object, List<Object>> registry = createMap();
 
     /**
      * Alternative, cached representation of {@link #registry} in form of a mapping
      * to {@link DispatchContext}s. Must be recomputed whenever {@link #registry}
      * changes.
      */
-    private final Map<Object, DispatchContext> contexts = new ConcurrentWeakHashMap<>();
+    private final Map<Object, DispatchContext> contexts = createMap();
 
     /** List of objects which subscribed to binding events. */
     private final List<BindingObserver> bindingObservers = new ArrayList<>();
@@ -51,6 +52,18 @@ public class Binder implements BindingService {
     /** Direct method handle to {@link Map#get(Object)} */
     private static final MethodHandle getContextHandle = lookup.findVirtual(Map.class, "get",
             methodType(Object.class, Object.class));
+
+    /**
+     * Allow the user to select the faster {@link IdentityHashMap} as the backing
+     * storage, by setting the system property {@code rolevm.map=IdentityHashMap}.
+     */
+    private static <K, V> Map<K, V> createMap() {
+        String implementation = System.getProperty("rolevm.map");
+        if ("identityhashmap".equalsIgnoreCase(implementation)) {
+            return new IdentityHashMap<>();
+        }
+        return new ConcurrentWeakHashMap<>();
+    }
 
     /**
      * Binds {@code role} to {@code player}. Both must be distinct, non-null
