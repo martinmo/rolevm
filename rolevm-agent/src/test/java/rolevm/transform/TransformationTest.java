@@ -1,23 +1,22 @@
 package rolevm.transform;
 
-import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.StringUtils.countMatches;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
+import static rolevm.transform.ClassFileUtils.disassemble;
+import static rolevm.transform.ClassFileUtils.loadClassFile;
+import static rolevm.transform.ClassFileUtils.methodDescriptor;
+import static rolevm.transform.ClassFileUtils.typeDescriptor;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.PrintStream;
+import java.lang.instrument.IllegalClassFormatException;
 import java.util.stream.Stream;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.util.TraceClassVisitor;
 
 /**
  * Tests the bytecode transformations that replace
@@ -27,28 +26,18 @@ import org.objectweb.asm.util.TraceClassVisitor;
  * @author Martin Morgenstern
  */
 public class TransformationTest {
-    private DefaultTransformer tfm = new DefaultTransformer(new StandardBlacklist());
+    private final DefaultTransformer tfm = new DefaultTransformer(new StandardBlacklist());
+    private byte[] transformedClass;
+    private String original;
+    private String transformed;
 
-    /** Loads class file into a byte array. */
-    static byte[] loadClassFile(final Class<?> clazz) throws IOException {
-        final String resource = clazz.getName().replace('.', '/') + ".class";
-        final InputStream s = ClassLoader.getSystemResourceAsStream(resource);
-        try (BufferedInputStream b = new BufferedInputStream(s)) {
-            return b.readAllBytes();
-        }
-    }
-
-    /**
-     * "Disassembles" a classfile using {@link TraceClassVisitor}, skipping
-     * unnecessary information and excessive whitespace around the printed
-     * instructions for easier matching.
-     */
-    static String disassemble(final byte[] classfile) {
-        final StringWriter sw = new StringWriter();
-        final TraceClassVisitor visitor = new TraceClassVisitor(new PrintWriter(sw));
-        final ClassReader reader = new ClassReader(classfile);
-        reader.accept(visitor, ClassReader.SKIP_DEBUG + ClassReader.SKIP_FRAMES);
-        return stream(sw.toString().split("\\n")).map(String::trim).collect(joining("\n"));
+    @Before
+    public void setUp() throws IllegalClassFormatException {
+        Class<?> clazz = A.class;
+        byte[] originalClass = loadClassFile(clazz);
+        original = disassemble(originalClass);
+        transformedClass = tfm.transform(null, clazz.getName(), clazz, null, originalClass);
+        transformed = disassemble(transformedClass);
     }
 
     /** For better readability. */
@@ -57,43 +46,39 @@ public class TransformationTest {
     }
 
     @Test
+    public void defineClass() throws Exception {
+        // TODO
+    }
+
+    @Test
     public void originalInstructionsArePresent() throws Exception {
-        String instructions = disassemble(loadClassFile(A.class));
-        assertThat(countMatches(instructions, "INVOKEVIRTUAL"), is(2));
-        assertThat(instructions, not(containsString("INVOKEDYNAMIC")));
+        assertThat(countMatches(original, "INVOKEVIRTUAL"), is(2));
+        assertThat(original, not(containsString("INVOKEDYNAMIC")));
     }
 
     @Test
     public void originalInstructionsAreReplaced() throws Exception {
-        byte[] transformed = tfm.transform(null, "", A.class, null, loadClassFile(A.class));
-        String instructions = disassemble(transformed);
-        assertThat(countMatches(instructions, "INVOKEDYNAMIC"), is(2));
-        assertThat(instructions, not(containsString("INVOKEVIRTUAL")));
+        assertThat(countMatches(transformed, "INVOKEDYNAMIC"), is(2));
+        assertThat(transformed, not(containsString("INVOKEVIRTUAL")));
     }
 
     @Test
     public void senderLoadInstructionIsPresent() throws Exception {
-        byte[] transformed = tfm.transform(null, "", A.class, null, loadClassFile(A.class));
-        String instructions = disassemble(transformed);
         String invoke = join("LDC \"C\"", "ALOAD 0", "INVOKEDYNAMIC println");
-        assertThat(instructions, containsString(invoke));
+        assertThat(transformed, containsString(invoke));
     }
 
     @Test
     public void staticSenderLoadInstructionIsPresent() throws Exception {
-        byte[] transformed = tfm.transform(null, "", A.class, null, loadClassFile(A.class));
-        String instructions = disassemble(transformed);
-        String invoke = join("LDC \"E\"", String.format("LDC L%s;.class", A.class.getName().replace('.', '/')),
+        String invoke = join("LDC \"E\"", String.format("LDC %s.class", typeDescriptor(A.class)),
                 "INVOKEDYNAMIC println");
-        assertThat(instructions, containsString(invoke));
+        assertThat(transformed, containsString(invoke));
     }
 
     @Test
     public void methodDescriptorIsAdapted() throws Exception {
-        byte[] transformed = tfm.transform(null, "", A.class, null, loadClassFile(A.class));
-        String instructions = disassemble(transformed);
-        assertThat(countMatches(instructions,
-                "INVOKEDYNAMIC println(Ljava/io/PrintStream;Ljava/lang/String;Ljava/lang/Object;)V"), is(2));
+        String descriptor = methodDescriptor(void.class, PrintStream.class, String.class, Object.class);
+        assertThat(countMatches(transformed, "INVOKEDYNAMIC println" + descriptor), is(2));
     }
 
     // Test class to be transformed
