@@ -11,11 +11,9 @@ import java.lang.invoke.MethodType;
 import jdk.dynalink.CallSiteDescriptor;
 import jdk.dynalink.DynamicLinker;
 import jdk.dynalink.support.ChainedCallSite;
-import rolevm.runtime.binder.Binder;
 import rolevm.runtime.binder.BinderFactory;
 import rolevm.runtime.binder.BinderNG;
 import rolevm.runtime.linker.ProceedInvocations;
-import rolevm.runtime.linker.StateBasedLinker;
 import rolevm.runtime.linker.StateBasedLinkerNG;
 
 /**
@@ -31,7 +29,7 @@ public class Bootstrap {
     /** Factory for {@code proceed()} invocations. */
     private static final ProceedInvocations proceedFactory = new ProceedInvocations();
 
-    /** Create a {@link StateBasedLinker} using the global {@link Binder}. */
+    /** Create a {@link StateBasedLinker} using the global {@link BinderNG}. */
     private static StateBasedLinkerNG newStateBasedLinker() {
         BinderNG binder = new BinderFactory().getBindingService();
         return new StateBasedLinkerNG(binder);
