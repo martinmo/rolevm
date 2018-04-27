@@ -3,6 +3,7 @@ package rolevm.examples.university;
 import java.util.List;
 
 import rolevm.api.Compartment;
+import rolevm.api.DispatchContext;
 import rolevm.api.OverrideBase;
 import rolevm.api.Role;
 
@@ -17,14 +18,14 @@ public class University extends Compartment {
         }
 
         @OverrideBase
-        public String getName(Person base) {
-            return title + " " + base.getName();
+        public String getName(DispatchContext ctx, Person base) throws Throwable {
+            return title + " " + (String) ctx.proceed().invoke(ctx, base);
         }
 
         @OverrideBase
-        public void live(Person base) {
+        public void live(DispatchContext ctx, Person base) throws Throwable {
             advise();
-            base.live();
+            ctx.proceed().invoke(ctx, base);
         }
 
         public void advise() {
@@ -39,8 +40,8 @@ public class University extends Compartment {
         private int motivation = 0;
 
         @OverrideBase
-        public void greet(Person base, Person other) {
-            base.greet(other);
+        public void greet(DispatchContext ctx, Person base, Person other) throws Throwable {
+            ctx.proceed().invoke(ctx, base, other);
             if (motivation <= 0) {
                 System.out.println("I have no motivation :(");
             } else {
@@ -49,10 +50,10 @@ public class University extends Compartment {
         }
 
         @OverrideBase
-        public void live(Person base) {
+        public void live(DispatchContext ctx, Person base) throws Throwable {
             System.out.println("Procrastinating...");
             motivation -= 5;
-            base.live();
+            ctx.proceed().invoke(ctx, base);
         }
     }
 }

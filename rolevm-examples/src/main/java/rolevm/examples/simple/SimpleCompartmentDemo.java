@@ -31,8 +31,6 @@ public class SimpleCompartmentDemo {
         System.out.println(b.calculate(3));
         System.out.println(b.delegation());
 
-        // results in a StackOverflowError:
-
         BaseType b2 = new BaseType();
         c.bind(b2, c.new RoleType(10));
         c.bind(b2, c.new EmptyRoleType());

@@ -1,6 +1,7 @@
 package rolevm.examples.simple;
 
 import rolevm.api.Compartment;
+import rolevm.api.DispatchContext;
 import rolevm.api.OverrideBase;
 import rolevm.api.Role;
 
@@ -13,9 +14,9 @@ public class SimpleCompartment extends Compartment {
         }
 
         @OverrideBase
-        public int calculate(BaseType base, int x) {
+        public int calculate(DispatchContext ctx, BaseType base, int x) throws Throwable {
             System.out.printf("RoleType(%s)::calculate()%n", this);
-            return base.calculate(x) + y;
+            return (int) ctx.proceed().invoke(ctx, base, x) + y;
         }
 
         public int getY() {
@@ -25,7 +26,7 @@ public class SimpleCompartment extends Compartment {
 
     public @Role class AnotherRoleType {
         @OverrideBase
-        public int calculate(BaseType base, int x) {
+        public int calculate(DispatchContext ctx, BaseType base, int x) {
             System.out.printf("AnotherRoleType(%s)::calculate()%n", this);
             return -x;
         }

@@ -3,12 +3,14 @@ package rolevm.examples.simple;
 import java.io.PrintStream;
 
 import rolevm.api.Compartment;
+import rolevm.api.DispatchContext;
 import rolevm.api.Role;
 
 public class VarArgs extends Compartment {
     public @Role class PrintfWithNewline {
-        public PrintStream printf(PrintStream base, String format, Object... args) {
-            return base.printf(format + "%n", args);
+        public PrintStream printf(DispatchContext ctx, PrintStream base, String format, Object... args)
+                throws Throwable {
+            return (PrintStream) ctx.proceed().invoke(ctx, base, format + "%n", args);
         }
     }
 
