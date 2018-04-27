@@ -1,11 +1,14 @@
 package rolevm.transform;
 
+import static org.objectweb.asm.Opcodes.ACONST_NULL;
 import static org.objectweb.asm.Opcodes.ASM5;
 import static org.objectweb.asm.Opcodes.H_INVOKESTATIC;
 import static org.objectweb.asm.Opcodes.INVOKEINTERFACE;
 import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
+import static org.objectweb.asm.Opcodes.POP;
 import static rolevm.transform.BootstrapConstants.BSM_CLASS;
-import static rolevm.transform.BootstrapConstants.BSM_NAME;
+import static rolevm.transform.BootstrapConstants.BSM_DEFAULT_NAME;
+import static rolevm.transform.BootstrapConstants.BSM_PROCEED_NAME;
 import static rolevm.transform.BootstrapConstants.BSM_TYPE;
 
 import org.objectweb.asm.Handle;
@@ -20,7 +23,8 @@ import org.objectweb.asm.MethodVisitor;
  * @author Martin Morgenstern
  */
 public class IndyMethodAdapter extends MethodVisitor {
-    private static final Handle BSM_HANDLE = new Handle(H_INVOKESTATIC, BSM_CLASS, BSM_NAME, BSM_TYPE, false);
+    private static final Handle DEFAULT_BSM = new Handle(H_INVOKESTATIC, BSM_CLASS, BSM_DEFAULT_NAME, BSM_TYPE, false);
+    private static final Handle PROCEED_BSM = new Handle(H_INVOKESTATIC, BSM_CLASS, BSM_PROCEED_NAME, BSM_TYPE, false);
     private final MethodInfo info;
 
     public IndyMethodAdapter(MethodInfo info, MethodVisitor mv) {
@@ -31,9 +35,23 @@ public class IndyMethodAdapter extends MethodVisitor {
     @Override
     public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
         if (opcode == INVOKEVIRTUAL || opcode == INVOKEINTERFACE) {
-            visitInvokeDynamicInsn(name, adaptDescriptor(owner, desc), BSM_HANDLE);
+            rewriteInvokeInstruction(owner, name, desc);
         } else {
             super.visitMethodInsn(opcode, owner, name, desc, itf);
+        }
+    }
+
+    private void rewriteInvokeInstruction(String owner, String name, String descriptor) {
+        // System.err.printf("rewriteInvoke(%s, %s, %s)%n", owner, name, descriptor);
+        if ("java/lang/invoke/MethodHandle".equals(owner) && "invoke".equals(name)
+                && descriptor.startsWith("(Lrolevm/api/DispatchContext;")) {
+            visitInvokeDynamicInsn(info.name, adaptDescriptor(owner, descriptor), PROCEED_BSM);
+        } else if ("rolevm/api/DispatchContext".equals(owner) && "proceed".equals(name)
+                && "()Ljava/lang/invoke/MethodHandle;".equals(descriptor)) {
+            visitInsn(POP);
+            visitInsn(ACONST_NULL);
+        } else {
+            visitInvokeDynamicInsn(name, adaptDescriptor(owner, descriptor), DEFAULT_BSM);
         }
     }
 

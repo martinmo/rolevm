@@ -19,7 +19,8 @@ public class BootstrapConstants {
     }
 
     public static final String BSM_CLASS = "rolevm/runtime/Bootstrap";
-    public static final String BSM_NAME = "defaultcall";
+    public static final String BSM_DEFAULT_NAME = "defaultcall";
+    public static final String BSM_PROCEED_NAME = "proceedcall";
     public static final String BSM_TYPE = methodType(CallSite.class, Lookup.class, //
             String.class, MethodType.class).toMethodDescriptorString();
 }

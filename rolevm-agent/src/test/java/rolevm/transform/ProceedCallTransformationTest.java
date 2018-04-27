@@ -46,7 +46,7 @@ public class ProceedCallTransformationTest extends TransformationTestBase {
         MatchResult firstMatch = matcher.toMatchResult();
         assertFalse(matcher.find());
         String signature = "someMethod"
-                + methodDescriptor(int.class, MethodHandle.class, DispatchContext.class, String.class);
+                + methodDescriptor(int.class, MethodHandle.class, DispatchContext.class, String.class, String.class);
         assertThat(firstMatch.group(1), containsString(signature));
         String bootstrapSignature = "rolevm/runtime/Bootstrap.proceedcall"
                 + methodDescriptor(CallSite.class, Lookup.class, String.class, MethodType.class);
