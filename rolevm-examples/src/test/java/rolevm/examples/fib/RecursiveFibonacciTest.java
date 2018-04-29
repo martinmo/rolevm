@@ -11,10 +11,18 @@ public class RecursiveFibonacciTest {
     }
 
     @Test
-    public void withCaching() {
+    public void withCachedFib() {
         RecursiveFibonacci fib = new RecursiveFibonacci();
-        FastFib fastFib = new FastFib();
-        fastFib.bind(fib, fastFib.new CachedFibonacci(20));
+        FibBenchmark fibBench = new FibBenchmark();
+        fibBench.bind(fib, fibBench.new CachedFib());
+        checkValues(fib);
+    }
+
+    @Test
+    public void withNoopFib() {
+        RecursiveFibonacci fib = new RecursiveFibonacci();
+        FibBenchmark fibBench = new FibBenchmark();
+        fibBench.bind(fib, fibBench.new NoopFib());
         checkValues(fib);
     }
 

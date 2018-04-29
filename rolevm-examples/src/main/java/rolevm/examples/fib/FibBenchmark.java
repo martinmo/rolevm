@@ -11,13 +11,11 @@ import rolevm.api.DispatchContext;
 import rolevm.api.OverrideBase;
 import rolevm.api.Role;
 
-public class FastFib extends Compartment {
-    public @Role class CachedFibonacci {
-        private final Cache<Integer, Integer> cache;
+public class FibBenchmark extends Compartment {
+    private static final int CACHE_SIZE = 30;
 
-        public CachedFibonacci(final int cacheSize) {
-            cache = CacheBuilder.newBuilder().maximumSize(cacheSize).build();
-        }
+    public @Role class CachedFib {
+        private final Cache<Integer, Integer> cache = CacheBuilder.newBuilder().maximumSize(CACHE_SIZE).build();
 
         @OverrideBase
         public int fib(DispatchContext ctx, RecursiveFibonacci base, final int x) throws Throwable {
@@ -31,13 +29,16 @@ public class FastFib extends Compartment {
         }
     }
 
-    /** Example of a faulty role implementation. */
-    public @Role class FaultyCachedFibonacci {
-        private final Cache<Integer, Integer> cache;
-
-        public FaultyCachedFibonacci(final int cacheSize) {
-            cache = CacheBuilder.newBuilder().maximumSize(cacheSize).build();
+    public @Role class NoopFib {
+        @OverrideBase
+        public int fib(DispatchContext ctx, RecursiveFibonacci base, int x) throws Throwable {
+            return (int) ctx.proceed().invoke(ctx, base, x);
         }
+    }
+
+    /** Example of a faulty role implementation. */
+    public @Role class FaultyCachedFib {
+        private final Cache<Integer, Integer> cache = CacheBuilder.newBuilder().maximumSize(CACHE_SIZE).build();
 
         @OverrideBase
         public int fib(RecursiveFibonacci base, final int x) throws ExecutionException {

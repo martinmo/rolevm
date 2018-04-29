@@ -1,12 +1,12 @@
 package rolevm.examples.fib;
 
-public class FastFibDemo {
+public class CachedFibDemo {
     public static void main(String[] args) {
         RecursiveFibonacci fib = new RecursiveFibonacci();
         demo("Uncached:", fib);
 
-        FastFib fastFib = new FastFib();
-        fastFib.bind(fib, fastFib.new CachedFibonacci(20));
+        FibBenchmark fibBench = new FibBenchmark();
+        fibBench.bind(fib, fibBench.new CachedFib());
         demo("Cached:", fib);
     }
 
