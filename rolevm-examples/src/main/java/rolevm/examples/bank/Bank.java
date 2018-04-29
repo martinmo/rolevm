@@ -21,9 +21,9 @@ public class Bank extends Compartment {
         return checkingAccounts;
     }
 
-    public void addSavingsAccount(Customer customer, Account accout) {
-        savingAccounts.add(accout);
-        customer.addAccount(null, accout);
+    public void addSavingsAccount(Customer customer, Account account) {
+        savingAccounts.add(account);
+        customer.addAccount(null, account);
     }
 
     public List<Account> getSavingAccounts() {
