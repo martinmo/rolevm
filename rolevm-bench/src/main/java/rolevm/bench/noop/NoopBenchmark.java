@@ -19,7 +19,7 @@ import rolevm.examples.noop.NoopCompartment;
 
 @Fork(jvmArgsAppend = { "@rolevm-bench/jvm.options" })
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-public class NoopCompartmentBenchmark extends DefaultBenchmark {
+public class NoopBenchmark extends DefaultBenchmark {
     @State(Scope.Benchmark)
     public static class BenchState {
         @Param({ "1", "2", "3" })
