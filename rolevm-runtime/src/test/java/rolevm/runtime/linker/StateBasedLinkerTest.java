@@ -58,10 +58,9 @@ public class StateBasedLinkerTest {
         binder.bind(core, role);
         GuardedInvocation invocation = linker.getGuardedInvocation(request, null);
         MethodHandle invocationHandle = invocation.getInvocation();
-        MethodHandle guardHandle = invocation.getGuard();
+        assertNull(invocation.getGuard());
         assertNull(invocation.getSwitchPoints());
         assertEquals(-3, (int) invocationHandle.invokeExact(core, 3));
-        assertTrue((boolean) guardHandle.invoke(core));
     }
 
     @Test
@@ -70,10 +69,9 @@ public class StateBasedLinkerTest {
         binder.unbind(core, role);
         GuardedInvocation invocation = linker.getGuardedInvocation(request, null);
         MethodHandle invocationHandle = invocation.getInvocation();
-        MethodHandle guardHandle = invocation.getGuard();
+        assertNull(invocation.getGuard());
         assertNull(invocation.getSwitchPoints());
         assertEquals(4, (int) invocationHandle.invokeExact(core, 4));
-        assertTrue((boolean) guardHandle.invoke(core));
     }
 
     @Test
@@ -84,9 +82,8 @@ public class StateBasedLinkerTest {
         binder.bind(core, role);
         GuardedInvocation invocation = linker.getGuardedInvocation(request, null);
         MethodHandle invocationHandle = invocation.getInvocation();
-        MethodHandle guardHandle = invocation.getGuard();
+        assertNull(invocation.getGuard());
         assertNull(invocation.getSwitchPoints());
         assertEquals(-5, (int) invocationHandle.invokeExact(core, 5));
-        assertTrue((boolean) guardHandle.invoke(core));
     }
 }

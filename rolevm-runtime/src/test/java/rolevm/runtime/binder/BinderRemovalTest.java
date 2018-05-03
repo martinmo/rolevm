@@ -2,7 +2,6 @@ package rolevm.runtime.binder;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.invoke.MethodHandle;
@@ -51,14 +50,11 @@ public class BinderRemovalTest {
     @Test
     public void basicAssumptionsWithHandle() throws Throwable {
         MethodHandle getContext = binder.createGetContextHandle();
-        MethodHandle containsKey = binder.createContainsKeyHandle();
         assertTrue((DispatchContext) getContext.invokeExact(player) instanceof DispatchContext);
-        assertTrue((boolean) containsKey.invokeExact(player));
         binder.unbind(player, role3);
         binder.unbind(player, role2);
         binder.unbind(player, role1);
-        assertNull((DispatchContext) getContext.invokeExact(player));
-        assertFalse((boolean) containsKey.invokeExact(player));
+        assertEquals(DispatchContext.END, (DispatchContext) getContext.invokeExact(player));
     }
 
     @Test

@@ -15,7 +15,7 @@ import jdk.dynalink.linker.support.Lookup;
  */
 public final class DispatchContext {
     /** End of the chain. */
-    private static final DispatchContext END = new DispatchContext();
+    public static final DispatchContext END = new DispatchContext();
 
     private static final Lookup lookup = new Lookup(MethodHandles.lookup());
 

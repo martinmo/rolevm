@@ -1,5 +1,6 @@
 package rolevm.runtime.binder;
 
+import static java.lang.invoke.MethodHandles.insertArguments;
 import static java.lang.invoke.MethodHandles.lookup;
 import static java.lang.invoke.MethodType.methodType;
 
@@ -140,20 +141,13 @@ public class Binder implements BindingService {
     }
 
     /**
-     * Returns a direct method handle to {@link Map#containsKey(Object)}, bound to
-     * the internal object/dispatch context map.
-     */
-    public MethodHandle createContainsKeyHandle() {
-        return bind(contexts, "containsKey", boolean.class, Object.class);
-    }
-
-    /**
-     * Returns a direct method handle to {@link Map#get(Object)}, bound to the
-     * internal object/dispatch context map.
+     * Returns a direct method handle to {@link Map#getOrDefault(Object, Object)},
+     * bound to the internal object/dispatch context map.
      */
     public MethodHandle createGetContextHandle() {
-        return bind(contexts, "get", Object.class, Object.class)
-                .asType(methodType(DispatchContext.class, Object.class));
+        MethodHandle mh = bind(contexts, "getOrDefault", Object.class, Object.class, Object.class);
+        mh = insertArguments(mh, 1, DispatchContext.END);
+        return mh.asType(methodType(DispatchContext.class, Object.class));
     }
 
     /**
