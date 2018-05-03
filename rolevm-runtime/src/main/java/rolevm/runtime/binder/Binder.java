@@ -1,9 +1,10 @@
 package rolevm.runtime.binder;
 
+import static java.lang.invoke.MethodHandles.lookup;
 import static java.lang.invoke.MethodType.methodType;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -11,7 +12,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import jdk.dynalink.linker.support.Lookup;
 import rolevm.api.DispatchContext;
 import rolevm.api.service.BindingService;
 
@@ -41,17 +41,6 @@ public class Binder implements BindingService {
 
     /** List of objects which subscribed to binding events. */
     private final List<BindingObserver> bindingObservers = new ArrayList<>();
-
-    /** MethodHandle factory that we use to find method handles. */
-    private static final Lookup lookup = new Lookup(MethodHandles.lookup());
-
-    /** Direct method handle to {@link Map#containsKey(Object)} */
-    private static final MethodHandle containsKeyHandle = lookup.findVirtual(Map.class, "containsKey",
-            methodType(boolean.class, Object.class));
-
-    /** Direct method handle to {@link Map#get(Object)} */
-    private static final MethodHandle getContextHandle = lookup.findVirtual(Map.class, "get",
-            methodType(Object.class, Object.class));
 
     /**
      * Allow the user to select the faster {@link IdentityHashMap} or
@@ -154,7 +143,7 @@ public class Binder implements BindingService {
      * the internal object/dispatch context map.
      */
     public MethodHandle createContainsKeyHandle() {
-        return MethodHandles.insertArguments(containsKeyHandle, 0, contexts);
+        return bind(contexts, "containsKey", boolean.class, Object.class);
     }
 
     /**
@@ -162,7 +151,19 @@ public class Binder implements BindingService {
      * internal object/dispatch context map.
      */
     public MethodHandle createGetContextHandle() {
-        return MethodHandles.insertArguments(getContextHandle, 0, contexts)
+        return bind(contexts, "get", Object.class, Object.class)
                 .asType(methodType(DispatchContext.class, Object.class));
+    }
+
+    /**
+     * Convenience wrapper around
+     * {@link Lookup#bind(Object, String, java.lang.invoke.MethodType)}.
+     */
+    private static MethodHandle bind(Object receiver, String name, Class<?> rtype, Class<?>... ptypes) {
+        try {
+            return lookup().bind(receiver, name, methodType(rtype, ptypes));
+        } catch (ReflectiveOperationException e) {
+            throw (AssertionError) new AssertionError().initCause(e);
+        }
     }
 }
