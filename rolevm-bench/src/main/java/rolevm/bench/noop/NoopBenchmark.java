@@ -11,6 +11,7 @@ import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.TearDown;
 
 import rolevm.bench.DefaultBenchmark;
 import rolevm.examples.noop.BaseType;
@@ -24,6 +25,13 @@ public class NoopBenchmark extends DefaultBenchmark {
     public static class BenchState {
         @Param({ "1", "2", "3" })
         int numRoles;
+
+        /**
+         * We use our own {@code gc} option, because JMH's {@code -gc} flag fails with a
+         * {@code NoClassDefFoundError} for {@code rolevm/runtime/Bootstrap}.
+         */
+        @Param("false")
+        boolean gc;
 
         int x, y;
         BaseType b;
@@ -43,6 +51,17 @@ public class NoopBenchmark extends DefaultBenchmark {
             Random random = new Random();
             x = random.nextInt();
             y = random.nextInt();
+        }
+
+        @TearDown(Level.Iteration)
+        public void teardown() {
+            b = null;
+            if (gc) {
+                System.runFinalization();
+                System.gc();
+                System.runFinalization();
+                System.gc();
+            }
         }
     }
 

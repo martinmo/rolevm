@@ -7,6 +7,7 @@ import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.TearDown;
 
 import rolevm.bench.DefaultBenchmark;
 import rolevm.examples.bank.Account;
@@ -20,6 +21,13 @@ import rolevm.examples.bank.Transaction;
 public class BankBenchmark extends DefaultBenchmark {
     @Param("1500")
     int N;
+
+    /**
+     * We use our own {@code gc} option, because JMH's {@code -gc} flag fails with a
+     * {@code NoClassDefFoundError} for {@code rolevm/runtime/Bootstrap}.
+     */
+    @Param("false")
+    boolean gc;
 
     Bank bank;
 
@@ -35,6 +43,17 @@ public class BankBenchmark extends DefaultBenchmark {
             bank.bind(ca, bank.new CheckingsAccount());
             bank.addSavingsAccount(c, sa);
             bank.addCheckingsAccount(c, ca);
+        }
+    }
+
+    @TearDown(Level.Iteration)
+    public void teardown() {
+        bank = null;
+        if (gc) {
+            System.runFinalization();
+            System.gc();
+            System.runFinalization();
+            System.gc();
         }
     }
 
