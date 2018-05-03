@@ -33,8 +33,9 @@ public class Compartment {
         return role;
     }
 
-    public final void unbind(final Object player, final Object role) {
+    public final <T> T unbind(final Object player, final T role) {
         bindingService.unbind(player, role);
+        return role;
     }
 
     public final void unbindAll() {
