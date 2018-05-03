@@ -1,5 +1,7 @@
 package rolevm.bench.bank;
 
+import java.math.BigDecimal;
+
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Level;
@@ -9,28 +11,30 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 
 import rolevm.bench.DefaultBenchmark;
-import rolevm.examples.bank.Account;
-import rolevm.examples.bank.Bank;
-import rolevm.examples.bank.Bank.Customer;
-import rolevm.examples.bank.Person;
-import rolevm.examples.bank.Transaction;
+import rolevm.examples.bank_bigdec.Account;
+import rolevm.examples.bank_bigdec.Bank;
+import rolevm.examples.bank_bigdec.Bank.Customer;
+import rolevm.examples.bank_bigdec.Person;
+import rolevm.examples.bank_bigdec.Transaction;
 
 @Fork(jvmArgsAppend = { "@rolevm-bench/jvm.options" })
 @State(Scope.Benchmark)
-public class BankBenchmark extends DefaultBenchmark {
-    @Param("1500")
+public class BigDecBankBenchmark extends DefaultBenchmark {
+    @Param("800")
     int N;
 
+    BigDecimal nAsBigDecimal;
     Bank bank;
 
     @Setup(Level.Iteration)
     public void setup() {
         bank = new Bank();
+        nAsBigDecimal = BigDecimal.valueOf(N);
         for (int i = 0; i < N; ++i) {
             Person p = new Person();
             Customer c = bank.bind(p, bank.new Customer());
-            Account sa = new Account(1000.0f);
-            Account ca = new Account(1000.0f);
+            Account sa = new Account(1000);
+            Account ca = new Account(1000);
             bank.bind(sa, bank.new SavingsAccount());
             bank.bind(ca, bank.new CheckingsAccount());
             bank.addSavingsAccount(c, sa);
@@ -41,7 +45,7 @@ public class BankBenchmark extends DefaultBenchmark {
     @Benchmark
     public boolean process_transactions_NxN() {
         for (Account from : bank.getCheckingAccounts()) {
-            float amount = from.getBalance() / N;
+            BigDecimal amount = from.getBalance().divide(nAsBigDecimal);
             for (Account to : bank.getSavingAccounts()) {
                 Transaction transaction = new Transaction(new Transaction.Source(from), new Transaction.Target(to));
                 transaction.execute(amount);
