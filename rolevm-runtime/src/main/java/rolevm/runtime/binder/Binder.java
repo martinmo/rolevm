@@ -43,18 +43,19 @@ public class Binder implements BindingService {
     private final List<BindingObserver> bindingObservers = new ArrayList<>();
 
     /**
-     * Allow the user to select the faster {@link IdentityHashMap} or
-     * {@link IdentityWeakHashMap} as the backing storage, by setting the system
-     * property {@code rolevm.map=IdentityHashMap}.
+     * Allows the user to select the fast, but memory-leaking
+     * {@link IdentityHashMap}, or the slower {@link ConcurrentWeakHashMap} as the
+     * backing storage, by setting the system property {@code rolevm.map} to the
+     * desired class name. By default, {@link IdentityWeakHashMap} is used.
      */
     private static <K, V> Map<K, V> createMap() {
         String implementation = System.getProperty("rolevm.map");
-        if ("identityhashmap".equalsIgnoreCase(implementation)) {
+        if ("IdentityHashMap".equalsIgnoreCase(implementation)) {
             return new IdentityHashMap<>();
-        } else if ("identityweakhashmap".equalsIgnoreCase(implementation)) {
-            return new IdentityWeakHashMap<>();
+        } else if ("ConcurrentWeakHashMap".equalsIgnoreCase(implementation)) {
+            return new ConcurrentWeakHashMap<>();
         }
-        return new ConcurrentWeakHashMap<>();
+        return new IdentityWeakHashMap<>();
     }
 
     /**
