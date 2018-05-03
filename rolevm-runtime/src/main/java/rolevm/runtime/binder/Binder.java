@@ -54,13 +54,16 @@ public class Binder implements BindingService {
             methodType(Object.class, Object.class));
 
     /**
-     * Allow the user to select the faster {@link IdentityHashMap} as the backing
-     * storage, by setting the system property {@code rolevm.map=IdentityHashMap}.
+     * Allow the user to select the faster {@link IdentityHashMap} or
+     * {@link IdentityWeakHashMap} as the backing storage, by setting the system
+     * property {@code rolevm.map=IdentityHashMap}.
      */
     private static <K, V> Map<K, V> createMap() {
         String implementation = System.getProperty("rolevm.map");
         if ("identityhashmap".equalsIgnoreCase(implementation)) {
             return new IdentityHashMap<>();
+        } else if ("identityweakhashmap".equalsIgnoreCase(implementation)) {
+            return new IdentityWeakHashMap<>();
         }
         return new ConcurrentWeakHashMap<>();
     }
