@@ -29,6 +29,11 @@
     </dependency>
     <dependency>
       <groupId>com.github.martinmo.rolevm</groupId>
+      <artifactId>rolevm-agent</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.martinmo.rolevm</groupId>
       <artifactId>rolevm-runtime</artifactId>
       <scope>runtime</scope>
       <exclusions>
