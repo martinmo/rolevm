@@ -3,6 +3,7 @@ package rolevm.runtime.binder;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -116,6 +117,107 @@ public class ConcurrentWeakHashMap<K, V> implements Map<K, V> {
         return storage.size();
     }
 
+    @Override
+    public Set<K> keySet() {
+        removeStaleReferences();
+        return new KeySet(storage.keySet());
+    }
+
+    class KeySetIterator implements Iterator<K> {
+        private final Iterator<Key> iterator;
+
+        public KeySetIterator(Iterator<Key> iterator) {
+            this.iterator = iterator;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return iterator.hasNext();
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public K next() {
+            return (K) iterator.next().get();
+        }
+    }
+
+    class KeySet implements Set<K> {
+        private final Set<Key> ks;
+
+        public KeySet(Set<Key> ks) {
+            this.ks = ks;
+        }
+
+        @Override
+        public int size() {
+            return ks.size();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return ks.isEmpty();
+        }
+
+        @Override
+        public Iterator<K> iterator() {
+            return new KeySetIterator(ks.iterator());
+        }
+
+        // everything else is unsupported
+
+        @Override
+        public boolean contains(Object o) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Object[] toArray() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public <T> T[] toArray(T[] a) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean add(K e) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean remove(Object o) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean containsAll(Collection<?> c) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean addAll(Collection<? extends K> c) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean retainAll(Collection<?> c) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean removeAll(Collection<?> c) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void clear() {
+            throw new UnsupportedOperationException();
+        }
+
+    }
+
     // unsupported operations
 
     /** Unsupported operation. */
@@ -127,12 +229,6 @@ public class ConcurrentWeakHashMap<K, V> implements Map<K, V> {
     /** Unsupported operation. */
     @Override
     public Set<Entry<K, V>> entrySet() {
-        throw new UnsupportedOperationException();
-    }
-
-    /** Unsupported operation. */
-    @Override
-    public Set<K> keySet() {
         throw new UnsupportedOperationException();
     }
 
