@@ -26,6 +26,9 @@ public class TypeChecks {
     }
 
     public static void validatePlayer(final Object player) {
+        if (player.getClass().isArray()) {
+            throw new RoleBindingException("an array cannot be a player");
+        }
         if (isRole(player)) {
             throw new RoleBindingException("a role cannot be a player");
         }

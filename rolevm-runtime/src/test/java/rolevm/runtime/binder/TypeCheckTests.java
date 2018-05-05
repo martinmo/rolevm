@@ -32,6 +32,11 @@ public class TypeCheckTests {
     }
 
     @Test(expected = RoleBindingException.class)
+    public void arrayTypeAsPlayerThrowsException() {
+        validatePlayer(new Object[0]);
+    }
+
+    @Test(expected = RoleBindingException.class)
     public void unenclosedRoleThrowsException() {
         validateRoleType(InvalidRole.class);
     }
