@@ -23,12 +23,7 @@ import rolevm.runtime.binder.BindingObserver;
  */
 public class SwitchPointManager implements BindingObserver {
     private final ClassValue<Set<Class<?>>> supertypes = new Supertypes();
-    private final ClassValue<SwitchPoint> switchpoints = new ClassValue<>() {
-        @Override
-        protected SwitchPoint computeValue(final Class<?> type) {
-            return new SwitchPoint();
-        }
-    };
+    private final ClassValue<SwitchPoint> switchpoints = new Switchpoints();
 
     public SwitchPoint getSwitchPointForType(final Class<?> type) {
         return switchpoints.get(type);
@@ -55,6 +50,17 @@ public class SwitchPointManager implements BindingObserver {
     @Override
     public void bindingRemoved(final Object player, final Object role) {
         // intentionally left empty
+    }
+
+    /**
+     * Thread-safe and leak-free mapping of {@link Class} to {@link SwitchPoint}
+     * using {@link #get(Class)} and {@link #remove(Class)}.
+     */
+    static class Switchpoints extends ClassValue<SwitchPoint> {
+        @Override
+        protected SwitchPoint computeValue(final Class<?> type) {
+            return new SwitchPoint();
+        }
     }
 
     /**
