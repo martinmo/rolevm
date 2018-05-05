@@ -53,10 +53,8 @@ public class Binder implements BindingService {
         String implementation = System.getProperty("rolevm.map");
         if ("IdentityHashMap".equalsIgnoreCase(implementation)) {
             return new IdentityHashMap<>();
-        } else if ("ConcurrentWeakHashMap".equalsIgnoreCase(implementation)) {
-            return new ConcurrentWeakHashMap<>();
         }
-        return new IdentityWeakHashMap<>();
+        return new ConcurrentWeakHashMap<>();
     }
 
     /**
@@ -138,6 +136,21 @@ public class Binder implements BindingService {
      */
     public boolean isPureObject(final Object player) {
         return !contexts.containsKey(player);
+    }
+
+    /**
+     * Returns true if and only if {@code type} is a pure type, i.e., if there is
+     * currently no registered player that is a subtype of {@code type}.
+     */
+    public boolean isPureType(final Class<?> type) {
+        Objects.requireNonNull(type);
+        for (Object player : contexts.keySet()) {
+            // player could be GC'ed during iteration
+            if (player != null && type.isAssignableFrom(player.getClass())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

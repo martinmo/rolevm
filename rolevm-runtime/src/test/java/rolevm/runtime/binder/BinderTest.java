@@ -69,6 +69,10 @@ public class BinderTest {
         assertEquals(List.of(), binder.getRoles(player));
         assertEquals(Optional.empty(), binder.getDispatchContext(player));
         assertTrue(binder.isPureObject(player));
+        assertTrue(binder.isPureType(Object.class));
+        assertTrue(binder.isPureType(I1.class));
+        assertTrue(binder.isPureType(A.class));
+        assertTrue(binder.isPureType(B.class));
     }
 
     @Test
@@ -85,6 +89,9 @@ public class BinderTest {
         assertTrue(context.isPresent());
         assertEquals(role, context.get().target());
         assertFalse(binder.isPureObject(player));
+        assertFalse(binder.isPureType(Object.class));
+        assertTrue(binder.isPureType(String.class));
+        assertTrue(binder.isPureType(Comparable.class));
     }
 
     @Test
@@ -93,6 +100,8 @@ public class BinderTest {
         binder.bind(player, compartment.new ValidRole());
         binder.bind(player, compartment.new ValidRole());
         assertFalse(binder.isPureObject(player));
+        assertFalse(binder.isPureType(Object.class));
+        assertTrue(binder.isPureType(String.class));
         assertEquals(3, binder.getRoles(player).size());
         Optional<DispatchContext> context = binder.getDispatchContext(player);
         assertTrue(context.isPresent());
@@ -100,5 +109,33 @@ public class BinderTest {
         assertNotNull(context.get().next());
         assertNotNull(context.get().next().next());
         assertNull(context.get().next().next().next().next());
+    }
+
+    @Test
+    public void pureType() {
+        binder.bind(new A(), role);
+        assertFalse(binder.isPureType(Object.class));
+        assertFalse(binder.isPureType(I1.class));
+        assertFalse(binder.isPureType(I2.class));
+        assertFalse(binder.isPureType(I3.class));
+        assertFalse(binder.isPureType(A.class));
+        assertTrue(binder.isPureType(B.class));
+    }
+
+    // some test classes for isPureType() tests:
+
+    interface I1 {
+    }
+
+    interface I2 {
+    }
+
+    interface I3 extends I1, I2 {
+    }
+
+    static class A implements I3 {
+    }
+
+    static class B extends A {
     }
 }
