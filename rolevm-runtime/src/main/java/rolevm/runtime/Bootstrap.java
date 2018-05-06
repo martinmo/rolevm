@@ -23,6 +23,9 @@ import rolevm.runtime.linker.StateBasedLinker;
  * @author Martin Morgenstern
  */
 public class Bootstrap {
+    /** Global {@link Binder} instance. */
+    static final Binder THE_BINDER = new BinderFactory().getBindingService();
+
     /** The top level Dynalink linker used for default call sites. */
     private static final DynamicLinker dynamicLinker = createDynamicLinker(newStateBasedLinker());
 
@@ -31,8 +34,7 @@ public class Bootstrap {
 
     /** Create a {@link StateBasedLinker} using the global {@link Binder}. */
     private static StateBasedLinker newStateBasedLinker() {
-        Binder binder = new BinderFactory().getBindingService();
-        return new StateBasedLinker(binder);
+        return new StateBasedLinker(THE_BINDER);
     }
 
     /** Initializes default call sites. */
