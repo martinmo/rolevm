@@ -22,12 +22,12 @@ import jdk.dynalink.linker.LinkRequest;
 import rolevm.runtime.SomeCore;
 import rolevm.runtime.TestCompartment;
 import rolevm.runtime.TestCompartment.RoleForSomeCore;
-import rolevm.runtime.binder.Binder;
+import rolevm.runtime.binder.CacheAwareBinder;
 
 public class StateBasedLinkerTest {
     private final CallSiteDescriptor descriptor = new CallSiteDescriptor(lookup(), CALL.named("someMethod"),
             methodType(int.class, SomeCore.class, int.class));
-    private Binder binder;
+    private CacheAwareBinder binder;
     private StateBasedLinker linker;
     private SomeCore core;
     private RoleForSomeCore role;
@@ -35,7 +35,7 @@ public class StateBasedLinkerTest {
 
     @Before
     public void setUp() {
-        binder = new Binder();
+        binder = new CacheAwareBinder();
         linker = new StateBasedLinker(binder);
         core = new SomeCore();
         role = new TestCompartment().new RoleForSomeCore();

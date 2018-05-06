@@ -22,7 +22,7 @@ public class BinderRemovalTest {
 
     @Before
     public void setUp() {
-        binder = new Binder();
+        binder = new CacheAwareBinder();
         player = new Object();
         compartment = new TestCompartment();
         role1 = compartment.new ValidRole();

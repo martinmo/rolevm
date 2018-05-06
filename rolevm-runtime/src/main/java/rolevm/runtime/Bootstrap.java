@@ -13,6 +13,7 @@ import jdk.dynalink.DynamicLinker;
 import jdk.dynalink.support.ChainedCallSite;
 import rolevm.runtime.binder.Binder;
 import rolevm.runtime.binder.BinderFactory;
+import rolevm.runtime.binder.CacheAwareBinder;
 import rolevm.runtime.linker.ProceedInvocations;
 import rolevm.runtime.linker.StateBasedLinker;
 
@@ -24,7 +25,7 @@ import rolevm.runtime.linker.StateBasedLinker;
  */
 public class Bootstrap {
     /** Global {@link Binder} instance. */
-    static final Binder THE_BINDER = new BinderFactory().getBindingService();
+    static final CacheAwareBinder THE_BINDER = new BinderFactory().getBindingService();
 
     /** The top level Dynalink linker used for default call sites. */
     private static final DynamicLinker dynamicLinker = createDynamicLinker(newStateBasedLinker());

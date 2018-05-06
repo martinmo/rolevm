@@ -23,14 +23,14 @@ import rolevm.runtime.TestCompartment;
 import rolevm.runtime.TestCompartment.ValidRole;
 
 public class BinderTest {
-    private Binder binder;
+    private CacheAwareBinder binder;
     private Object player;
     private TestCompartment compartment;
     private ValidRole role;
 
     @Before
     public void setUp() {
-        binder = new Binder();
+        binder = new CacheAwareBinder();
         player = new Object();
         compartment = new TestCompartment();
         role = compartment.new ValidRole();

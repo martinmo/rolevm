@@ -16,8 +16,8 @@ import jdk.dynalink.linker.GuardingDynamicLinker;
 import jdk.dynalink.linker.LinkRequest;
 import jdk.dynalink.linker.LinkerServices;
 import rolevm.api.DispatchContext;
-import rolevm.runtime.binder.Binder;
 import rolevm.runtime.binder.BindingObserver;
+import rolevm.runtime.binder.CacheAwareBinder;
 
 /**
  * State based linker that uses a "fast path" linking mechanism initially, when
@@ -38,7 +38,7 @@ public class StateBasedLinker implements BindingObserver, GuardingDynamicLinker 
     private final MethodHandle getContextHandle;
     private LinkerState currentLinker = new InitialLinker();
 
-    public StateBasedLinker(final Binder binder) {
+    public StateBasedLinker(final CacheAwareBinder binder) {
         Objects.requireNonNull(binder);
         binder.addObserver(this);
         binder.addObserver(switchpoints);
