@@ -1,0 +1,53 @@
+package rolevm.runtime.dynalink;
+
+import static java.lang.invoke.MethodHandles.foldArguments;
+import static java.lang.invoke.MethodType.methodType;
+
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.MethodType;
+import java.util.Objects;
+
+import jdk.dynalink.CallSiteDescriptor;
+import jdk.dynalink.NamedOperation;
+import jdk.dynalink.Operation;
+import jdk.dynalink.linker.GuardedInvocation;
+import jdk.dynalink.linker.GuardingDynamicLinker;
+import jdk.dynalink.linker.LinkRequest;
+import jdk.dynalink.linker.LinkerServices;
+import rolevm.api.DispatchContext;
+import rolevm.runtime.linker.ProceedInvocations;
+
+public class UnstableLinker implements GuardingDynamicLinker {
+    private final ProceedInvocations factory = new ProceedInvocations();
+    private final MethodHandle getContext;
+
+    public UnstableLinker(final MethodHandle getContext) {
+        this.getContext = Objects.requireNonNull(getContext);
+    }
+
+    @Override
+    public GuardedInvocation getGuardedInvocation(final LinkRequest request, final LinkerServices unused)
+            throws Exception {
+        CallSiteDescriptor descriptor = request.getCallSiteDescriptor();
+        String name = unwrapName(descriptor);
+        MethodType callsiteType = descriptor.getMethodType();
+        MethodType lookupType = callsiteType.dropParameterTypes(0, 1);
+        Class<?> receiverType = callsiteType.parameterType(0);
+        Lookup lookup = descriptor.getLookup();
+        lookup.findVirtual(receiverType, name, lookupType); // fail early if core type has no such method
+        MethodHandle proceed = factory
+                .getInvocation(lookup, name, callsiteType.insertParameterTypes(0, DispatchContext.class)).getHandle();
+        MethodHandle foldedProceed = foldArguments(proceed,
+                getContext.asType(methodType(DispatchContext.class, receiverType)));
+        return new GuardedInvocation(foldedProceed.asType(callsiteType));
+    }
+
+    public static String unwrapName(final CallSiteDescriptor descriptor) {
+        Operation op = descriptor.getOperation();
+        if (op instanceof NamedOperation) {
+            return ((NamedOperation) op).getName().toString();
+        }
+        throw new AssertionError();
+    }
+}

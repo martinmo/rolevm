@@ -1,0 +1,48 @@
+package rolevm.runtime.dynalink;
+
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodType;
+
+import jdk.dynalink.CallSiteDescriptor;
+import jdk.dynalink.NamedOperation;
+import jdk.dynalink.Operation;
+import jdk.dynalink.linker.GuardedInvocation;
+import jdk.dynalink.linker.GuardingDynamicLinker;
+import jdk.dynalink.linker.LinkRequest;
+import jdk.dynalink.linker.LinkerServices;
+import rolevm.runtime.binder.GuardedQuery;
+import rolevm.runtime.binder.GuardedValue;
+
+public class FastpathLinker implements GuardingDynamicLinker {
+    private GuardedQuery query;
+
+    public FastpathLinker(GuardedQuery query) {
+        this.query = query;
+    }
+
+    @Override
+    public GuardedInvocation getGuardedInvocation(final LinkRequest request, final LinkerServices unused)
+            throws Exception {
+        if (request.isCallSiteUnstable()) {
+            return null;
+        }
+        CallSiteDescriptor descriptor = request.getCallSiteDescriptor();
+        MethodType callsiteType = descriptor.getMethodType();
+        Class<?> staticReceiverType = callsiteType.parameterType(0);
+        GuardedValue<Boolean> isPure = query.getGuardedIsPureType(staticReceiverType);
+        if (!isPure.value()) {
+            return null;
+        }
+        MethodHandle handle = descriptor.getLookup().findVirtual(staticReceiverType, unwrapName(descriptor),
+                callsiteType.dropParameterTypes(0, 1));
+        return new GuardedInvocation(handle, isPure.switchpoint());
+    }
+
+    public static String unwrapName(final CallSiteDescriptor descriptor) {
+        Operation op = descriptor.getOperation();
+        if (op instanceof NamedOperation) {
+            return ((NamedOperation) op).getName().toString();
+        }
+        throw new AssertionError();
+    }
+}
