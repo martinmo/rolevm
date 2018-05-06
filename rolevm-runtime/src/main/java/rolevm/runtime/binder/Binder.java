@@ -6,12 +6,16 @@ import static java.lang.invoke.MethodType.methodType;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.SwitchPoint;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import rolevm.api.DispatchContext;
 import rolevm.api.service.BindingService;
@@ -39,6 +43,12 @@ public class Binder implements BindingService {
      * changes.
      */
     private final Map<Object, DispatchContext> contexts = createMap();
+
+    private final Map<Object, SwitchPoint> contextSwitchpoints = createMap();
+
+    private final ClassValue<Set<Class<?>>> supertypes = new Supertypes();
+
+    private final ClassValue<SwitchPoint> typeSwitchpoints = new TypeSwitchpoints();
 
     /** List of objects which subscribed to binding events. */
     private final List<BindingObserver> bindingObservers = new ArrayList<>();
@@ -79,9 +89,18 @@ public class Binder implements BindingService {
             currentRoles.add(role);
             registry.put(player, currentRoles);
             contexts.put(player, DispatchContext.of(currentRoles));
+            invalidateType(player.getClass());
+            updateContextSwitchpoint(player);
         }
         // "alien" methods should be called outside synchronized blocks:
         bindingObservers.stream().forEach(o -> o.bindingAdded(player, role));
+    }
+
+    private void updateContextSwitchpoint(final Object player) {
+        SwitchPoint oldSwitchPoint = contextSwitchpoints.put(player, new SwitchPoint());
+        if (oldSwitchPoint != null) {
+            SwitchPoint.invalidateAll(new SwitchPoint[] { oldSwitchPoint });
+        }
     }
 
     /**
@@ -100,6 +119,7 @@ public class Binder implements BindingService {
                     } else {
                         contexts.put(player, DispatchContext.of(currentRoles));
                     }
+                    updateContextSwitchpoint(player);
                 }
             }
         }
@@ -172,6 +192,61 @@ public class Binder implements BindingService {
             return lookup().bind(receiver, name, methodType(rtype, ptypes));
         } catch (ReflectiveOperationException e) {
             throw (AssertionError) new AssertionError().initCause(e);
+        }
+    }
+
+    public SwitchPoint getTypeSwitchpoint(final Class<?> type) {
+        return typeSwitchpoints.get(type);
+    }
+
+    private void invalidateType(final Class<?> type) {
+        final List<SwitchPoint> switchpoints = new ArrayList<>();
+        for (final Class<?> supertype : supertypes.get(type)) {
+            switchpoints.add(typeSwitchpoints.get(supertype));
+        }
+        SwitchPoint.invalidateAll(switchpoints.toArray(new SwitchPoint[0]));
+    }
+
+    /**
+     * Thread-safe and leak-free mapping of {@link Class} to {@link SwitchPoint}
+     * using {@link #get(Class)} and {@link #remove(Class)}.
+     */
+    static class TypeSwitchpoints extends ClassValue<SwitchPoint> {
+        @Override
+        protected SwitchPoint computeValue(final Class<?> type) {
+            return new SwitchPoint();
+        }
+    }
+
+    /**
+     * Provides a {@link #get(Class)} method that lazily computes the supertypes for
+     * a non-primitive type as per JLS §4.10 with a recursive algorithm in
+     * {@link #computeValue(Class)}, and caches the result. The returned set always
+     * contains {@link Object} and the type itself.
+     * 
+     * @author Martin Morgenstern
+     */
+    static class Supertypes extends ClassValue<Set<Class<?>>> {
+        @Override
+        protected Set<Class<?>> computeValue(final Class<?> type) {
+            if (type.isPrimitive()) {
+                throw new IllegalArgumentException();
+            }
+            if (type.equals(Object.class)) {
+                return Collections.singleton(Object.class);
+            }
+            Set<Class<?>> result = new HashSet<>();
+            result.add(type);
+            for (Class<?> iface : type.getInterfaces()) {
+                result.addAll(get(iface));
+            }
+            Class<?> superclass = type.getSuperclass();
+            if (superclass != null) {
+                result.addAll(get(superclass));
+            } else {
+                result.add(Object.class);
+            }
+            return Collections.unmodifiableSet(result);
         }
     }
 }
