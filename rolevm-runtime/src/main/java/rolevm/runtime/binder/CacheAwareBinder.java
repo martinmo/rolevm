@@ -24,7 +24,7 @@ import rolevm.api.DispatchContext;
  * 
  * @author Martin Morgenstern
  */
-public class CacheAwareBinder implements Binder {
+public class CacheAwareBinder implements Binder, GuardedQuery {
     /** Lock object used to guard bind/unbind operations. */
     private final Object mutex = new Object();
 
@@ -186,6 +186,23 @@ public class CacheAwareBinder implements Binder {
         }
     }
 
+    @Override
+    public GuardedValue<Optional<DispatchContext>> getGuardedDispatchContext(final Object player) {
+        synchronized (mutex) {
+            SwitchPoint sp = contextSwitchpoints.get(player);
+            if (sp == null) {
+                sp = new SwitchPoint();
+                contextSwitchpoints.put(player, sp);
+            }
+            return new GuardedDispatchContext(getDispatchContext(player), sp);
+        }
+    }
+
+    @Override
+    public GuardedValue<Boolean> getGuardedIsPureType(Class<?> type) {
+        return new GuardedIsPureType(isPureType(type), typeSwitchpoints.get(type));
+    }
+
     private void updateContextSwitchpoint(final Object player) {
         final SwitchPoint oldSwitchPoint = contextSwitchpoints.put(player, new SwitchPoint());
         if (oldSwitchPoint != null) {
@@ -241,6 +258,46 @@ public class CacheAwareBinder implements Binder {
                 result.add(Object.class);
             }
             return Collections.unmodifiableSet(result);
+        }
+    }
+
+    static class GuardedDispatchContext implements GuardedValue<Optional<DispatchContext>> {
+        private final Optional<DispatchContext> context;
+        private final SwitchPoint switchpoint;
+
+        GuardedDispatchContext(Optional<DispatchContext> context, SwitchPoint switchpoint) {
+            this.context = context;
+            this.switchpoint = switchpoint;
+        }
+
+        @Override
+        public SwitchPoint switchpoint() {
+            return switchpoint;
+        }
+
+        @Override
+        public Optional<DispatchContext> value() {
+            return context;
+        }
+    }
+
+    static class GuardedIsPureType implements GuardedValue<Boolean> {
+        private final Boolean isPure;
+        private final SwitchPoint switchpoint;
+
+        GuardedIsPureType(boolean isPure, SwitchPoint switchpoint) {
+            this.isPure = Boolean.valueOf(isPure);
+            this.switchpoint = switchpoint;
+        }
+
+        @Override
+        public SwitchPoint switchpoint() {
+            return switchpoint;
+        }
+
+        @Override
+        public Boolean value() {
+            return isPure;
         }
     }
 }
