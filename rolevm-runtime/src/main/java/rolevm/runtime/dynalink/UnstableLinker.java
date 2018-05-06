@@ -6,7 +6,7 @@ import static java.lang.invoke.MethodType.methodType;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
-import java.util.Objects;
+import java.lang.invoke.WrongMethodTypeException;
 
 import jdk.dynalink.CallSiteDescriptor;
 import jdk.dynalink.NamedOperation;
@@ -19,11 +19,15 @@ import rolevm.api.DispatchContext;
 import rolevm.runtime.linker.ProceedInvocations;
 
 public class UnstableLinker implements GuardingDynamicLinker {
+    private static final MethodType COMBINER_TYPE = methodType(DispatchContext.class, Object.class);
     private final ProceedInvocations factory = new ProceedInvocations();
     private final MethodHandle getContext;
 
     public UnstableLinker(final MethodHandle getContext) {
-        this.getContext = Objects.requireNonNull(getContext);
+        if (!COMBINER_TYPE.equals(getContext.type())) { // forces NPE
+            throw new WrongMethodTypeException(getContext + " should be of type " + COMBINER_TYPE);
+        }
+        this.getContext = getContext;
     }
 
     @Override
