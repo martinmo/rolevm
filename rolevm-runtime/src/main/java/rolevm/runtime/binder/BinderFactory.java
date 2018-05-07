@@ -10,10 +10,10 @@ import rolevm.runtime.Binder;
  * @author Martin Morgenstern
  */
 public class BinderFactory implements BindingServiceFactory {
-    private static final CacheAwareBinder binder = new CacheAwareBinder();
+    private static final CacheAwareBinder BINDER = new CacheAwareBinder();
 
     @Override
     public CacheAwareBinder getBindingService() {
-        return binder;
+        return BINDER;
     }
 }

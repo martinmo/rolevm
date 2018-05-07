@@ -143,7 +143,7 @@ public class CacheAwareBinder implements Binder, GuardedQuery {
     @Override
     public boolean isPureType(final Class<?> type) {
         Objects.requireNonNull(type);
-        for (Object player : contexts.keySet()) {
+        for (final Object player : contexts.keySet()) {
             // player could be GC'ed during iteration
             if (player != null && type.isAssignableFrom(player.getClass())) {
                 return false;
@@ -171,12 +171,12 @@ public class CacheAwareBinder implements Binder, GuardedQuery {
     @Override
     public GuardedValue<Optional<DispatchContext>> getGuardedDispatchContext(final Object player) {
         synchronized (lock) {
-            SwitchPoint sp = contextSwitchpoints.get(player);
-            if (sp == null) {
-                sp = new SwitchPoint();
-                contextSwitchpoints.put(player, sp);
+            SwitchPoint switchpoint = contextSwitchpoints.get(player);
+            if (switchpoint == null) {
+                switchpoint = new SwitchPoint();
+                contextSwitchpoints.put(player, switchpoint);
             }
-            return new GuardedDispatchContext(getDispatchContext(player), sp);
+            return new GuardedDispatchContext(getDispatchContext(player), switchpoint);
         }
     }
 
@@ -247,7 +247,7 @@ public class CacheAwareBinder implements Binder, GuardedQuery {
         private final Optional<DispatchContext> context;
         private final SwitchPoint switchpoint;
 
-        GuardedDispatchContext(Optional<DispatchContext> context, SwitchPoint switchpoint) {
+        GuardedDispatchContext(final Optional<DispatchContext> context, final SwitchPoint switchpoint) {
             this.context = context;
             this.switchpoint = switchpoint;
         }
@@ -267,7 +267,7 @@ public class CacheAwareBinder implements Binder, GuardedQuery {
         private final Boolean isPure;
         private final SwitchPoint switchpoint;
 
-        GuardedIsPureType(boolean isPure, SwitchPoint switchpoint) {
+        GuardedIsPureType(final boolean isPure, final SwitchPoint switchpoint) {
             this.isPure = Boolean.valueOf(isPure);
             this.switchpoint = switchpoint;
         }
