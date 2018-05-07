@@ -15,13 +15,12 @@ import org.junit.Test;
 
 import rolevm.api.DispatchContext;
 import rolevm.api.RoleBindingException;
-import rolevm.runtime.Binder;
 import rolevm.runtime.InvalidRole;
 import rolevm.runtime.TestCompartment;
 import rolevm.runtime.TestCompartment.ValidRole;
 
-public class BinderTest {
-    private Binder binder;
+public class AddBindingsTest {
+    private CacheAwareBinder binder;
     private Object player;
     private TestCompartment compartment;
     private ValidRole role;

@@ -11,12 +11,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import rolevm.api.DispatchContext;
-import rolevm.runtime.Binder;
 import rolevm.runtime.TestCompartment;
 import rolevm.runtime.TestCompartment.ValidRole;
 
-public class BinderRemovalTest {
-    private Binder binder;
+public class RemoveBindingsTest {
+    private CacheAwareBinder binder;
     private Object player;
     private TestCompartment compartment;
     private ValidRole role1, role2, role3;
