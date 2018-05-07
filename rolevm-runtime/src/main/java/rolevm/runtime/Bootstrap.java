@@ -16,7 +16,7 @@ import rolevm.runtime.binder.Binder;
 import rolevm.runtime.binder.BinderFactory;
 import rolevm.runtime.binder.CacheAwareBinder;
 import rolevm.runtime.dynalink.DynalinkLinkerBuilder;
-import rolevm.runtime.linker.ProceedInvocations;
+import rolevm.runtime.proceed.ProceedInvocations;
 
 /**
  * Sets up the RoleVM linker and provides the bootstrap methods for the

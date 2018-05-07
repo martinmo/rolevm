@@ -1,4 +1,4 @@
-package rolevm.runtime.linker;
+package rolevm.runtime.proceed;
 
 import static org.junit.Assert.assertEquals;
 

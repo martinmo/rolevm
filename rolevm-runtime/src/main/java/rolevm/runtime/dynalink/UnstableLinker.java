@@ -15,7 +15,7 @@ import jdk.dynalink.linker.GuardingDynamicLinker;
 import jdk.dynalink.linker.LinkRequest;
 import jdk.dynalink.linker.LinkerServices;
 import rolevm.api.DispatchContext;
-import rolevm.runtime.linker.ProceedInvocations;
+import rolevm.runtime.proceed.ProceedInvocations;
 
 public class UnstableLinker implements GuardingDynamicLinker {
     private static final MethodType COMBINER_TYPE = methodType(DispatchContext.class, Object.class);

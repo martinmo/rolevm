@@ -17,7 +17,7 @@ import jdk.dynalink.linker.support.Guards;
 import rolevm.api.DispatchContext;
 import rolevm.runtime.binder.GuardedQuery;
 import rolevm.runtime.binder.GuardedValue;
-import rolevm.runtime.linker.ProceedInvocations;
+import rolevm.runtime.proceed.ProceedInvocations;
 
 public class StableLinker implements GuardingDynamicLinker {
     private final ProceedInvocations factory = new ProceedInvocations();

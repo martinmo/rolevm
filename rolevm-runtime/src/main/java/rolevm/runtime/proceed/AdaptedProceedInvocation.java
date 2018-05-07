@@ -1,4 +1,4 @@
-package rolevm.runtime.linker;
+package rolevm.runtime.proceed;
 
 import static java.lang.invoke.MethodHandles.dropArguments;
 
