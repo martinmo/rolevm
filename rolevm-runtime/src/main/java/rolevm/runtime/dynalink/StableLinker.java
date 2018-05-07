@@ -3,6 +3,7 @@ package rolevm.runtime.dynalink;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
+import java.util.Objects;
 import java.util.Optional;
 
 import jdk.dynalink.CallSiteDescriptor;
@@ -20,7 +21,7 @@ public class StableLinker extends BaseLinker {
     private final GuardedQuery query;
 
     public StableLinker(final GuardedQuery query) {
-        this.query = query;
+        this.query = Objects.requireNonNull(query);
     }
 
     @Override

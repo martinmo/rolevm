@@ -2,6 +2,7 @@ package rolevm.runtime.dynalink;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
+import java.util.Objects;
 
 import jdk.dynalink.CallSiteDescriptor;
 import jdk.dynalink.linker.GuardedInvocation;
@@ -11,10 +12,10 @@ import rolevm.runtime.binder.GuardedQuery;
 import rolevm.runtime.binder.GuardedValue;
 
 public class FastpathLinker extends BaseLinker {
-    private GuardedQuery query;
+    private final GuardedQuery query;
 
-    public FastpathLinker(GuardedQuery query) {
-        this.query = query;
+    public FastpathLinker(final GuardedQuery query) {
+        this.query = Objects.requireNonNull(query);
     }
 
     @Override
