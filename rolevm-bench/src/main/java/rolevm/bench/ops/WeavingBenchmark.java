@@ -4,7 +4,6 @@ import static java.lang.ClassLoader.getSystemResourceAsStream;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UncheckedIOException;
 import java.lang.instrument.IllegalClassFormatException;
 import java.util.concurrent.TimeUnit;
 
