@@ -9,6 +9,8 @@ import static rolevm.api.DispatchContext.TARGET_HANDLE;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
+import java.lang.invoke.WrongMethodTypeException;
+import java.util.Objects;
 
 import jdk.dynalink.CallSiteDescriptor;
 import jdk.dynalink.DynamicLinker;
@@ -20,12 +22,12 @@ public class ProceedInvocation {
     private final CallSiteDescriptor descriptor;
 
     public ProceedInvocation(DynamicLinker linker, Lookup lookup, String name, MethodType type) {
-        if (!type.parameterType(0).equals(DispatchContext.class)) {
-            throw new IllegalArgumentException("invalid method type " + type);
+        if (type.parameterCount() < 2 || type.parameterType(0) != DispatchContext.class) {
+            throw new WrongMethodTypeException(type.toString());
         }
         MethodType callSiteType = type.insertParameterTypes(0, Object.class);
         this.descriptor = new CallSiteDescriptor(lookup, CALL.named(name), callSiteType);
-        this.linker = linker;
+        this.linker = Objects.requireNonNull(linker);
     }
 
     public MethodHandle getHandle() {
@@ -37,14 +39,11 @@ public class ProceedInvocation {
     }
 
     static MethodHandle combineWithContext(final MethodHandle invoker) {
-        ensureCorrectType(invoker);
+        MethodType type = invoker.type();
+        if (type.parameterCount() < 3 || type.parameterType(0) != Object.class
+                || type.parameterType(1) != DispatchContext.class) {
+            throw new WrongMethodTypeException(type.toString());
+        }
         return foldArguments(filterArguments(invoker, 1, NEXT_HANDLE), TARGET_HANDLE);
-    }
-
-    private static void ensureCorrectType(final MethodHandle handle) {
-        MethodType type = handle.type();
-        assert type.parameterType(0) == Object.class; // unbound receiver
-        assert type.parameterType(1) == DispatchContext.class; // first arg
-        assert type.parameterCount() >= 3; // third is some core type
     }
 }
