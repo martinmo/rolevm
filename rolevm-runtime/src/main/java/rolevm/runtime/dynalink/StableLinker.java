@@ -6,10 +6,7 @@ import java.lang.invoke.MethodType;
 import java.util.Optional;
 
 import jdk.dynalink.CallSiteDescriptor;
-import jdk.dynalink.NamedOperation;
-import jdk.dynalink.Operation;
 import jdk.dynalink.linker.GuardedInvocation;
-import jdk.dynalink.linker.GuardingDynamicLinker;
 import jdk.dynalink.linker.LinkRequest;
 import jdk.dynalink.linker.LinkerServices;
 import jdk.dynalink.linker.support.Guards;
@@ -18,7 +15,7 @@ import rolevm.runtime.binder.GuardedQuery;
 import rolevm.runtime.binder.GuardedValue;
 import rolevm.runtime.linker.ProceedInvocations;
 
-public class StableLinker implements GuardingDynamicLinker {
+public class StableLinker extends BaseLinker {
     private final ProceedInvocations factory = new ProceedInvocations();
     private final GuardedQuery query;
 
@@ -35,7 +32,7 @@ public class StableLinker implements GuardingDynamicLinker {
         CallSiteDescriptor descriptor = request.getCallSiteDescriptor();
         MethodType callsiteType = descriptor.getMethodType();
         MethodType lookupType = callsiteType.dropParameterTypes(0, 1);
-        String name = unwrapName(descriptor);
+        String name = unwrapMethodName(descriptor);
         Lookup lookup = descriptor.getLookup();
         MethodHandle handle = lookup.findVirtual(callsiteType.parameterType(0), name, lookupType);
         Object receiver = request.getReceiver();
@@ -48,13 +45,5 @@ public class StableLinker implements GuardingDynamicLinker {
             return new GuardedInvocation(boundProceed, Guards.getIdentityGuard(receiver), guardedContext.switchpoint());
         }
         return new GuardedInvocation(handle, Guards.getIdentityGuard(receiver), guardedContext.switchpoint());
-    }
-
-    public static String unwrapName(final CallSiteDescriptor descriptor) {
-        Operation op = descriptor.getOperation();
-        if (op instanceof NamedOperation) {
-            return ((NamedOperation) op).getName().toString();
-        }
-        throw new AssertionError();
     }
 }

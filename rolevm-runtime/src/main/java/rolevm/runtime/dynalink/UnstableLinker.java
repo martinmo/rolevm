@@ -9,16 +9,13 @@ import java.lang.invoke.MethodType;
 import java.lang.invoke.WrongMethodTypeException;
 
 import jdk.dynalink.CallSiteDescriptor;
-import jdk.dynalink.NamedOperation;
-import jdk.dynalink.Operation;
 import jdk.dynalink.linker.GuardedInvocation;
-import jdk.dynalink.linker.GuardingDynamicLinker;
 import jdk.dynalink.linker.LinkRequest;
 import jdk.dynalink.linker.LinkerServices;
 import rolevm.api.DispatchContext;
 import rolevm.runtime.linker.ProceedInvocations;
 
-public class UnstableLinker implements GuardingDynamicLinker {
+public class UnstableLinker extends BaseLinker {
     private static final MethodType COMBINER_TYPE = methodType(DispatchContext.class, Object.class);
     private final ProceedInvocations factory = new ProceedInvocations();
     private final MethodHandle getContext;
@@ -34,7 +31,7 @@ public class UnstableLinker implements GuardingDynamicLinker {
     public GuardedInvocation getGuardedInvocation(final LinkRequest request, final LinkerServices unused)
             throws Exception {
         CallSiteDescriptor descriptor = request.getCallSiteDescriptor();
-        String name = unwrapName(descriptor);
+        String name = unwrapMethodName(descriptor);
         MethodType callsiteType = descriptor.getMethodType();
         MethodType lookupType = callsiteType.dropParameterTypes(0, 1);
         Class<?> receiverType = callsiteType.parameterType(0);
@@ -45,13 +42,5 @@ public class UnstableLinker implements GuardingDynamicLinker {
         MethodHandle foldedProceed = foldArguments(proceed,
                 getContext.asType(methodType(DispatchContext.class, receiverType)));
         return new GuardedInvocation(foldedProceed.asType(callsiteType));
-    }
-
-    public static String unwrapName(final CallSiteDescriptor descriptor) {
-        Operation op = descriptor.getOperation();
-        if (op instanceof NamedOperation) {
-            return ((NamedOperation) op).getName().toString();
-        }
-        throw new AssertionError();
     }
 }

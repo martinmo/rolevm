@@ -10,14 +10,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import jdk.dynalink.CallSiteDescriptor;
-import jdk.dynalink.NamedOperation;
-import jdk.dynalink.Operation;
 import jdk.dynalink.linker.GuardedInvocation;
-import jdk.dynalink.linker.GuardingDynamicLinker;
 import jdk.dynalink.linker.LinkRequest;
 import jdk.dynalink.linker.LinkerServices;
 
-public class JLOLinker implements GuardingDynamicLinker {
+public class JLOLinker extends BaseLinker {
     /** Map of names and method types of methods in {@link java.lang.Object}. */
     private static final Map<String, MethodType> JLO_METHODS = objectMethods();
 
@@ -27,7 +24,7 @@ public class JLOLinker implements GuardingDynamicLinker {
         CallSiteDescriptor descriptor = request.getCallSiteDescriptor();
         MethodType callsiteType = descriptor.getMethodType();
         MethodType lookupType = callsiteType.dropParameterTypes(0, 1);
-        String name = unwrapName(descriptor);
+        String name = unwrapMethodName(descriptor);
         if (!lookupType.equals(JLO_METHODS.get(name))) {
             // we cannot link this request, try the next linker
             return null;
@@ -46,13 +43,5 @@ public class JLOLinker implements GuardingDynamicLinker {
             objectMethods.put(m.getName(), methodType(m.getReturnType(), m.getParameterTypes()));
         }
         return Collections.unmodifiableMap(objectMethods);
-    }
-
-    public static String unwrapName(final CallSiteDescriptor descriptor) {
-        Operation op = descriptor.getOperation();
-        if (op instanceof NamedOperation) {
-            return ((NamedOperation) op).getName().toString();
-        }
-        throw new AssertionError();
     }
 }
