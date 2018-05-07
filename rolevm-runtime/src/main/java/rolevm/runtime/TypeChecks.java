@@ -1,4 +1,4 @@
-package rolevm.runtime.binder;
+package rolevm.runtime;
 
 import static rolevm.runtime.RoleTypeConstants.COMPARTMENT_CLASS;
 import static rolevm.runtime.RoleTypeConstants.ROLE_ANNOTATION;

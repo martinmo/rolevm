@@ -1,16 +1,14 @@
-package rolevm.runtime.binder;
+package rolevm.runtime;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static rolevm.runtime.binder.TypeChecks.isRole;
-import static rolevm.runtime.binder.TypeChecks.validatePlayer;
-import static rolevm.runtime.binder.TypeChecks.validateRoleType;
+import static rolevm.runtime.TypeChecks.isRole;
+import static rolevm.runtime.TypeChecks.validatePlayer;
+import static rolevm.runtime.TypeChecks.validateRoleType;
 
 import org.junit.Test;
 
 import rolevm.api.RoleBindingException;
-import rolevm.runtime.InvalidRole;
-import rolevm.runtime.TestCompartment;
 import rolevm.runtime.TestCompartment.ValidRole;
 
 public class TypeCheckTests {
