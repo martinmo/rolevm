@@ -30,7 +30,7 @@ import rolevm.runtime.TypeChecks;
  */
 public class CacheAwareBinder implements Binder, GuardedQuery {
     /** Lock object used to guard bind/unbind operations. */
-    private final Object mutex = new Object();
+    private final Object lock = new Object();
 
     /**
      * Saves roles of an object in a canonical mapping. Whenever this map is
@@ -81,7 +81,7 @@ public class CacheAwareBinder implements Binder, GuardedQuery {
         }
         TypeChecks.validateRoleType(role.getClass());
         TypeChecks.validatePlayer(player);
-        synchronized (mutex) {
+        synchronized (lock) {
             List<Object> currentRoles = registry.get(player);
             if (currentRoles == null) {
                 currentRoles = new ArrayList<>();
@@ -99,7 +99,7 @@ public class CacheAwareBinder implements Binder, GuardedQuery {
      */
     @Override
     public void unbind(final Object player, final Object role) {
-        synchronized (mutex) {
+        synchronized (lock) {
             List<Object> currentRoles = registry.get(player);
             if (currentRoles != null && currentRoles.remove(role)) {
                 if (currentRoles.isEmpty()) {
@@ -170,7 +170,7 @@ public class CacheAwareBinder implements Binder, GuardedQuery {
 
     @Override
     public GuardedValue<Optional<DispatchContext>> getGuardedDispatchContext(final Object player) {
-        synchronized (mutex) {
+        synchronized (lock) {
             SwitchPoint sp = contextSwitchpoints.get(player);
             if (sp == null) {
                 sp = new SwitchPoint();
