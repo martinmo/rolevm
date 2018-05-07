@@ -95,20 +95,16 @@ public class CacheAwareBinder implements Binder, GuardedQuery {
      */
     @Override
     public void unbind(final Object player, final Object role) {
-        boolean modified = false;
         synchronized (mutex) {
             List<Object> currentRoles = registry.get(player);
-            if (currentRoles != null) {
-                modified = currentRoles.remove(role);
-                if (modified) {
-                    if (currentRoles.isEmpty()) {
-                        registry.remove(player);
-                        contexts.remove(player);
-                    } else {
-                        contexts.put(player, DispatchContext.of(currentRoles));
-                    }
-                    updateContextSwitchpoint(player);
+            if (currentRoles != null && currentRoles.remove(role)) {
+                if (currentRoles.isEmpty()) {
+                    registry.remove(player);
+                    contexts.remove(player);
+                } else {
+                    contexts.put(player, DispatchContext.of(currentRoles));
                 }
+                updateContextSwitchpoint(player);
             }
         }
     }
