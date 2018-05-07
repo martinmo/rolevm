@@ -12,7 +12,6 @@ import jdk.dynalink.DynamicLinker;
 import jdk.dynalink.NamedOperation;
 import jdk.dynalink.Operation;
 import jdk.dynalink.support.ChainedCallSite;
-import rolevm.runtime.binder.Binder;
 import rolevm.runtime.binder.BinderFactory;
 import rolevm.runtime.binder.CacheAwareBinder;
 import rolevm.runtime.dynalink.DynalinkLinkerBuilder;

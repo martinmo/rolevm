@@ -7,8 +7,8 @@ import java.util.Objects;
 import jdk.dynalink.DynamicLinker;
 import jdk.dynalink.DynamicLinkerFactory;
 import jdk.dynalink.linker.GuardingDynamicLinker;
-import rolevm.runtime.binder.Binder;
-import rolevm.runtime.binder.GuardedQuery;
+import rolevm.runtime.Binder;
+import rolevm.runtime.GuardedQuery;
 
 public class DynalinkLinkerBuilder {
     private static final String THRESHOLD_PROPERTY = "rolevm.unstableRelinkThreshold";

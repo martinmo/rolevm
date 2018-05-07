@@ -17,10 +17,10 @@ import org.junit.Test;
 
 import jdk.dynalink.linker.GuardedInvocation;
 import rolevm.api.DispatchContext;
+import rolevm.runtime.GuardedQuery;
+import rolevm.runtime.GuardedValue;
 import rolevm.runtime.SomeCore;
 import rolevm.runtime.TestCompartment.RoleForSomeCore;
-import rolevm.runtime.binder.GuardedQuery;
-import rolevm.runtime.binder.GuardedValue;
 
 public class StableLinkerTest extends DynalinkTestBase {
     private StableLinker linker;

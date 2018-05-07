@@ -17,6 +17,9 @@ import java.util.Optional;
 import java.util.Set;
 
 import rolevm.api.DispatchContext;
+import rolevm.runtime.Binder;
+import rolevm.runtime.GuardedQuery;
+import rolevm.runtime.GuardedValue;
 
 /**
  * Manages object-to-role bindings, provides binding operations, and answers

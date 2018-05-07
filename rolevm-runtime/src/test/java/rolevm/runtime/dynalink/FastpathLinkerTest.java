@@ -13,9 +13,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import jdk.dynalink.linker.GuardedInvocation;
+import rolevm.runtime.GuardedQuery;
+import rolevm.runtime.GuardedValue;
 import rolevm.runtime.SomeCore;
-import rolevm.runtime.binder.GuardedQuery;
-import rolevm.runtime.binder.GuardedValue;
 
 public class FastpathLinkerTest extends DynalinkTestBase {
     private FastpathLinker linker;

@@ -1,6 +1,7 @@
 package rolevm.runtime.binder;
 
 import rolevm.api.service.BindingServiceFactory;
+import rolevm.runtime.Binder;
 
 /**
  * Implementation of {@link BindingServiceFactory} that returns the singleton

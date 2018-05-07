@@ -1,4 +1,4 @@
-package rolevm.runtime.binder;
+package rolevm.runtime;
 
 import java.lang.invoke.MethodHandle;
 import java.util.List;

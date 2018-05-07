@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import rolevm.api.DispatchContext;
+import rolevm.runtime.Binder;
 import rolevm.runtime.TestCompartment;
 import rolevm.runtime.TestCompartment.ValidRole;
 

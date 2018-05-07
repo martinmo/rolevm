@@ -11,8 +11,8 @@ import jdk.dynalink.linker.GuardedInvocation;
 import jdk.dynalink.linker.GuardingDynamicLinker;
 import jdk.dynalink.linker.LinkRequest;
 import jdk.dynalink.linker.LinkerServices;
-import rolevm.runtime.binder.GuardedQuery;
-import rolevm.runtime.binder.GuardedValue;
+import rolevm.runtime.GuardedQuery;
+import rolevm.runtime.GuardedValue;
 
 public class FastpathLinker implements GuardingDynamicLinker {
     private final GuardedQuery query;

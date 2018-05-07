@@ -13,7 +13,6 @@ import org.junit.Test;
 
 import rolevm.api.DispatchContext;
 import rolevm.runtime.TestCompartment.RoleForSomeCore;
-import rolevm.runtime.binder.Binder;
 
 public class BootstrapTest {
     private final MethodType type = methodType(int.class, SomeCore.class, int.class);
