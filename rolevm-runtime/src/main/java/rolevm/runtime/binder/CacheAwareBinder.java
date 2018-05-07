@@ -48,9 +48,6 @@ public class CacheAwareBinder implements Binder, GuardedQuery {
 
     private final ClassValue<SwitchPoint> typeSwitchpoints = new TypeSwitchpoints();
 
-    /** List of objects which subscribed to binding events. */
-    private final List<BindingObserver> bindingObservers = new ArrayList<>();
-
     /**
      * Allows the user to select the fast, but memory-leaking
      * {@link IdentityHashMap}, or the slower {@link ConcurrentWeakHashMap} as the
@@ -91,8 +88,6 @@ public class CacheAwareBinder implements Binder, GuardedQuery {
             invalidateType(player.getClass());
             updateContextSwitchpoint(player);
         }
-        // "alien" methods should be called outside synchronized blocks:
-        bindingObservers.stream().forEach(o -> o.bindingAdded(player, role));
     }
 
     /**
@@ -116,19 +111,6 @@ public class CacheAwareBinder implements Binder, GuardedQuery {
                 }
             }
         }
-        if (modified) {
-            bindingObservers.stream().forEach(o -> o.bindingRemoved(player, role));
-        }
-    }
-
-    /** Adds an observer that will be notified on binding events. */
-    public void addObserver(BindingObserver observer) {
-        bindingObservers.add(observer);
-    }
-
-    /** Removes an observer from the subscription list. */
-    public boolean removeObserver(BindingObserver observer) {
-        return bindingObservers.remove(observer);
     }
 
     /** Returns a (possibly empty) list with the bound roles of {@code player}. */

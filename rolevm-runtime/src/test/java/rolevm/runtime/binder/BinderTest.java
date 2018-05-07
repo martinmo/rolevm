@@ -5,9 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 import java.lang.invoke.MethodHandle;
 import java.util.List;
@@ -45,23 +42,6 @@ public class BinderTest {
     public void bindInvalidPlayer() {
         TestCompartment compartment = new TestCompartment();
         binder.bind(compartment.new ValidRole(), compartment.new ValidRole());
-    }
-
-    @Test
-    public void observerNotification() {
-        BindingObserver observer1 = mock(BindingObserver.class);
-        BindingObserver observer2 = mock(BindingObserver.class);
-        binder.addObserver(observer1);
-        binder.addObserver(observer2);
-        binder.unbind(player, role);
-        verify(observer1, never()).bindingRemoved(player, role);
-        verify(observer2, never()).bindingRemoved(player, role);
-        binder.bind(player, role);
-        verify(observer1).bindingAdded(player, role);
-        verify(observer2).bindingAdded(player, role);
-        binder.unbind(player, role);
-        verify(observer1).bindingRemoved(player, role);
-        verify(observer2).bindingRemoved(player, role);
     }
 
     @Test
