@@ -1,7 +1,6 @@
 package rolevm.runtime;
 
 import static jdk.dynalink.StandardOperation.CALL;
-import static rolevm.runtime.linker.Utils.createDynamicLinker;
 
 import java.lang.invoke.CallSite;
 import java.lang.invoke.ConstantCallSite;
@@ -14,8 +13,8 @@ import jdk.dynalink.support.ChainedCallSite;
 import rolevm.runtime.binder.Binder;
 import rolevm.runtime.binder.BinderFactory;
 import rolevm.runtime.binder.CacheAwareBinder;
+import rolevm.runtime.dynalink.DynalinkLinkerBuilder;
 import rolevm.runtime.linker.ProceedInvocations;
-import rolevm.runtime.linker.StateBasedLinker;
 
 /**
  * Sets up the RoleVM linker and provides the bootstrap methods for the
@@ -28,14 +27,14 @@ public class Bootstrap {
     static final CacheAwareBinder THE_BINDER = new BinderFactory().getBindingService();
 
     /** The top level Dynalink linker used for default call sites. */
-    private static final DynamicLinker dynamicLinker = createDynamicLinker(newStateBasedLinker());
+    private static final DynamicLinker dynamicLinker = initCompositeLinker();
 
     /** Factory for {@code proceed()} invocations. */
     private static final ProceedInvocations proceedFactory = new ProceedInvocations();
 
-    /** Create a {@link StateBasedLinker} using the global {@link Binder}. */
-    private static StateBasedLinker newStateBasedLinker() {
-        return new StateBasedLinker(THE_BINDER);
+    private static DynamicLinker initCompositeLinker() {
+        return new DynalinkLinkerBuilder()//
+                .fromSystemProperties().withBinder(THE_BINDER).withGuardedQuery(THE_BINDER).build();
     }
 
     /** Initializes default call sites. */
