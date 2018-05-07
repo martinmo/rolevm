@@ -1,7 +1,7 @@
 package rolevm.runtime.linker;
 
 import static java.lang.invoke.MethodHandles.dropArguments;
-import static rolevm.runtime.linker.Utils.unwrapName;
+import static rolevm.runtime.Bootstrap.unwrapMethodName;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
@@ -50,7 +50,7 @@ public class ProceedInvocations {
             Lookup lookup = descriptor.getLookup();
             Class<?> coreType = descriptor.getMethodType().parameterType(2);
             MethodType coreMethodType = descriptor.getMethodType().dropParameterTypes(0, 3);
-            MethodHandle handle = lookup.findVirtual(coreType, unwrapName(descriptor), coreMethodType);
+            MethodHandle handle = lookup.findVirtual(coreType, unwrapMethodName(descriptor), coreMethodType);
             return new GuardedInvocation(dropArguments(handle, 0, Object.class, DispatchContext.class),
                     Guards.isNull());
         }
@@ -58,7 +58,7 @@ public class ProceedInvocations {
         private GuardedInvocation roleOrProceedInvocation(Class<?> receiverType, CallSiteDescriptor descriptor)
                 throws IllegalAccessException {
             Lookup lookup = descriptor.getLookup();
-            String name = unwrapName(descriptor);
+            String name = unwrapMethodName(descriptor);
             MethodType type = descriptor.getMethodType();
             MethodHandle guard = Guards.isInstance(receiverType, type);
             try {

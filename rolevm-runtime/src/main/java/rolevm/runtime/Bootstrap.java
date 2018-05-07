@@ -9,6 +9,8 @@ import java.lang.invoke.MethodType;
 
 import jdk.dynalink.CallSiteDescriptor;
 import jdk.dynalink.DynamicLinker;
+import jdk.dynalink.NamedOperation;
+import jdk.dynalink.Operation;
 import jdk.dynalink.support.ChainedCallSite;
 import rolevm.runtime.binder.Binder;
 import rolevm.runtime.binder.BinderFactory;
@@ -45,5 +47,14 @@ public class Bootstrap {
     /** Initializes proceed call sites. */
     public static CallSite proceedcall(Lookup lookup, String name, MethodType type) {
         return new ConstantCallSite(proceedFactory.getAdaptedInvocation(lookup, name, type).getHandle());
+    }
+
+    /** Unwraps the method name from the given {@link CallSiteDescriptor}. */
+    public static String unwrapMethodName(final CallSiteDescriptor descriptor) {
+        final Operation operation = descriptor.getOperation();
+        if (operation instanceof NamedOperation) {
+            return ((NamedOperation) operation).getName().toString();
+        }
+        throw new AssertionError();
     }
 }

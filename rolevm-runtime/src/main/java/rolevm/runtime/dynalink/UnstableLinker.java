@@ -2,6 +2,7 @@ package rolevm.runtime.dynalink;
 
 import static java.lang.invoke.MethodHandles.foldArguments;
 import static java.lang.invoke.MethodType.methodType;
+import static rolevm.runtime.Bootstrap.unwrapMethodName;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
@@ -10,12 +11,13 @@ import java.lang.invoke.WrongMethodTypeException;
 
 import jdk.dynalink.CallSiteDescriptor;
 import jdk.dynalink.linker.GuardedInvocation;
+import jdk.dynalink.linker.GuardingDynamicLinker;
 import jdk.dynalink.linker.LinkRequest;
 import jdk.dynalink.linker.LinkerServices;
 import rolevm.api.DispatchContext;
 import rolevm.runtime.linker.ProceedInvocations;
 
-public class UnstableLinker extends BaseLinker {
+public class UnstableLinker implements GuardingDynamicLinker {
     private static final MethodType COMBINER_TYPE = methodType(DispatchContext.class, Object.class);
     private final ProceedInvocations factory = new ProceedInvocations();
     private final MethodHandle getContext;

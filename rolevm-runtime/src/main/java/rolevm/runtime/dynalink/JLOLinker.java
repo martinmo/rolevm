@@ -1,6 +1,7 @@
 package rolevm.runtime.dynalink;
 
 import static java.lang.invoke.MethodType.methodType;
+import static rolevm.runtime.Bootstrap.unwrapMethodName;
 
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
@@ -11,10 +12,11 @@ import java.util.Map;
 
 import jdk.dynalink.CallSiteDescriptor;
 import jdk.dynalink.linker.GuardedInvocation;
+import jdk.dynalink.linker.GuardingDynamicLinker;
 import jdk.dynalink.linker.LinkRequest;
 import jdk.dynalink.linker.LinkerServices;
 
-public class JLOLinker extends BaseLinker {
+public class JLOLinker implements GuardingDynamicLinker {
     /** Map of names and method types of methods in {@link java.lang.Object}. */
     private static final Map<String, MethodType> JLO_METHODS = objectMethods();
 
