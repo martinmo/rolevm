@@ -1,5 +1,5 @@
 /**
- * Contains the RoleVM java agent, which activates load-time class
- * transformation.
+ * Contains the RoleVM java agent that performs the load-time class
+ * transformations.
  */
 package rolevm.agent;

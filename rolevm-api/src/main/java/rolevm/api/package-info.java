@@ -1,4 +1,4 @@
 /**
- * Provides all basic annotations and types for users of the RoleVM.
+ * Contains annotations, interfaces and classes for library users.
  */
 package rolevm.api;

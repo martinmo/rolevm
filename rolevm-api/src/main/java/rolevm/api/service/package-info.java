@@ -1,5 +1,4 @@
 /**
- * Contains interfaces that are used for service discovery and for communication
- * with the underlying RoleVM implementation.
+ * Contains interfaces that are used for communication with the RoleVM runtime.
  */
 package rolevm.api.service;

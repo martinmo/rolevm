@@ -140,7 +140,7 @@
               <head>Implementation Note:</head>
             </tag>
           </tags>
-          <excludePackageNames>rolevm.bench.*:rolevm.examples.*</excludePackageNames>
+          <excludePackageNames>rolevm.bench:rolevm.examples</excludePackageNames>
         </configuration>
       </plugin>
       <plugin>
