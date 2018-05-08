@@ -18,7 +18,7 @@ import rolevm.agent.RoleVMAgent;
  * @author Martin Morgenstern
  */
 public class DefaultTransformer implements ClassFileTransformer {
-    final static Logger logger = LoggerFactory.getLogger(DefaultTransformer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultTransformer.class);
     private final StandardBlacklist blacklist;
 
     public DefaultTransformer(StandardBlacklist blacklist) {
@@ -31,7 +31,7 @@ public class DefaultTransformer implements ClassFileTransformer {
         if (blacklist.isExcluded(className)) {
             return null;
         }
-        logger.trace("Transforming class {}", className);
+        LOG.trace("Transforming class {}", className);
         final ClassReader reader = new ClassReader(classfileBuffer);
         final ClassWriter writer = new ClassWriter(reader, 0);
         final ClassVisitor visitor = new IndyClassAdapter(writer);
@@ -39,10 +39,10 @@ public class DefaultTransformer implements ClassFileTransformer {
             reader.accept(visitor, 0);
             return writer.toByteArray();
         } catch (OutdatedClassFormatError e) {
-            logger.warn("Class format of {} is too old, and thus not transformed");
+            LOG.warn("Skipping class with outdated format: {}", className);
         } catch (Throwable t) {
-            logger.error("Transformation of {} failed", className);
-            logger.error("Stacktrace:", t);
+            LOG.error("Transformation failed: {}", className);
+            LOG.error("Stacktrace:", t);
         }
         return null;
     }
