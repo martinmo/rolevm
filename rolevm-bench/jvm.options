@@ -1,2 +1,5 @@
 -javaagent:rolevm-agent/target/rolevm-agent-2.0-SNAPSHOT.jar=dump
+-Dorg.slf4j.simpleLogger.defaultLogLevel=error
+-Dorg.slf4j.simpleLogger.log.rolevm.runtime=trace
+-Dorg.slf4j.simpleLogger.showThreadName=false
 -Drolevm.exclude=com/google/common/base/,rolevm/bench/,org/openjdk/jmh/

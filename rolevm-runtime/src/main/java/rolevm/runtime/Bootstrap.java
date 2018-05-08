@@ -7,6 +7,9 @@ import java.lang.invoke.ConstantCallSite;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jdk.dynalink.CallSiteDescriptor;
 import jdk.dynalink.DynamicLinker;
 import jdk.dynalink.NamedOperation;
@@ -24,6 +27,9 @@ import rolevm.runtime.proceed.ProceedInvocations;
  * @author Martin Morgenstern
  */
 public class Bootstrap {
+    /** Shared SLF4J logger for the {@link rolevm.runtime} package. */
+    public static final Logger LOG = LoggerFactory.getLogger(Bootstrap.class);
+
     /** Global {@link Binder} instance. */
     static final CacheAwareBinder THE_BINDER = new BinderFactory().getBindingService();
 

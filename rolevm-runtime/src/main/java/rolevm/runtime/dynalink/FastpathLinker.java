@@ -1,5 +1,6 @@
 package rolevm.runtime.dynalink;
 
+import static rolevm.runtime.Bootstrap.LOG;
 import static rolevm.runtime.Bootstrap.unwrapMethodName;
 
 import java.lang.invoke.MethodHandle;
@@ -34,6 +35,7 @@ public class FastpathLinker implements GuardingDynamicLinker {
         if (!isPure.value()) {
             return null;
         }
+        LOG.trace("fastpath link for {}", descriptor);
         MethodHandle handle = descriptor.getLookup().findVirtual(staticReceiverType, unwrapMethodName(descriptor),
                 callsiteType.dropParameterTypes(0, 1));
         return new GuardedInvocation(handle, isPure.switchpoint());

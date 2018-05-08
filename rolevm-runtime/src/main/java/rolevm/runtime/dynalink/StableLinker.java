@@ -1,5 +1,6 @@
 package rolevm.runtime.dynalink;
 
+import static rolevm.runtime.Bootstrap.LOG;
 import static rolevm.runtime.Bootstrap.unwrapMethodName;
 
 import java.lang.invoke.MethodHandle;
@@ -41,6 +42,7 @@ public class StableLinker implements GuardingDynamicLinker {
         MethodHandle handle = lookup.findVirtual(callsiteType.parameterType(0), name, lookupType);
         Object receiver = request.getReceiver();
         GuardedValue<Optional<DispatchContext>> guardedContext = query.getGuardedDispatchContext(receiver);
+        LOG.trace("stable link for {}", descriptor);
         if (guardedContext.value().isPresent()) {
             MethodHandle proceed = factory
                     .getInvocation(lookup, name, callsiteType.insertParameterTypes(0, DispatchContext.class))

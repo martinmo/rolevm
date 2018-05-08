@@ -1,6 +1,7 @@
 package rolevm.runtime.dynalink;
 
 import static java.lang.invoke.MethodType.methodType;
+import static rolevm.runtime.Bootstrap.LOG;
 import static rolevm.runtime.Bootstrap.unwrapMethodName;
 
 import java.lang.invoke.MethodHandles.Lookup;
@@ -31,6 +32,7 @@ public class JLOLinker implements GuardingDynamicLinker {
             // we cannot link this request, try the next linker
             return null;
         }
+        LOG.trace("JLO link for {}", descriptor);
         Lookup lookup = descriptor.getLookup();
         return new GuardedInvocation(lookup.findVirtual(callsiteType.parameterType(0), name, lookupType));
     }

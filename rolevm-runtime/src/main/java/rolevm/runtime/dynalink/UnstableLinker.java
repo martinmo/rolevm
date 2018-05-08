@@ -2,6 +2,7 @@ package rolevm.runtime.dynalink;
 
 import static java.lang.invoke.MethodHandles.foldArguments;
 import static java.lang.invoke.MethodType.methodType;
+import static rolevm.runtime.Bootstrap.LOG;
 import static rolevm.runtime.Bootstrap.unwrapMethodName;
 
 import java.lang.invoke.MethodHandle;
@@ -19,6 +20,7 @@ import rolevm.runtime.proceed.ProceedInvocations;
 
 public class UnstableLinker implements GuardingDynamicLinker {
     private static final MethodType COMBINER_TYPE = methodType(DispatchContext.class, Object.class);
+
     private final ProceedInvocations factory = new ProceedInvocations();
     private final MethodHandle getContext;
 
@@ -43,6 +45,7 @@ public class UnstableLinker implements GuardingDynamicLinker {
                 .getInvocation(lookup, name, callsiteType.insertParameterTypes(0, DispatchContext.class)).getHandle();
         MethodHandle foldedProceed = foldArguments(proceed,
                 getContext.asType(methodType(DispatchContext.class, receiverType)));
+        LOG.trace("unstable link for {}", descriptor);
         return new GuardedInvocation(foldedProceed.asType(callsiteType));
     }
 }
