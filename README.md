@@ -240,47 +240,48 @@ c.unbind(base, role);
 Measured with JDK 9.0.4 (VM 9.0.4+11) on the same machine using the synthetic NoopCompartment
 benchmarks.
 
-OT/J ([benchmark source](https://github.com/martinmo/otjbench)):
+OT/J 2.6.x ([OT/J benchmark source][otjbench]):
 
-    Benchmark                                 Mode  Cnt    Score    Error  Units
-    NoopCallinBenchmark.callin_noargs         avgt   10  192,167 ± 11,004  ns/op
-    NoopCallinBenchmark.callin_primitiveargs  avgt   10  235,161 ±  8,173  ns/op
-    NoopCallinBenchmark.callin_withargs       avgt   10  201,160 ±  6,595  ns/op
-    NoopCallinBenchmark.baseline              avgt   10    0,418 ±  0,017  ns/op
+    Benchmark                             (numRoles)  Mode  Cnt    Score   Error  Units
+    NoopBenchmark.basecall_noargs                  1  avgt   10  186.101 ± 4.509  ns/op
+    NoopBenchmark.basecall_primitiveargs           1  avgt   10  238.219 ± 7.745  ns/op
+    NoopBenchmark.basecall_withargs                1  avgt   10  195.115 ± 4.209  ns/op
+    NoopBenchmark.baseline                         1  avgt   10    0.439 ± 0.021  ns/op
 
-RoleVM 1.x ([benchmark source](rolevm-bench/src/main/java/rolevm/bench/noop)):
+RoleVM 1.x:
 
     Benchmark                                        Mode  Cnt   Score   Error  Units
-    NoopCompartmentBenchmark.basecall_noargs         avgt   10  15,118 ± 1,348  ns/op
-    NoopCompartmentBenchmark.basecall_primitiveargs  avgt   10  14,519 ± 0,463  ns/op
-    NoopCompartmentBenchmark.basecall_withargs       avgt   10  14,934 ± 0,401  ns/op
-    NoopCompartmentBenchmark.baseline                avgt   10   0,419 ± 0,015  ns/op
+    NoopCompartmentBenchmark.basecall_noargs         avgt   10  15.118 ± 1.348  ns/op
+    NoopCompartmentBenchmark.basecall_primitiveargs  avgt   10  14.519 ± 0.463  ns/op
+    NoopCompartmentBenchmark.basecall_withargs       avgt   10  14.934 ± 0.401  ns/op
+    NoopCompartmentBenchmark.baseline                avgt   10   0.419 ± 0.015  ns/op
 
-RoleVM 2.x with the default `ConcurrentWeakHashMap` as backing store:
+RoleVM 2.x with `rolevm.unstableRelinkThreshold=20`:
 
-    Benchmark                                        (numRoles)  Mode  Cnt   Score   Error  Units
-    NoopCompartmentBenchmark.basecall_noargs                  1  avgt   10  53.478 ± 1.212  ns/op
-    NoopCompartmentBenchmark.basecall_primitiveargs           1  avgt   10  52.213 ± 1.383  ns/op
-    NoopCompartmentBenchmark.basecall_withargs                1  avgt   10  52.130 ± 1.836  ns/op
-    NoopCompartmentBenchmark.baseline                       N/A  avgt   10   0.443 ± 0.007  ns/op
+    Benchmark                              (gc)  (numRoles)  Mode  Cnt  Score   Error  Units
+    NoopBenchmark.basecall_noargs         false           1  avgt   10  7.166 ± 0.373  ns/op
+    NoopBenchmark.basecall_primitiveargs  false           1  avgt   10  7.724 ± 0.260  ns/op
+    NoopBenchmark.basecall_withargs       false           1  avgt   10  7.196 ± 0.201  ns/op
+    NoopBenchmark.baseline                  N/A         N/A  avgt   10  0.442 ± 0.016  ns/op
 
-RoleVM 2.x with `IdentityHashMap` as backing store (`-Drolevm.map=IdentityHashMap`):
+RoleVM 2.x with `rolevm.unstableRelinkThreshold=1`:
 
-    Benchmark                                        (numRoles)  Mode  Cnt   Score    Error  Units
-    NoopCompartmentBenchmark.basecall_noargs                  1  avgt   10  15.601 ±  3.070  ns/op
-    NoopCompartmentBenchmark.basecall_primitiveargs           1  avgt   10  18.370 ± 10.167  ns/op
-    NoopCompartmentBenchmark.basecall_withargs                1  avgt   10  16.670 ±  4.615  ns/op
-    NoopCompartmentBenchmark.baseline                       N/A  avgt   10   0.426 ±  0.016  ns/op
+    Benchmark                              (gc)  (numRoles)  Mode  Cnt   Score   Error  Units
+    NoopBenchmark.basecall_noargs         false           1  avgt   10  39.560 ± 1.733  ns/op
+    NoopBenchmark.basecall_primitiveargs  false           1  avgt   10  34.482 ± 1.993  ns/op
+    NoopBenchmark.basecall_withargs       false           1  avgt   10  33.887 ± 1.735  ns/op
+    NoopBenchmark.baseline                  N/A         N/A  avgt   10   0.440 ± 0.016  ns/op
 
-SCROLL (units are µs instead of ns, [benchmark source][scrollbench]):
+SCROLL (units are µs instead of ns, [SCROLL benchmark source][scrollbench]):
 
     Benchmark                             (cached)  Mode  Cnt   Score    Error  Units
-    NoopBenchmark.basecall_noargs             true  avgt   10   3,548 ±  0,155  us/op
-    NoopBenchmark.basecall_primitiveargs      true  avgt   10   4,732 ±  0,173  us/op
-    NoopBenchmark.basecall_withargs           true  avgt   10   5,590 ±  0,176  us/op
+    NoopBenchmark.basecall_noargs             true  avgt   10   3.548 ±  0.155  us/op
+    NoopBenchmark.basecall_primitiveargs      true  avgt   10   4.732 ±  0.173  us/op
+    NoopBenchmark.basecall_withargs           true  avgt   10   5.590 ±  0.176  us/op
     NoopBenchmark.baseline                     N/A  avgt   10  ≈ 10⁻³           us/op
 
-[scrollbench]: https://github.com/martinmo/SCROLL/tree/noop-benchmarks
+[otjbench]: https://github.com/martinmo/otjbench
+[scrollbench]: https://github.com/martinmo/SCROLL
 
 
 ## License and copyright
