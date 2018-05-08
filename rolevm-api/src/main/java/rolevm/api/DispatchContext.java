@@ -9,20 +9,30 @@ import java.util.Objects;
 import jdk.dynalink.linker.support.Lookup;
 
 /**
- * Immutable, chained dispatch context for multiple role dispatch.
+ * Represents the runtime context for role method calls, which is expected as
+ * the first stack argument to role methods, after {@code this}. The dispatch
+ * context is an immutable, chained data structure that captures the roles to
+ * which a particular method call must be delegated. Inside a role method body,
+ * {@link #proceed()} can be used to specify a signature-polymorphic proceed
+ * call to the next role, if any, in this chain.
  * 
  * @author Martin Morgenstern
  */
 public final class DispatchContext {
-    /** End of the chain. */
+    /** Represents the end of a chain. */
     public static final DispatchContext END = new DispatchContext();
 
     private static final Lookup lookup = new Lookup(MethodHandles.lookup());
 
-    /** Direct handle to the {@link DispatchContext#next} field. */
+    /**
+     * Direct handle to the {@link DispatchContext#next} field (internal use only).
+     */
     public static final MethodHandle NEXT_HANDLE;
 
-    /** Direct handle to the {@link DispatchContext#target} field. */
+    /**
+     * Direct handle to the {@link DispatchContext#target} field (internal use
+     * only).
+     */
     public static final MethodHandle TARGET_HANDLE;
 
     static {
@@ -34,7 +44,7 @@ public final class DispatchContext {
     /** The next context in the chain (may be <code>null</code>). */
     private final DispatchContext next;
 
-    /** The target of this context. */
+    /** The target of this context (may be <code>null</code>). */
     private final Object target;
 
     /** Builds a chain of {@link DispatchContext}s using the given list of roles. */
@@ -47,7 +57,7 @@ public final class DispatchContext {
         return ctx;
     }
 
-    /** Convenience factory for {@link DispatchContext#of(List)}. */
+    /** Convenience method for {@link DispatchContext#of(List)}. */
     public static DispatchContext ofRoles(Object... roles) {
         return of(List.of(roles));
     }
@@ -70,32 +80,42 @@ public final class DispatchContext {
     }
 
     /**
-     * Returns the next {@link DispatchContext} in this chain, or <code>null</code>.
+     * Returns the next {@link DispatchContext} in the chain, or <code>null</code>
+     * the end of the chain was reached (internal use only).
      */
     public DispatchContext next() {
         return next;
     }
 
     /**
-     * Returns the target (i.e., receiver object) of this dispatch context.
+     * Returns the next role of this dispatch context, or <code>null</code> if the
+     * end of the chain was reached (internal use only).
      */
     public Object target() {
         return target;
     }
 
     /**
-     * Just a dummy method that allows for the static specification of
-     * signature-polymorphic <code>ctx.proceed().invoke(...)</code> calls inside
-     * roles using {@link MethodHandle#invoke(Object...)}.
+     * A marker method that can be used to specify a signature-polymorphic proceed
+     * call to the next role, if any, or to the core object of this dispatch
+     * context, using {@link MethodHandle#invoke(Object...)}. A proceed call is only
+     * valid inside a role method. The proceed handle expects <em>exactly</em> the
+     * same argument list as the surrounding method, i.e., at least the dispatch
+     * context and the base argument as the first and second argument, respectively,
+     * followed by any remaining arguments.
      * 
-     * @return <code>null</code>
+     * @see MethodHandle#invoke(Object...)
+     * @implNote Calls to this marker method will be replaced by the RoleVM
+     *           load-time transformation, so it never gets executed. Its sole
+     *           purpose is to take advantage of signature polymorphism, which
+     *           avoids boxing of method arguments.
      */
     public MethodHandle proceed() {
-        return null;
+        throw new AssertionError();
     }
 
     /**
-     * Print a human-friendly flat representation of the chain, such as
+     * Returns a human-friendly flat representation of the chain, such as
      * {@code DispatchContext[1 -> 2 -> 3 -> END]}.
      */
     @Override
