@@ -23,8 +23,8 @@ import rolevm.runtime.GuardedValue;
 import rolevm.runtime.TypeChecks;
 
 /**
- * Manages object-to-role bindings, provides binding operations, and answers
- * queries related to the object/role mappings.
+ * This class implements a thread-safe, memleak-free object/role mapping that is
+ * agnostic of call site inline caching using {@link SwitchPoint}s.
  * 
  * @author Martin Morgenstern
  */
@@ -41,22 +41,36 @@ public class CacheAwareBinder implements Binder, GuardedQuery {
 
     /**
      * Alternative, cached representation of {@link #registry} in form of a mapping
-     * to {@link DispatchContext}s. Must be recomputed whenever {@link #registry}
-     * changes.
+     * to {@link DispatchContext}s. The dispatch context must be recomputed whenever
+     * the corresponding map entry in {@link #registry} changes.
      */
     private final Map<Object, DispatchContext> contexts = createMap();
 
+    /**
+     * A map that maintains switchpoints to support invalidation instance level
+     * switchpoints. When the {@link #contexts} (and {@link #registry}) maps are
+     * modified, the corresponding context switchpoint must be invalidated and
+     * replaced with a new one which is valid until the next modification.
+     * 
+     * @see #getGuardedDispatchContext(Object)
+     */
     private final Map<Object, SwitchPoint> contextSwitchpoints = createMap();
 
+    /** Lazily computed mapping of supertypes for a given type. */
     private final ClassValue<Set<Class<?>>> supertypes = new Supertypes();
 
+    /**
+     * A mapping that maintains type level switch points.
+     * 
+     * @see #getGuardedIsPureType(Class)
+     */
     private final ClassValue<SwitchPoint> typeSwitchpoints = new TypeSwitchpoints();
 
     /**
-     * Allows the user to select the fast, but memory-leaking
-     * {@link IdentityHashMap}, or the slower {@link ConcurrentWeakHashMap} as the
-     * backing storage, by setting the system property {@code rolevm.map} to the
-     * desired class name. By default, {@link IdentityWeakHashMap} is used.
+     * Allows the user to select another {@link Map} implementation via the system
+     * property {@code rolevm.map}, for demonstration purposes. Available map
+     * implementations are {@link IdentityHashMap} and {@link ConcurrentWeakHashMap}
+     * (the default).
      */
     private static <K, V> Map<K, V> createMap() {
         String implementation = System.getProperty("rolevm.map");
@@ -66,12 +80,6 @@ public class CacheAwareBinder implements Binder, GuardedQuery {
         return new ConcurrentWeakHashMap<>();
     }
 
-    /**
-     * Binds {@code role} to {@code player}. Both must be distinct, non-null
-     * objects. Furthermore, the class of {@code role} must be a valid role type,
-     * and player must not be a role type (i.e., <em>deep roles</em> are not
-     * possible).
-     */
     @Override
     public void bind(final Object player, final Object role) {
         Objects.requireNonNull(player);
@@ -94,11 +102,10 @@ public class CacheAwareBinder implements Binder, GuardedQuery {
         }
     }
 
-    /**
-     * Deletes the first found binding of {@code role} to {@code player}.
-     */
     @Override
     public void unbind(final Object player, final Object role) {
+        Objects.requireNonNull(player);
+        Objects.requireNonNull(role);
         synchronized (lock) {
             List<Object> currentRoles = registry.get(player);
             if (currentRoles != null && currentRoles.remove(role)) {
@@ -113,33 +120,21 @@ public class CacheAwareBinder implements Binder, GuardedQuery {
         }
     }
 
-    /** Returns a (possibly empty) list with the bound roles of {@code player}. */
     @Override
     public List<Object> getRoles(final Object player) {
         return registry.getOrDefault(player, List.of());
     }
 
-    /**
-     * Returns an {@link Optional} containing the {@link DispatchContext} for
-     * {@code player}, or an empty Optional if {@code player} has no bound roles.
-     */
     @Override
     public Optional<DispatchContext> getDispatchContext(final Object player) {
         return Optional.ofNullable(contexts.get(player));
     }
 
-    /**
-     * Returns true if and only if {@code player} has no bound roles.
-     */
     @Override
     public boolean isPureObject(final Object player) {
         return !contexts.containsKey(player);
     }
 
-    /**
-     * Returns true if and only if {@code type} is a pure type, i.e., if there is
-     * currently no registered player that is a subtype of {@code type}.
-     */
     @Override
     public boolean isPureType(final Class<?> type) {
         Objects.requireNonNull(type);
@@ -152,10 +147,6 @@ public class CacheAwareBinder implements Binder, GuardedQuery {
         return true;
     }
 
-    /**
-     * Returns a direct method handle to {@link Map#getOrDefault(Object, Object)},
-     * bound to the internal object/dispatch context map.
-     */
     @Override
     public MethodHandle createGetContextHandle() {
         try {
@@ -185,6 +176,10 @@ public class CacheAwareBinder implements Binder, GuardedQuery {
         return new GuardedIsPureType(isPureType(type), typeSwitchpoints.get(type));
     }
 
+    /**
+     * Assigns a new context switchpoint to {@code player} and invalidates the old
+     * one, if any.
+     */
     private void updateContextSwitchpoint(final Object player) {
         final SwitchPoint oldSwitchPoint = contextSwitchpoints.put(player, new SwitchPoint());
         if (oldSwitchPoint != null) {
@@ -192,6 +187,10 @@ public class CacheAwareBinder implements Binder, GuardedQuery {
         }
     }
 
+    /**
+     * Invalidates the switchpoints of all supertypes of the given type
+     * (re-validation is currently not implemented).
+     */
     private void invalidateType(final Class<?> type) {
         final List<SwitchPoint> switchpoints = new ArrayList<>();
         for (final Class<?> supertype : supertypes.get(type)) {
@@ -243,6 +242,7 @@ public class CacheAwareBinder implements Binder, GuardedQuery {
         }
     }
 
+    /** Wraps dispatch contexts as guarded values. */
     static class GuardedDispatchContext implements GuardedValue<Optional<DispatchContext>> {
         private final Optional<DispatchContext> context;
         private final SwitchPoint switchpoint;
@@ -263,6 +263,7 @@ public class CacheAwareBinder implements Binder, GuardedQuery {
         }
     }
 
+    /** Wraps isPureType values as guarded values. */
     static class GuardedIsPureType implements GuardedValue<Boolean> {
         private final Boolean isPure;
         private final SwitchPoint switchpoint;

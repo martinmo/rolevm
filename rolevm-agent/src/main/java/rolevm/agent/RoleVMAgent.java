@@ -12,9 +12,17 @@ import rolevm.transform.DumpingTransformer;
 import rolevm.transform.StandardBlacklist;
 import rolevm.transform.UserDefinedBlacklist;
 
+/**
+ * Java agent that installs the RoleVM bytecode transformer.
+ * 
+ * @author Martin Morgenstern
+ */
 public class RoleVMAgent {
     private static final Path PATH = Paths.get("target", "rolevm-transformed-classes");
 
+    /**
+     * Registers the RoleVM {@link ClassFileTransformer}.
+     */
     public static void premain(final String args, final Instrumentation ins) {
         ins.addTransformer(createTransformer(System.getProperty("rolevm.exclude"), "dump".equals(args)));
     }

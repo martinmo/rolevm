@@ -2,12 +2,17 @@ package rolevm.runtime;
 
 import java.lang.invoke.MethodHandle;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import rolevm.api.DispatchContext;
 import rolevm.api.service.BindingService;
 
+/**
+ * The basic interface that a {@link DispatchContext}-based object/role manager
+ * must conform to.
+ * 
+ * @author Martin Morgenstern
+ */
 public interface Binder extends BindingService {
     /** Returns a (possibly empty) list with the bound roles of {@code player}. */
     List<Object> getRoles(Object player);
@@ -30,8 +35,10 @@ public interface Binder extends BindingService {
     boolean isPureType(Class<?> type);
 
     /**
-     * Returns a direct method handle to {@link Map#getOrDefault(Object, Object)},
-     * bound to the internal object/dispatch context map.
+     * Returns a bound method handle of type {@code (Object)DispatchContext}. When
+     * invoked, it returns a {@link DispatchContext} for the given object (the
+     * returned value is never <code>null</code> for objects without roles, but
+     * {@link DispatchContext#END} instead}.
      */
     MethodHandle createGetContextHandle();
 }

@@ -15,6 +15,10 @@ public class TypeChecks {
     private TypeChecks() {
     }
 
+    /**
+     * Validates the given role type and throws {@link RoleBindingException} if it
+     * is invalid.
+     */
     public static void validateRoleType(final Class<?> roleType) {
         final Class<?> compartmentType = roleType.getEnclosingClass();
         if (compartmentType == null || !COMPARTMENT_CLASS.isAssignableFrom(compartmentType)) {
@@ -25,6 +29,10 @@ public class TypeChecks {
         }
     }
 
+    /**
+     * Validates the given player object and throws {@link RoleBindingException} if
+     * it is invalid.
+     */
     public static void validatePlayer(final Object player) {
         if (player.getClass().isArray()) {
             throw new RoleBindingException("an array cannot be a player");
@@ -34,6 +42,10 @@ public class TypeChecks {
         }
     }
 
+    /**
+     * Returns {@code true} if the given object has the {@link rolevm.api.Role}
+     * annotation.
+     */
     public static boolean isRole(final Object object) {
         return object.getClass().getDeclaredAnnotation(ROLE_ANNOTATION) != null;
     }

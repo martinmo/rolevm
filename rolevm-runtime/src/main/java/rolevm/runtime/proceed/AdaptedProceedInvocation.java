@@ -8,6 +8,12 @@ import java.lang.invoke.MethodType;
 
 import jdk.dynalink.DynamicLinker;
 
+/**
+ * Adapted version of {@link ProceedInvocation} that discards any leading
+ * argument.
+ * 
+ * @author Martin Morgenstern
+ */
 public class AdaptedProceedInvocation extends ProceedInvocation {
     private final Class<?> parameterType;
 

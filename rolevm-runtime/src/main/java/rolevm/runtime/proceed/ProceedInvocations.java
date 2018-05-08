@@ -17,6 +17,13 @@ import jdk.dynalink.linker.LinkerServices;
 import jdk.dynalink.linker.support.Guards;
 import rolevm.api.DispatchContext;
 
+/**
+ * Provides the factory for different kinds of {@link ProceedInvocation}s as
+ * well as the {@link DynamicLinker} implementation that is used to link the
+ * nested dynamic call site.
+ * 
+ * @author Martin Morgenstern
+ */
 public class ProceedInvocations {
     private final DynamicLinker linker = createDynamicLinker();
 
@@ -27,14 +34,29 @@ public class ProceedInvocations {
         return factory.createLinker();
     }
 
+    /**
+     * Make an ordinary {@link ProceedInvocation} with the given lookup, name, and
+     * method type (intended to be called from an {@code invokedynamic} bootstrap
+     * method).
+     */
     public ProceedInvocation getInvocation(Lookup lookup, String name, MethodType type) {
         return new ProceedInvocation(linker, lookup, name, type);
     }
 
+    /**
+     * Make an {@link AdaptedProceedInvocation} with the given lookup, name, and
+     * method type, which discards any leading argument (intended to be called from
+     * an {@code invokedynamic} bootstrap method).
+     */
     public ProceedInvocation getAdaptedInvocation(Lookup lookup, String name, MethodType type) {
         return new AdaptedProceedInvocation(linker, lookup, name, type);
     }
 
+    /**
+     * Component linker for the nested dynamic call sites in {@code proceed}
+     * macro-instructions. It simply implements classic receiver-based dispatch and
+     * links invocations with simple guards such as {@code instanceof}.
+     */
     private class ProceedLinker implements GuardingDynamicLinker {
         @Override
         public GuardedInvocation getGuardedInvocation(LinkRequest request, LinkerServices unused) throws Exception {

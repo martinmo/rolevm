@@ -15,10 +15,11 @@ import org.objectweb.asm.Handle;
 import org.objectweb.asm.MethodVisitor;
 
 /**
- * Adapts <code>invoke{virtual,interface}</code> call sites to equivalent
- * <code>invokedynamic</code> call sites with an injected sender argument. The
- * sender argument is <code>this</code> in bodies of non-static methods,
- * otherwise the {@link Class} object of the surrounding class.
+ * Rewrites {@code invokevirtual} and {@code invokeinterface} call sites to
+ * equivalent {@code invokedynamic} call sites. Call sites representing
+ * {@code proceed} calls are assigned a special bootstrap method, and calls to
+ * the {@link rolevm.api.DispatchContext#proceed()} marker method are replaced
+ * by no-ops.
  * 
  * @author Martin Morgenstern
  */
@@ -57,7 +58,7 @@ public class IndyMethodAdapter extends MethodVisitor {
 
     /**
      * Adapts the method descriptor string to include the receiver type as the first
-     * argument, and an additional sender argument at the last position.
+     * argument.
      */
     static String adaptDescriptor(final String owner, final String desc) {
         final String ownerTypeDesc = owner.startsWith("[") ? owner : "L" + owner + ";";

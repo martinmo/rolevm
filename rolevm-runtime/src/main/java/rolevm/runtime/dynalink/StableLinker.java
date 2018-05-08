@@ -20,6 +20,13 @@ import rolevm.runtime.GuardedQuery;
 import rolevm.runtime.GuardedValue;
 import rolevm.runtime.proceed.ProceedInvocations;
 
+/**
+ * Component linker that links stable call sites with a bound method handle that
+ * captures an instance-specific {@link DispatchContext}, guarded by the
+ * corresponding context switchpoint and an identity guard.
+ * 
+ * @author Martin Morgenstern
+ */
 public class StableLinker implements GuardingDynamicLinker {
     private final ProceedInvocations factory = new ProceedInvocations();
     private final GuardedQuery query;

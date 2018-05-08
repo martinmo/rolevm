@@ -10,6 +10,12 @@ import jdk.dynalink.linker.GuardingDynamicLinker;
 import rolevm.runtime.Binder;
 import rolevm.runtime.GuardedQuery;
 
+/**
+ * Builder for a composite {@link DynamicLinker} consisting of the component
+ * linkers in this package.
+ * 
+ * @author Martin Morgenstern
+ */
 public class DynalinkLinkerBuilder {
     private static final String THRESHOLD_PROPERTY = "rolevm.unstableRelinkThreshold";
     private static final int THRESHOLD_DEFAULT = 8;
@@ -17,6 +23,11 @@ public class DynalinkLinkerBuilder {
     private Binder binder;
     private GuardedQuery guardedQuery;
 
+    /**
+     * Builds a {@link DynamicLinker} with the current configuration.
+     * 
+     * @return a new {@link DynamicLinker} instance
+     */
     public DynamicLinker build() {
         if (binder == null || guardedQuery == null) {
             throw new IllegalArgumentException("binder and guardedQuery must not be null");
@@ -33,21 +44,34 @@ public class DynalinkLinkerBuilder {
         return factory.createLinker();
     }
 
+    /** Configure the {@link Binder} implementation to be used. */
     public DynalinkLinkerBuilder withBinder(final Binder binder) {
         this.binder = Objects.requireNonNull(binder);
         return this;
     }
 
+    /** Configure the {@link GuardedQuery} implementation to be used. */
     public DynalinkLinkerBuilder withGuardedQuery(final GuardedQuery guardedQuery) {
         this.guardedQuery = Objects.requireNonNull(guardedQuery);
         return this;
     }
 
+    /**
+     * Configure the threshold after which Dynalink regards the call site as
+     * unstable.
+     * 
+     * @see DynamicLinkerFactory#setUnstableRelinkThreshold(int)
+     */
     public DynalinkLinkerBuilder withUnstableRelinkThreshold(final int unstableRelinkThreshold) {
         this.unstableRelinkThreshold = unstableRelinkThreshold;
         return this;
     }
 
+    /**
+     * Configure this builder from system properties. Currently, only
+     * {@link #withUnstableRelinkThreshold(int)} can be configured via the
+     * {@code rolevm.unstableRelinkThreshold} property.
+     */
     public DynalinkLinkerBuilder fromSystemProperties() {
         final String threshold = System.getProperty(THRESHOLD_PROPERTY);
         if (threshold != null) {

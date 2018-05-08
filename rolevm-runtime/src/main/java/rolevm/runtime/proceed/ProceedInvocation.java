@@ -17,6 +17,22 @@ import jdk.dynalink.DynamicLinker;
 import jdk.dynalink.support.ChainedCallSite;
 import rolevm.api.DispatchContext;
 
+/**
+ * Represents a {@code proceed} macro-instruction for a given method name and
+ * method type. The method handle returned by {@link #getHandle()} executes the
+ * following pseudo code:
+ * <p>
+ * 
+ * <pre>
+ * {@code Object role = context.target();
+ * if (role != null)
+ *   // will be bridged if necessary:
+ *   return role.method(context.next(), base, ...);
+ * return base.method(...);}
+ * </pre>
+ * 
+ * @author Martin Morgenstern
+ */
 public class ProceedInvocation {
     private final DynamicLinker linker;
     private final CallSiteDescriptor descriptor;

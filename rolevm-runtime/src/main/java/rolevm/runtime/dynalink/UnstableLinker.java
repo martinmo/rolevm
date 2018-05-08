@@ -18,6 +18,13 @@ import jdk.dynalink.linker.LinkerServices;
 import rolevm.api.DispatchContext;
 import rolevm.runtime.proceed.ProceedInvocations;
 
+/**
+ * Component linker for unstable call sites, which links an unconditional
+ * invocation to the most generic (but also slowest) role method dispatch
+ * algorithm, which requires a hash map lookup on each invocation.
+ * 
+ * @author Martin Morgenstern
+ */
 public class UnstableLinker implements GuardingDynamicLinker {
     private static final MethodType COMBINER_TYPE = methodType(DispatchContext.class, Object.class);
 

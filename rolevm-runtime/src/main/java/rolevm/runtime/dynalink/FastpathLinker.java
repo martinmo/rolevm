@@ -15,6 +15,12 @@ import jdk.dynalink.linker.LinkerServices;
 import rolevm.runtime.GuardedQuery;
 import rolevm.runtime.GuardedValue;
 
+/**
+ * Component linker that that exclusively links stable call sites with a pure
+ * receiver type, and guards the invocation with a type-specific switchpoint.
+ * 
+ * @author Martin Morgenstern
+ */
 public class FastpathLinker implements GuardingDynamicLinker {
     private final GuardedQuery query;
 

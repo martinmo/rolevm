@@ -17,6 +17,13 @@ import jdk.dynalink.linker.GuardingDynamicLinker;
 import jdk.dynalink.linker.LinkRequest;
 import jdk.dynalink.linker.LinkerServices;
 
+/**
+ * Component linker that exclusively links methods of {@link java.lang.Object}
+ * with an unconditional invocation (methods in this type cannot be overridden
+ * by a role). This linker must be the first in the chain of linkers.
+ * 
+ * @author Martin Morgenstern
+ */
 public class JLOLinker implements GuardingDynamicLinker {
     /** Map of names and method types of methods in {@link java.lang.Object}. */
     private static final Map<String, MethodType> JLO_METHODS = objectMethods();
