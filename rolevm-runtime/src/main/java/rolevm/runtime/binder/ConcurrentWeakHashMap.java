@@ -91,6 +91,12 @@ public class ConcurrentWeakHashMap<K, V> implements Map<K, V> {
     }
 
     @Override
+    public V getOrDefault(Object key, V defaultValue) {
+        removeStaleReferences();
+        return storage.getOrDefault(new Key(key), defaultValue);
+    }
+
+    @Override
     public boolean isEmpty() {
         removeStaleReferences();
         return storage.isEmpty();
