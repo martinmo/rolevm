@@ -3,3 +3,5 @@
 -Dorg.slf4j.simpleLogger.log.rolevm.runtime=trace
 -Dorg.slf4j.simpleLogger.showThreadName=false
 -Drolevm.exclude=com/google/common/base/,rolevm/bench/,org/openjdk/jmh/
+#-Drolevm.map=IdentityHashMap
+#-Drolevm.unstableRelinkThreshold=50
