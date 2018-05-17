@@ -19,11 +19,11 @@ import rolevm.examples.bank_bigdec.Bank.Customer;
 import rolevm.examples.bank_bigdec.Person;
 import rolevm.examples.bank_bigdec.Transaction;
 
-@Fork(warmups = 1, jvmArgsAppend = { "@rolevm-bench/jvm.options" })
+@Fork(warmups = 1, value = 15, jvmArgsAppend = { "@rolevm-bench/jvm.options" })
 @BenchmarkMode(Mode.SingleShotTime)
 @State(Scope.Benchmark)
 public class BigDecBankBenchmark {
-    @Param("800")
+    @Param({ "250", "500", "1000", "2000", "4000" })
     int N;
 
     /**

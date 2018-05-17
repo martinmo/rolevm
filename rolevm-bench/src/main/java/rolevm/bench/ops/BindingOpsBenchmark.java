@@ -21,7 +21,7 @@ import rolevm.examples.noop.NoopCompartment.NoopRole;
 @State(Scope.Benchmark)
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 public class BindingOpsBenchmark extends DefaultBenchmark {
-    @Param({ "5" })
+    @Param({ "1" })
     int N;
 
     BaseType base;

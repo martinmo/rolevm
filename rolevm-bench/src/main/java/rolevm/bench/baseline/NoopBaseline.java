@@ -40,11 +40,6 @@ public class NoopBaseline extends DefaultBenchmark {
     }
 
     @Benchmark
-    public void baseline() {
-        // intentionally left empty
-    }
-
-    @Benchmark
     public Object basecall_noargs() {
         NoopRole r = (NoopRole) b.getRole("NoopRole");
         return r.noArgs();

@@ -17,11 +17,11 @@ import rolevm.examples.bank.Bank.Customer;
 import rolevm.examples.bank.Person;
 import rolevm.examples.bank.Transaction;
 
-@Fork(warmups = 1, jvmArgsAppend = { "@rolevm-bench/jvm.options" })
+@Fork(warmups = 1, value = 15, jvmArgsAppend = { "@rolevm-bench/jvm.options" })
 @BenchmarkMode(Mode.SingleShotTime)
 @State(Scope.Benchmark)
 public class BankBenchmark {
-    @Param("1500")
+    @Param({ "250", "500", "1000", "2000", "4000" })
     int N;
 
     /**

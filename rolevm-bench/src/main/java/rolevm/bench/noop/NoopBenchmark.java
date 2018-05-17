@@ -66,11 +66,6 @@ public class NoopBenchmark extends DefaultBenchmark {
     }
 
     @Benchmark
-    public void baseline() {
-        // empty
-    }
-
-    @Benchmark
     public Object basecall_noargs(BenchState s) {
         return BenchmarkHelper.performTest1(s.b);
     }

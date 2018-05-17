@@ -18,11 +18,11 @@ import rolevm.bench.baseline.bank.Person;
 import rolevm.bench.baseline.bank.PersonCore;
 import rolevm.bench.baseline.bank.Transaction;
 
-@Fork(warmups = 1)
+@Fork(warmups = 1, value = 15)
 @BenchmarkMode(Mode.SingleShotTime)
 @State(Scope.Benchmark)
 public class BankBaseline {
-    @Param("1500")
+    @Param({ "250", "500", "1000", "2000", "4000" })
     int N;
 
     Bank bank;
