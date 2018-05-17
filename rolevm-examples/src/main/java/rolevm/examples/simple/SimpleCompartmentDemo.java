@@ -5,7 +5,7 @@ import rolevm.examples.simple.SimpleCompartment.RoleType;
 public class SimpleCompartmentDemo {
     public static void main(String args[]) throws Exception {
         SimpleCompartment c = new SimpleCompartment();
-        BaseType b = new BaseType();
+        BaseType b = new BaseType("foo");
         RoleType r = c.new RoleType(42);
 
         System.out.println(b.calculate(3));
@@ -21,7 +21,7 @@ public class SimpleCompartmentDemo {
         System.out.println(b.calculate(3));
         System.out.println(b.delegation());
 
-        c.bind(b, c.new AnotherRoleType());
+        c.bind(b, c.new AnotherRoleType("another1"));
         System.out.println("--- Three roles ---");
         System.out.println(b.calculate(3));
         System.out.println(b.delegation());
@@ -31,10 +31,10 @@ public class SimpleCompartmentDemo {
         System.out.println(b.calculate(3));
         System.out.println(b.delegation());
 
-        BaseType b2 = new BaseType();
+        BaseType b2 = new BaseType("bar");
         c.bind(b2, c.new RoleType(10));
         c.bind(b2, c.new EmptyRoleType());
-        c.bind(b2, c.new AnotherRoleType());
+        c.bind(b2, c.new AnotherRoleType("another2"));
         System.out.println("--- Three roles, the second must be bridged ---");
         System.out.println(b2.calculate(3));
         System.out.println(b2.delegation());

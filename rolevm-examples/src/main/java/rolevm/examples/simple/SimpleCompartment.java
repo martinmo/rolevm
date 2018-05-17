@@ -15,20 +15,36 @@ public class SimpleCompartment extends Compartment {
 
         @OverrideBase
         public int calculate(DispatchContext ctx, BaseType base, int x) throws Throwable {
-            System.out.printf("RoleType(%s)::calculate()%n", this);
+            System.out.println(this + "::calculate(" + x + ")");
             return (int) ctx.proceed().invoke(ctx, base, x) + y;
         }
 
         public int getY() {
             return y;
         }
+
+        @Override
+        public String toString() {
+            return getClass().getSimpleName() + "(" + y + ")";
+        }
     }
 
     public @Role class AnotherRoleType {
+        private final String id;
+
+        public AnotherRoleType(String id) {
+            this.id = id;
+        }
+
         @OverrideBase
         public int calculate(DispatchContext ctx, BaseType base, int x) {
-            System.out.printf("AnotherRoleType(%s)::calculate()%n", this);
+            System.out.println(this + "::calculate(" + x + ")");
             return -x;
+        }
+
+        @Override
+        public String toString() {
+            return getClass().getSimpleName() + "(" + id + ")";
         }
     }
 
