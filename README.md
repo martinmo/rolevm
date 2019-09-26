@@ -49,8 +49,8 @@ branch.
 ## Building this project
 
 The library is not yet available on Maven Central. You have to build and/or install it locally
-using `mvn package` or `mvn install`. The **build currently requires JDK 9**, but the resulting
-JARs can be executed on JDK 10 as well.
+using `mvn package` or `mvn install`. The **build requires JDK 11**, but the resulting
+JARs can be executed with later JDKs as well.
 
 Furthermore, the code is organized into multiple subprojects:
 
